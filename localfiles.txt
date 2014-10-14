@@ -1,0 +1,10 @@
+update.sh
+localfiles.txt
+.git
+*.pyc
+__pycache__
+.gitignore
+.DS_Store
+*.arr
+README.rst
+LICENCE
