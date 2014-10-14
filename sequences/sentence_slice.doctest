@@ -1,0 +1,79 @@
+>>> from sentence_slice import SentenceSlice
+>>> s = SentenceSlice('the')
+>>> s.tokens
+['the']
+>>> s.words
+['the']
+
+>>> s = SentenceSlice('the quick brown fox')
+>>> s.tokens
+['the', ' ', 'quick', ' ', 'brown', ' ', 'fox']
+>>> s.words
+['the', 'quick', 'brown', 'fox']
+>>> s[0]
+'the'
+>>> s[1]
+'quick'
+>>> s[-1]
+'fox'
+>>> s[2:4]
+SentenceSlice('brown fox')
+>>> s[1:]
+SentenceSlice('quick brown fox')
+>>> s[:3]
+SentenceSlice('the quick brown')
+
+>>> s = SentenceSlice('"The time has come," the Walrus said,')
+>>> s.tokens
+['"', 'The', ' ', 'time', ' ', 'has', ' ', 'come', ',"', ' ', 'the', ' ', 'Walrus', ' ', 'said', ',']
+>>> s.words
+['The', 'time', 'has', 'come', 'the', 'Walrus', 'said']
+>>> s[:3]
+SentenceSlice('"The time has')
+>>> s[:4]
+SentenceSlice('"The time has come,"')
+>>> s[4:]
+SentenceSlice('the Walrus said,')
+>>> s[1:5]
+SentenceSlice('time has come," the')
+>>> s[1:6]
+SentenceSlice('time has come," the Walrus')
+>>> s[1:7]
+SentenceSlice('time has com... Walrus said,')
+>>> s[1:8]
+SentenceSlice('time has com... Walrus said,')
+>>> s[6:]
+SentenceSlice('said,')
+>>> s[7:]
+SentenceSlice('')
+>>> s[8:]
+SentenceSlice('')
+>>> s[:-3]
+SentenceSlice('"The time has come,"')
+>>> s[-4:-2]
+SentenceSlice('come," the')
+>>> s[0:2]
+SentenceSlice('"The time')
+
+>>> s = SentenceSlice('''"The time has come," the Walrus said,
+... "To talk of many things:"''')
+>>> s.tokens
+['"', 'The', ' ', 'time', ' ', 'has', ' ', 'come', ',"', ' ', 'the', ' ', 'Walrus', ' ', 'said', ',', '\n', '"', 'To', ' ', 'talk', ' ', 'of', ' ', 'many', ' ', 'things', ':"']
+>>> s.words
+['The', 'time', 'has', 'come', 'the', 'Walrus', 'said', 'To', 'talk', 'of', 'many', 'things']
+
+>>> s = SentenceSlice('Agora vou-me. Ou me vão?')
+>>> s.tokens
+['Agora', ' ', 'vou', '-', 'me', '.', ' ', 'Ou', ' ', 'me', ' ', 'vão', '?']
+>>> s.words
+['Agora', 'vou', 'me', 'Ou', 'me', 'vão']
+>>> s[1:]
+SentenceSlice('vou-me. Ou me vão?')
+>>> s[:2]
+SentenceSlice('Agora vou-')
+>>> s[2:]
+SentenceSlice('-me. Ou me vão?')
+
+
+
+

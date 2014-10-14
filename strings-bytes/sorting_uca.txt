@@ -1,0 +1,11 @@
+PS > pip install pyuca
+Downloading/unpacking pyuca
+  Running setup.py (path:C:\Users\...) egg_info for package pyuca
+Installing collected packages: pyuca
+  Running setup.py install for pyuca
+Successfully installed pyuca
+Cleaning up...
+PS > python .\sorting_uca.py
+manual_sort ['açaí', 'acaíba', 'acerola', 'cajá', 'caju']
+plain_sort  ['acaíba', 'acerola', 'açaí', 'caju', 'cajá'] WRONG
+pyuca_sort  ['açaí', 'acaíba', 'acerola', 'cajá', 'caju'] CORRECT

@@ -1,0 +1,25 @@
+                 |object  |instance|list    |function|class   
+__class__        |type    |type    |type    |type    |type    
+__delattr__      |method  |method  |method  |method  |method  
+__dir__          |method  |method  |method  |method  |method  
+__doc__          |data    |data    |data    |data    |data    
+__eq__           |method  |method  |method  |method  |method  
+__format__       |method  |method  |method  |method  |method  
+__ge__           |method  |method  |method  |method  |method  
+__getattribute__ |method  |method  |method  |method  |method  
+__gt__           |method  |method  |method  |method  |method  
+__hash__         |method  |method  |data    |method  |method  
+__init__         |method  |method  |method  |method  |method  
+__le__           |method  |method  |method  |method  |method  
+__lt__           |method  |method  |method  |method  |method  
+__ne__           |method  |method  |method  |method  |method  
+__new__          |method  |method  |method  |method  |method  
+__reduce__       |method  |method  |method  |method  |method  
+__reduce_ex__    |method  |method  |method  |method  |method  
+__repr__         |method  |method  |method  |method  |method  
+__setattr__      |method  |method  |method  |method  |method  
+__sizeof__       |method  |method  |method  |method  |method  
+__str__          |method  |method  |method  |method  |method  
+__subclasshook__ |method  |method  |method  |method  |method  
+TOTALS           |      22|      25|      34|      34|      28
+['attr_list.py', '+']

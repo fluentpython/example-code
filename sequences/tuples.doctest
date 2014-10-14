@@ -1,0 +1,14 @@
+>>> coordinates = (-23.547778, -46.635833)
+>>> lat, long_ = coordinates
+>>> long_
+-46.635833
+>>> lat
+-23.547778
+>>> traveler_ids = [('USA', '311975855'), ('BRA', 'CE342567'), ('ESP', 'XDA205856')]
+>>> for country, passport_no in sorted(traveler_ids):
+...     print('%s:%s' % (country, passport_no))
+BRA:CE342567
+ESP:XDA205856
+USA:311975855
+
+

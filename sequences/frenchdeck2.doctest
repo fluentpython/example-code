@@ -1,0 +1,54 @@
+>>> from frenchdeck2 import FrenchDeck2, Card
+>>> beer_card = Card('7', 'diamonds')
+>>> beer_card
+Card(rank='7', suit='diamonds')
+>>> deck = FrenchDeck2()
+>>> len(deck)
+52
+>>> deck[:3]
+[Card(rank='2', suit='spades'), Card(rank='3', suit='spades'), Card(rank='4', suit='spades')]
+>>> deck[12::13]
+[Card(rank='A', suit='spades'), Card(rank='A', suit='diamonds'), Card(rank='A', suit='clubs'), Card(rank='A', suit='hearts')]
+>>> Card('Q', 'hearts') in deck
+True
+>>> Card('Z', 'clubs') in deck
+False
+>>> for card in deck:  # doctest: +ELLIPSIS
+...   print(card)
+Card(rank='2', suit='spades')
+Card(rank='3', suit='spades')
+Card(rank='4', suit='spades')
+...
+>>> for card in reversed(deck):  # doctest: +ELLIPSIS
+...   print(card)
+Card(rank='A', suit='hearts')
+Card(rank='K', suit='hearts')
+Card(rank='Q', suit='hearts')
+...
+>>> for n, card in enumerate(deck, 1):  # doctest: +ELLIPSIS
+...   print(n, card)
+1 Card(rank='2', suit='spades')
+2 Card(rank='3', suit='spades')
+3 Card(rank='4', suit='spades')
+...
+>>> def alt_color_rank(card):
+...     rank_value = FrenchDeck2.ranks.index(card.rank)
+...     suits = 'diamonds clubs hearts spades'.split()
+...     return rank_value * len(suits) + suits.index(card.suit)
+
+Rank test:
+
+>>> alt_color_rank(Card('2', 'diamonds'))
+0
+>>> alt_color_rank(Card('A', 'spades'))
+51
+
+>>> for card in sorted(deck, key=alt_color_rank):  # doctest: +ELLIPSIS
+...      print(card)
+Card(rank='2', suit='diamonds')
+Card(rank='2', suit='clubs')
+Card(rank='2', suit='hearts')
+...
+Card(rank='A', suit='clubs')
+Card(rank='A', suit='hearts')
+Card(rank='A', suit='spades')

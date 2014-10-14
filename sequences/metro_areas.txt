@@ -1,0 +1,29 @@
+# THE 20 LARGEST WORLD METROPOLITAN AREAS, 2003: DATA FOR FORSTALL DEFINITIONS
+# (Populations in thousands estimated for 1 July 2003.)
+# CC Name	Rank	Population	Yr_change	%	Area(km2)	Pop/km2
+JP	Tokyo	1	32,450	213	0.66	8014	4049.2
+KR	Seoul	2	20,550	227	1.12	5076	4048.5
+MX	Mexico City	3	20,450	307	1.54	7346	2783.8
+US	New York	4	19,750	120	0.61	17884	1104.3
+IN	Mumbai (Bombay)	5	19,200	472	2.53	2350	8170.2
+ID	Jakarta	6	18,900	225	1.21	5100	3705.9
+BR	Sao Paulo	7	18,850	289	1.57	8479	2223.1
+IN	Delhi-New Delhi	8	18,600	686	3.86	3182	5845.4
+JP	Osaka-Kobe-Kyoto	9	17,375	28	0.16	6930	2507.2
+CN	Shanghai	10	16,650	335	2.07	5177	3216.1
+PH	Manila	11	16,300	461	2.96	2521	6465.7
+CN	Hong Kong-Shenzhen	12	15,800	797	5.42	3051	5178.6
+US	Los Angeles	13	15,250	205	1.38	10780	1414.7
+IN	Kolkata (Calcutta)	14	15,100	257	1.74	1785	8459.4
+RU	Moscow	15	15,000	103	0.69	14925	1005.0
+EG	Cairo	16	14,450	257	1.89	1600	9031.3
+AR	Buenos Aires	17	13,170	79	0.62	10888	1209.6
+UK	London	18	12,875	112	0.87	11391	1130.3
+CN	Beijing	19	12,500	301	2.49	6562	1904.9
+PK	Karachi	20	11,800	370	3.43	1100	10727.3
+# Data source:
+# WHICH ARE THE LARGEST? WHY PUBLISHED POPULATIONS
+# FOR MAJOR WORLD URBAN AREAS VARY SO GREATLY
+# Richard L. Forstall, Richard P. Greene, James B. Pick
+# http://web.archive.org/web/20130114203922/http://www.uic.edu/cuppa/cityfutures/papers/webpapers/cityfuturespapers/session3_4/3_4whicharethe.pdf
+# Country codes added by L. Ramalho

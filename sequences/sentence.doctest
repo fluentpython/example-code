@@ -1,0 +1,75 @@
+>>> from sentence import Sentence
+>>> s = Sentence('The time has come')
+>>> s
+Sentence('The time has come')
+>>> s[0]
+'The'
+>>> list(s)
+['The', 'time', 'has', 'come']
+
+
+>>> s = Sentence('"The time has come," the Walrus said,')
+>>> s
+Sentence('"The time ha... Walrus said,')
+>>> s[0]
+'The'
+>>> s[1]
+'time'
+>>> for word in s:
+...     print(word)
+The
+time
+has
+come
+the
+Walrus
+said
+>>> list(s)
+['The', 'time', 'has', 'come', 'the', 'Walrus', 'said']
+>>> s[-2]
+'Walrus'
+>>> s[2:4]
+['has', 'come']
+>>> s[:4]
+['The', 'time', 'has', 'come']
+>>> s[4:]
+['the', 'Walrus', 'said']
+
+
+>>> s3 = Sentence('Pig and Pepper')
+>>> it = iter(s3)
+>>> it  # doctest: +ELLIPSIS
+<iterator object at 0x...>
+>>> next(it)
+'Pig'
+>>> next(it)
+'and'
+>>> next(it)
+'Pepper'
+>>> next(it)
+Traceback (most recent call last):
+  ...
+StopIteration
+>>> list(it)
+[]
+>>> list(iter(s3))
+['Pig', 'and', 'Pepper']
+
+
+>>> s = Sentence('''The right of the people to be secure in
+... their persons, houses, papers, and effects, against
+... unreasonable searches and seizures, shall not be violated,''')
+>>> s
+Sentence('The right of... be violated,')
+>>> list(s)  # doctest: +ELLIPSIS
+['The', 'right', 'of', 'the', 'people', ... 'not', 'be', 'violated']
+
+
+>>> s = Sentence('Agora vou-me. Ou me vão?')
+>>> s
+Sentence('Agora vou-me. Ou me vão?')
+>>> list(s)
+['Agora', 'vou', 'me', 'Ou', 'me', 'vão']
+
+
+
