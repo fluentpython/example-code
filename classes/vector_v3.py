@@ -28,6 +28,38 @@ Test of .frombytes() class method:
     >>> v1 == v1_clone
     True
 
+Tests of ``format()`` with Cartesian coordinates:
+
+    >>> format(v1)
+    '(3.0, 4.0)'
+    >>> format(v1, '.2f')
+    '(3.00, 4.00)'
+    >>> format(v1, '.3e')
+    '(3.000e+00, 4.000e+00)'
+
+
+Tests of the ``angle`` method::
+
+    >>> Vector(0, 0).angle()
+    0.0
+    >>> Vector(1, 0).angle()
+    0.0
+    >>> epsilon = 10**-8
+    >>> abs(Vector(0, 1).angle() - math.pi/2) < epsilon
+    True
+    >>> abs(Vector(1, 1).angle() - math.pi/4) < epsilon
+    True
+
+
+Tests of ``format()`` with polar coordinates:
+
+    >>> format(Vector(1, 1), 'p')  # doctest:+ELLIPSIS
+    '<1.414213..., 0.785398...>'
+    >>> format(Vector(1, 1), '.3ep')
+    '<1.414e+00, 7.854e-01>'
+    >>> format(Vector(1, 1), '0.5fp')
+    '<1.41421, 0.78540>'
+
 # BEGIN VECTOR_V3_DEMO
 Test of `x` and `y` read-only properties:
 

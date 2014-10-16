@@ -28,7 +28,7 @@ Test of ``.frombytes()`` class method:
     >>> v1 == v1_clone
     True
 
-Tests of ``format()`` with rectangular coordinates:
+Tests of ``format()`` with Cartesian coordinates:
 
     >>> format(v1)
     '(3.0, 4.0)'
@@ -36,6 +36,7 @@ Tests of ``format()`` with rectangular coordinates:
     '(3.00, 4.00)'
     >>> format(v1, '.3e')
     '(3.000e+00, 4.000e+00)'
+
 
 Tests of the ``angle`` method::
 
@@ -48,6 +49,7 @@ Tests of the ``angle`` method::
     True
     >>> abs(Vector(1, 1).angle() - math.pi/4) < epsilon
     True
+
 
 Tests of ``format()`` with polar coordinates:
 
