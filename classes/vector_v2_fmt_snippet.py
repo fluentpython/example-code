@@ -110,6 +110,5 @@ class Vector:
 
     @classmethod
     def frombytes(cls, octets):
-        arr = array(Vector.typecode)
-        arr.frombytes(octets)
-        return cls(*arr)
+        memv = memoryview(octets).cast(cls.typecode)
+        return cls(*memv)

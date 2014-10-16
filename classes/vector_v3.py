@@ -46,8 +46,9 @@ Test of `x` and `y` read-only properties:
     >>> v2 = Vector(3.1, 4.2)
     >>> hash(v1), hash(v2)
     (7, 384307168202284039)
-    >>> set([v1, v2])
-    {Vector(3.1, 4.2), Vector(3.0, 4.0)}
+    >>> len(set([v1, v2]))
+    2
+
 
 # END VECTOR_V3_DEMO
 
@@ -118,6 +119,5 @@ class Vector:
 
     @classmethod
     def frombytes(cls, octets):
-        arr = array(Vector.typecode)
-        arr.frombytes(octets)
-        return cls(*arr)
+        memv = memoryview(octets).cast(cls.typecode)
+        return cls(*memv)
