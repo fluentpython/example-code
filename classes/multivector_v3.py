@@ -140,7 +140,7 @@ class MultiVector:
     typecode = 'd'
 
     def __init__(self, components):
-        self._components = array(MultiVector.typecode, components)
+        self._components = array(self.typecode, components)
 
     def __iter__(self):
         return iter(self._components)
