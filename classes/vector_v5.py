@@ -180,8 +180,8 @@ Tests of ``format()`` with spherical coordinates in 2D, 3D and 4D::
     '<2.0, 2.09439..., 2.18627..., 3.92699...>'
     >>> format(Vector([2, 2, 2, 2]), '.3eh')
     '<4.000e+00, 1.047e+00, 9.553e-01, 7.854e-01>'
-    >>> format(Vector([0, 1, 0, 1]), '0.5fh')
-    '<1.41421, 1.57080, 0.78540, 1.57080>'
+    >>> format(Vector([0, 1, 0, 0]), '0.5fh')
+    '<1.00000, 1.57080, 0.00000, 0.00000>'
 """
 
 from array import array
@@ -269,8 +269,8 @@ class Vector:
         else:
             coords = self
             outer_fmt = '({})'  # <6>
-        components = (format(c, fmt_spec) for c in coords)
-        return outer_fmt.format(', '.join(components))  # <7>
+        components = (format(c, fmt_spec) for c in coords)  # <7>
+        return outer_fmt.format(', '.join(components))  # <8>
 
     @classmethod
     def frombytes(cls, octets):
