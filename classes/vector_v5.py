@@ -1,24 +1,25 @@
+# BEGIN VECTOR_V5
 """
-A multi-dimensional ``MultiVector`` class, take 2
+A multi-dimensional ``Vector`` class, take 5
 
-A ``MultiVector`` is built from an iterable of numbers::
+A ``Vector`` is built from an iterable of numbers::
 
-    >>> MultiVector([3.1, 4.2])
-    MultiVector([3.1, 4.2])
-    >>> MultiVector((3, 4, 5))
-    MultiVector([3.0, 4.0, 5.0])
-    >>> MultiVector(range(10))
-    MultiVector([0.0, 1.0, 2.0, 3.0, 4.0, ...])
+    >>> Vector([3.1, 4.2])
+    Vector([3.1, 4.2])
+    >>> Vector((3, 4, 5))
+    Vector([3.0, 4.0, 5.0])
+    >>> Vector(range(10))
+    Vector([0.0, 1.0, 2.0, 3.0, 4.0, ...])
 
 
-Tests with 2-dimensions (same results as ``vector_v1.py``)::
+Tests with 2-dimensions (same results as ``vector2d_v1.py``)::
 
-    >>> v1 = MultiVector([3, 4])
+    >>> v1 = Vector([3, 4])
     >>> x, y = v1
     >>> x, y
     (3.0, 4.0)
     >>> v1
-    MultiVector([3.0, 4.0])
+    Vector([3.0, 4.0])
     >>> v1_clone = eval(repr(v1))
     >>> v1 == v1_clone
     True
@@ -29,27 +30,27 @@ Tests with 2-dimensions (same results as ``vector_v1.py``)::
     b'\\x00\\x00\\x00\\x00\\x00\\x00\\x08@\\x00\\x00\\x00\\x00\\x00\\x00\\x10@'
     >>> abs(v1)
     5.0
-    >>> bool(v1), bool(MultiVector([0, 0]))
+    >>> bool(v1), bool(Vector([0, 0]))
     (True, False)
 
 
 Test of ``.frombytes()`` class method:
 
-    >>> v1_clone = MultiVector.frombytes(bytes(v1))
+    >>> v1_clone = Vector.frombytes(bytes(v1))
     >>> v1_clone
-    MultiVector([3.0, 4.0])
+    Vector([3.0, 4.0])
     >>> v1 == v1_clone
     True
 
 
 Tests with 3-dimensions::
 
-    >>> v1 = MultiVector([3, 4, 5])
+    >>> v1 = Vector([3, 4, 5])
     >>> x, y, z = v1
     >>> x, y, z
     (3.0, 4.0, 5.0)
     >>> v1
-    MultiVector([3.0, 4.0, 5.0])
+    Vector([3.0, 4.0, 5.0])
     >>> v1_clone = eval(repr(v1))
     >>> v1 == v1_clone
     True
@@ -57,32 +58,32 @@ Tests with 3-dimensions::
     (3.0, 4.0, 5.0)
     >>> abs(v1)  # doctest:+ELLIPSIS
     7.071067811...
-    >>> bool(v1), bool(MultiVector([0, 0, 0]))
+    >>> bool(v1), bool(Vector([0, 0, 0]))
     (True, False)
 
 
 Tests with many dimensions::
 
-    >>> v7 = MultiVector(range(7))
+    >>> v7 = Vector(range(7))
     >>> v7
-    MultiVector([0.0, 1.0, 2.0, 3.0, 4.0, ...])
+    Vector([0.0, 1.0, 2.0, 3.0, 4.0, ...])
     >>> abs(v7)  # doctest:+ELLIPSIS
     9.53939201...
 
 
 Test of ``.__bytes__`` and ``.frombytes()`` methods::
 
-    >>> v1 = MultiVector([3, 4, 5])
-    >>> v1_clone = MultiVector.frombytes(bytes(v1))
+    >>> v1 = Vector([3, 4, 5])
+    >>> v1_clone = Vector.frombytes(bytes(v1))
     >>> v1_clone
-    MultiVector([3.0, 4.0, 5.0])
+    Vector([3.0, 4.0, 5.0])
     >>> v1 == v1_clone
     True
 
 
 Tests of sequence behavior::
 
-    >>> v1 = MultiVector([3, 4, 5])
+    >>> v1 = Vector([3, 4, 5])
     >>> len(v1)
     3
     >>> v1[0], v1[len(v1)-1], v1[-1]
@@ -91,22 +92,22 @@ Tests of sequence behavior::
 
 Test of slicing::
 
-    >>> v7 = MultiVector(range(7))
+    >>> v7 = Vector(range(7))
     >>> v7[-1]
     6.0
     >>> v7[1:4]
-    MultiVector([1.0, 2.0, 3.0])
+    Vector([1.0, 2.0, 3.0])
     >>> v7[-1:]
-    MultiVector([6.0])
+    Vector([6.0])
     >>> v7[1,2]
     Traceback (most recent call last):
       ...
-    TypeError: MultiVector indices must be integers
+    TypeError: Vector indices must be integers
 
 
 Tests of dynamic attribute access::
 
-    >>> v7 = MultiVector(range(10))
+    >>> v7 = Vector(range(10))
     >>> v7.x
     0.0
     >>> v7.y, v7.z, v7.t, v7.u, v7.v, v7.w
@@ -117,33 +118,33 @@ Dynamic attribute lookup failures::
     >>> v7.k
     Traceback (most recent call last):
       ...
-    AttributeError: 'MultiVector' object has no attribute 'k'
-    >>> v3 = MultiVector(range(3))
+    AttributeError: 'Vector' object has no attribute 'k'
+    >>> v3 = Vector(range(3))
     >>> v3.t
     Traceback (most recent call last):
       ...
-    AttributeError: 'MultiVector' object has no attribute 't'
+    AttributeError: 'Vector' object has no attribute 't'
     >>> v3.spam
     Traceback (most recent call last):
       ...
-    AttributeError: 'MultiVector' object has no attribute 'spam'
+    AttributeError: 'Vector' object has no attribute 'spam'
 
 
 Tests of hashing::
 
-    >>> v1 = MultiVector([3, 4])
-    >>> v2 = MultiVector([3.1, 4.2])
-    >>> v3 = MultiVector([3, 4, 5])
-    >>> v6 = MultiVector(range(6))
+    >>> v1 = Vector([3, 4])
+    >>> v2 = Vector([3.1, 4.2])
+    >>> v3 = Vector([3, 4, 5])
+    >>> v6 = Vector(range(6))
     >>> hash(v1), hash(v2), hash(v3), hash(v6)
     (7, 384307168202284039, 2, 1)
     >>> len(set([v1, v2, v3, v6]))
     4
 
 
-Tests of ``format()`` with Cartesian coordinates in 2D:
+Tests of ``format()`` with Cartesian coordinates in 2D::
 
-    >>> v1 = MultiVector([3, 4])
+    >>> v1 = Vector([3, 4])
     >>> format(v1)
     '(3.0, 4.0)'
     >>> format(v1, '.2f')
@@ -152,38 +153,35 @@ Tests of ``format()`` with Cartesian coordinates in 2D:
     '(3.000e+00, 4.000e+00)'
 
 
-Tests of ``format()`` with Cartesian coordinates in 3D and 7D:
+Tests of ``format()`` with Cartesian coordinates in 3D and 7D::
 
-    >>> v3 = MultiVector([3, 4, 5])
+    >>> v3 = Vector([3, 4, 5])
     >>> format(v3)
     '(3.0, 4.0, 5.0)'
-    >>> format(MultiVector(range(7)))
+    >>> format(Vector(range(7)))
     '(0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0)'
 
 
-Tests of the ``angle`` method::
+Tests of ``format()`` with spherical coordinates in 2D, 3D and 4D::
 
-    >>> MultiVector([0, 0]).angle()
-    0.0
-    >>> MultiVector([1, 0]).angle()
-    0.0
-    >>> epsilon = 10**-8
-    >>> abs(MultiVector([0, 1]).angle() - math.pi/2) < epsilon
-    True
-    >>> abs(MultiVector([1, 1]).angle() - math.pi/4) < epsilon
-    True
-
-
-Tests of ``format()`` with polar coordinates:
-
-    >>> format(MultiVector([1, 1]), 'p')  # doctest:+ELLIPSIS
+    >>> format(Vector([1, 1]), 'h')  # doctest:+ELLIPSIS
     '<1.414213..., 0.785398...>'
-    >>> format(MultiVector([1, 1]), '.3ep')
+    >>> format(Vector([1, 1]), '.3eh')
     '<1.414e+00, 7.854e-01>'
-    >>> format(MultiVector([1, 1]), '0.5fp')
+    >>> format(Vector([1, 1]), '0.5fh')
     '<1.41421, 0.78540>'
-
-
+    >>> format(Vector([1, 1, 1]), 'h')  # doctest:+ELLIPSIS
+    '<1.73205..., 0.95531..., 0.78539...>'
+    >>> format(Vector([2, 2, 2]), '.3eh')
+    '<3.464e+00, 9.553e-01, 7.854e-01>'
+    >>> format(Vector([0, 0, 0]), '0.5fh')
+    '<0.00000, 0.00000, 0.00000>'
+    >>> format(Vector([-1, -1, -1, -1]), 'h')  # doctest:+ELLIPSIS
+    '<2.0, 2.09439..., 2.18627..., 3.92699...>'
+    >>> format(Vector([2, 2, 2, 2]), '.3eh')
+    '<4.000e+00, 1.047e+00, 9.553e-01, 7.854e-01>'
+    >>> format(Vector([0, 1, 0, 1]), '0.5fh')
+    '<1.41421, 1.57080, 0.78540, 1.57080>'
 """
 
 from array import array
@@ -191,9 +189,10 @@ import reprlib
 import math
 import functools
 import operator
+import itertools  # <1>
 
 
-class MultiVector:
+class Vector:
     typecode = 'd'
 
     def __init__(self, components):
@@ -205,7 +204,7 @@ class MultiVector:
     def __repr__(self):
         components = reprlib.repr(self._components)
         components = components[components.find('['):-1]
-        return 'MultiVector({})'.format(components)
+        return 'Vector({})'.format(components)
 
     def __str__(self):
         return str(tuple(self))
@@ -250,21 +249,31 @@ class MultiVector:
         msg = '{.__name__!r} object has no attribute {!r}'
         raise AttributeError(msg.format(cls, name))
 
-    def angle(self):
-        return math.atan2(self.y, self.x)  # <1>
+    def angle(self, n):  # <2>
+        r = math.sqrt(sum(x * x for x in self[n:]))
+        a = math.atan2(r, self[n-1])
+        if (n == len(self) - 1) and (self[-1] < 0):
+            return math.pi * 2 - a
+        else:
+            return a
+
+    def angles(self):  # <3>
+        return (self.angle(n) for n in range(1, len(self)))
 
     def __format__(self, fmt_spec=''):
-        if fmt_spec.endswith('p'):
+        if fmt_spec.endswith('h'):  # hyperspherical coordinates
             fmt_spec = fmt_spec[:-1]
-            coords = (abs(self), self.angle())
-            outer_fmt = '<{}>'  # <2>
+            coords = itertools.chain([abs(self)],
+                                     self.angles())  # <4>
+            outer_fmt = '<{}>'  # <5>
         else:
             coords = self
-            outer_fmt = '({})'  # <3>
+            outer_fmt = '({})'  # <6>
         components = (format(c, fmt_spec) for c in coords)
-        return outer_fmt.format(', '.join(components))  # <4>
+        return outer_fmt.format(', '.join(components))  # <7>
 
     @classmethod
     def frombytes(cls, octets):
         memv = memoryview(octets).cast(cls.typecode)
         return cls(memv)
+# END VECTOR_V5

@@ -1,12 +1,24 @@
 """
-A 2-dimensional vector class
+A multi-dimensional ``Vector`` class, take 2
 
-    >>> v1 = Vector(3, 4)
+A ``Vector`` is built from an iterable of numbers::
+
+    >>> Vector([3.1, 4.2])
+    Vector([3.1, 4.2])
+    >>> Vector((3, 4, 5))
+    Vector([3.0, 4.0, 5.0])
+    >>> Vector(range(10))
+    Vector([0.0, 1.0, 2.0, 3.0, 4.0, ...])
+
+
+Tests with 2-dimensions (same results as ``vector2d_v1.py``)::
+
+    >>> v1 = Vector([3, 4])
     >>> x, y = v1
     >>> x, y
     (3.0, 4.0)
     >>> v1
-    Vector(3.0, 4.0)
+    Vector([3.0, 4.0])
     >>> v1_clone = eval(repr(v1))
     >>> v1 == v1_clone
     True
@@ -17,98 +29,136 @@ A 2-dimensional vector class
     b'\\x00\\x00\\x00\\x00\\x00\\x00\\x08@\\x00\\x00\\x00\\x00\\x00\\x00\\x10@'
     >>> abs(v1)
     5.0
-    >>> bool(v1), bool(Vector(0, 0))
+    >>> bool(v1), bool(Vector([0, 0]))
     (True, False)
+
 
 Test of ``.frombytes()`` class method:
 
     >>> v1_clone = Vector.frombytes(bytes(v1))
     >>> v1_clone
-    Vector(3.0, 4.0)
+    Vector([3.0, 4.0])
     >>> v1 == v1_clone
     True
 
-Tests of ``format()`` with Cartesian coordinates:
 
-    >>> format(v1)
-    '(3.0, 4.0)'
-    >>> format(v1, '.2f')
-    '(3.00, 4.00)'
-    >>> format(v1, '.3e')
-    '(3.000e+00, 4.000e+00)'
+Tests with 3-dimensions::
 
-
-Tests of the ``angle`` method::
-
-    >>> Vector(0, 0).angle()
-    0.0
-    >>> Vector(1, 0).angle()
-    0.0
-    >>> epsilon = 10**-8
-    >>> abs(Vector(0, 1).angle() - math.pi/2) < epsilon
+    >>> v1 = Vector([3, 4, 5])
+    >>> x, y, z = v1
+    >>> x, y, z
+    (3.0, 4.0, 5.0)
+    >>> v1
+    Vector([3.0, 4.0, 5.0])
+    >>> v1_clone = eval(repr(v1))
+    >>> v1 == v1_clone
     True
-    >>> abs(Vector(1, 1).angle() - math.pi/4) < epsilon
+    >>> print(v1)
+    (3.0, 4.0, 5.0)
+    >>> abs(v1)  # doctest:+ELLIPSIS
+    7.071067811...
+    >>> bool(v1), bool(Vector([0, 0, 0]))
+    (True, False)
+
+
+Tests with many dimensions::
+
+    >>> v7 = Vector(range(7))
+    >>> v7
+    Vector([0.0, 1.0, 2.0, 3.0, 4.0, ...])
+    >>> abs(v7)  # doctest:+ELLIPSIS
+    9.53939201...
+
+
+Test of ``.__bytes__`` and ``.frombytes()`` methods::
+
+    >>> v1 = Vector([3, 4, 5])
+    >>> v1_clone = Vector.frombytes(bytes(v1))
+    >>> v1_clone
+    Vector([3.0, 4.0, 5.0])
+    >>> v1 == v1_clone
     True
 
 
-Tests of ``format()`` with polar coordinates:
+Tests of sequence behavior::
 
-    >>> format(Vector(1, 1), 'p')  # doctest:+ELLIPSIS
-    '<1.414213..., 0.785398...>'
-    >>> format(Vector(1, 1), '.3ep')
-    '<1.414e+00, 7.854e-01>'
-    >>> format(Vector(1, 1), '0.5fp')
-    '<1.41421, 0.78540>'
+    >>> v1 = Vector([3, 4, 5])
+    >>> len(v1)
+    3
+    >>> v1[0], v1[len(v1)-1], v1[-1]
+    (3.0, 5.0, 5.0)
+
+
+Test of slicing::
+
+# BEGIN VECTOR_V2_DEMO
+
+    >>> v7 = Vector(range(7))
+    >>> v7[-1]  # <1>
+    6.0
+    >>> v7[1:4]  # <2>
+    Vector([1.0, 2.0, 3.0])
+    >>> v7[-1:]  # <3>
+    Vector([6.0])
+    >>> v7[1,2]  # <4>
+    Traceback (most recent call last):
+      ...
+    TypeError: Vector indices must be integers
+
+# END VECTOR_V2_DEMO
 
 """
 
 from array import array
+import reprlib
 import math
 
 
 class Vector:
     typecode = 'd'
 
-    def __init__(self, x, y):
-        self.x = float(x)
-        self.y = float(y)
+    def __init__(self, components):
+        self._components = array(self.typecode, components)
 
     def __iter__(self):
-        return (i for i in (self.x, self.y))
+        return iter(self._components)
 
     def __repr__(self):
-        return 'Vector({!r}, {!r})'.format(*self)
+        components = reprlib.repr(self._components)
+        components = components[components.find('['):-1]
+        return 'Vector({})'.format(components)
 
     def __str__(self):
         return str(tuple(self))
 
     def __bytes__(self):
-        return bytes(array(Vector.typecode, self))
+        return bytes(self._components)
 
     def __eq__(self, other):
         return tuple(self) == tuple(other)
 
     def __abs__(self):
-        return math.hypot(self.x, self.y)
+        return math.sqrt(sum(x * x for x in self))
 
     def __bool__(self):
         return bool(abs(self))
 
-    def angle(self):
-        return math.atan2(self.y, self.x)
+# BEGIN VECTOR_V2
+    def __len__(self):
+        return len(self._components)
 
-    def __format__(self, fmt_spec=''):
-        if fmt_spec.endswith('p'):
-            fmt_spec = fmt_spec[:-1]
-            coords = (abs(self), self.angle())
-            outer_fmt = '<{}, {}>'
+    def __getitem__(self, index):
+        cls = type(self)  # <1>
+        if isinstance(index, slice):
+            return cls(self._components[index])  # <2>
+        elif isinstance(index, int):
+            return self._components[index]  # <3>
         else:
-            coords = self
-            outer_fmt = '({}, {})'
-        components = (format(c, fmt_spec) for c in coords)
-        return outer_fmt.format(*components)
+            msg = '{cls.__name__} indices must be integers'
+            raise TypeError(msg.format(cls=cls))  # <4>
+# END VECTOR_V2
 
     @classmethod
     def frombytes(cls, octets):
         memv = memoryview(octets).cast(cls.typecode)
-        return cls(*memv)
+        return cls(memv)

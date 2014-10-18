@@ -1,155 +1,198 @@
 """
-A 2-dimensional vector class
+A multi-dimensional ``Vector`` class, take 3
 
-    >>> v1 = Vector(3, 4)
-    >>> x, y = v1  #<1>
+A ``Vector`` is built from an iterable of numbers::
+
+    >>> Vector([3.1, 4.2])
+    Vector([3.1, 4.2])
+    >>> Vector((3, 4, 5))
+    Vector([3.0, 4.0, 5.0])
+    >>> Vector(range(10))
+    Vector([0.0, 1.0, 2.0, 3.0, 4.0, ...])
+
+
+Tests with 2-dimensions (same results as ``vector2d_v1.py``)::
+
+    >>> v1 = Vector([3, 4])
+    >>> x, y = v1
     >>> x, y
     (3.0, 4.0)
-    >>> v1  #<2>
-    Vector(3.0, 4.0)
-    >>> v1_clone = eval(repr(v1))  #<3>
+    >>> v1
+    Vector([3.0, 4.0])
+    >>> v1_clone = eval(repr(v1))
     >>> v1 == v1_clone
     True
-    >>> print(v1)  #<4>
+    >>> print(v1)
     (3.0, 4.0)
-    >>> octets = bytes(v1)  #<5>
+    >>> octets = bytes(v1)
     >>> octets
     b'\\x00\\x00\\x00\\x00\\x00\\x00\\x08@\\x00\\x00\\x00\\x00\\x00\\x00\\x10@'
-    >>> abs(v1)  #<6>
+    >>> abs(v1)
     5.0
-    >>> bool(v1), bool(Vector(0, 0))  #<7>
+    >>> bool(v1), bool(Vector([0, 0]))
     (True, False)
 
-Test of .frombytes() class method:
+
+Test of ``.frombytes()`` class method:
 
     >>> v1_clone = Vector.frombytes(bytes(v1))
     >>> v1_clone
-    Vector(3.0, 4.0)
+    Vector([3.0, 4.0])
     >>> v1 == v1_clone
     True
 
-Tests of ``format()`` with Cartesian coordinates:
 
-    >>> format(v1)
-    '(3.0, 4.0)'
-    >>> format(v1, '.2f')
-    '(3.00, 4.00)'
-    >>> format(v1, '.3e')
-    '(3.000e+00, 4.000e+00)'
+Tests with 3-dimensions::
 
-
-Tests of the ``angle`` method::
-
-    >>> Vector(0, 0).angle()
-    0.0
-    >>> Vector(1, 0).angle()
-    0.0
-    >>> epsilon = 10**-8
-    >>> abs(Vector(0, 1).angle() - math.pi/2) < epsilon
+    >>> v1 = Vector([3, 4, 5])
+    >>> x, y, z = v1
+    >>> x, y, z
+    (3.0, 4.0, 5.0)
+    >>> v1
+    Vector([3.0, 4.0, 5.0])
+    >>> v1_clone = eval(repr(v1))
+    >>> v1 == v1_clone
     True
-    >>> abs(Vector(1, 1).angle() - math.pi/4) < epsilon
+    >>> print(v1)
+    (3.0, 4.0, 5.0)
+    >>> abs(v1)  # doctest:+ELLIPSIS
+    7.071067811...
+    >>> bool(v1), bool(Vector([0, 0, 0]))
+    (True, False)
+
+
+Tests with many dimensions::
+
+    >>> v7 = Vector(range(7))
+    >>> v7
+    Vector([0.0, 1.0, 2.0, 3.0, 4.0, ...])
+    >>> abs(v7)  # doctest:+ELLIPSIS
+    9.53939201...
+
+
+Test of ``.__bytes__`` and ``.frombytes()`` methods::
+
+    >>> v1 = Vector([3, 4, 5])
+    >>> v1_clone = Vector.frombytes(bytes(v1))
+    >>> v1_clone
+    Vector([3.0, 4.0, 5.0])
+    >>> v1 == v1_clone
     True
 
 
-Tests of ``format()`` with polar coordinates:
+Tests of sequence behavior::
 
-    >>> format(Vector(1, 1), 'p')  # doctest:+ELLIPSIS
-    '<1.414213..., 0.785398...>'
-    >>> format(Vector(1, 1), '.3ep')
-    '<1.414e+00, 7.854e-01>'
-    >>> format(Vector(1, 1), '0.5fp')
-    '<1.41421, 0.78540>'
+    >>> v1 = Vector([3, 4, 5])
+    >>> len(v1)
+    3
+    >>> v1[0], v1[len(v1)-1], v1[-1]
+    (3.0, 5.0, 5.0)
 
-# BEGIN VECTOR_V3_DEMO
-Test of `x` and `y` read-only properties:
 
-    >>> v1.x, v1.y
-    (3.0, 4.0)
-    >>> v1.x = 123
+Test of slicing::
+
+    >>> v7 = Vector(range(7))
+    >>> v7[-1]
+    6.0
+    >>> v7[1:4]
+    Vector([1.0, 2.0, 3.0])
+    >>> v7[-1:]
+    Vector([6.0])
+    >>> v7[1,2]
     Traceback (most recent call last):
       ...
-    AttributeError: can't set attribute
-
-# END VECTOR_V3_HASH_DEMO
-
-# BEGIN VECTOR_V3_HASH_DEMO
-
-    >>> v1 = Vector(3, 4)
-    >>> v2 = Vector(3.1, 4.2)
-    >>> hash(v1), hash(v2)
-    (7, 384307168202284039)
-    >>> len(set([v1, v2]))
-    2
+    TypeError: Vector indices must be integers
 
 
-# END VECTOR_V3_DEMO
+Tests of dynamic attribute access::
+
+    >>> v7 = Vector(range(10))
+    >>> v7.x
+    0.0
+    >>> v7.y, v7.z, v7.t, v7.u, v7.v, v7.w
+    (1.0, 2.0, 3.0, 4.0, 5.0, 6.0)
+
+Dynamic attribute lookup failures::
+
+    >>> v7.k
+    Traceback (most recent call last):
+      ...
+    AttributeError: 'Vector' object has no attribute 'k'
+    >>> v3 = Vector(range(3))
+    >>> v3.t
+    Traceback (most recent call last):
+      ...
+    AttributeError: 'Vector' object has no attribute 't'
+    >>> v3.spam
+    Traceback (most recent call last):
+      ...
+    AttributeError: 'Vector' object has no attribute 'spam'
 
 
 """
 
 from array import array
+import reprlib
 import math
 
-# BEGIN VECTOR_V3
+
 class Vector:
     typecode = 'd'
 
-    def __init__(self, x, y):
-        self.__x = float(x)  # <1>
-        self.__y = float(y)
-
-    @property  # <2>
-    def x(self):  # <3>
-        return self.__x  # <4>
-
-    @property  # <5>
-    def y(self):
-        return self.__y
+    def __init__(self, components):
+        self._components = array(self.typecode, components)
 
     def __iter__(self):
-        return (i for i in (self.x, self.y))  # <6>
-
-    # remaining methods follow (omitted in book listing)
-# END VECTOR_V3
+        return iter(self._components)
 
     def __repr__(self):
-        return 'Vector({!r}, {!r})'.format(*self)
+        components = reprlib.repr(self._components)
+        components = components[components.find('['):-1]
+        return 'Vector({})'.format(components)
 
     def __str__(self):
         return str(tuple(self))
 
     def __bytes__(self):
-        return bytes(array(Vector.typecode, self))
+        return bytes(self._components)
 
     def __eq__(self, other):
         return tuple(self) == tuple(other)
 
-# BEGIN VECTOR_V3_HASH
-    def __hash__(self):
-        return hash(self.x) ^ hash(self.y)
-# END VECTOR_V3_HASH
-
     def __abs__(self):
-        return math.hypot(self.x, self.y)
+        return math.sqrt(sum(x * x for x in self))
 
     def __bool__(self):
         return bool(abs(self))
 
-    def angle(self):
-        return math.atan2(self.y, self.x)
+    def __len__(self):
+        return len(self._components)
 
-    def __format__(self, fmt_spec=''):
-        if fmt_spec.endswith('p'):
-            fmt_spec = fmt_spec[:-1]
-            coords = (abs(self), self.angle())
-            outer_fmt = '<{}, {}>'
+    def __getitem__(self, index):
+        cls = type(self)
+        if isinstance(index, slice):
+            return cls(self._components[index])
+        elif isinstance(index, int):
+            return self._components[index]
         else:
-            coords = self
-            outer_fmt = '({}, {})'
-        components = (format(c, fmt_spec) for c in coords)
-        return outer_fmt.format(*components)
+            msg = '{.__name__} indices must be integers'
+            raise TypeError(msg.format(cls))
+
+# BEGIN VECTOR_V3
+    shortcut_names = 'xyztuvw'
+
+    def __getattr__(self, name):
+        cls = type(self)  # <1>
+        if len(name) == 1:  # <2>
+            pos = cls.shortcut_names.find(name) # <3>
+            if 0 <= pos < len(self._components): # <4>
+                return self._components[pos]
+        msg = '{.__name__!r} object has no attribute {!r}' # <5>
+        raise AttributeError(msg.format(cls, name))
+
+# END VECTOR_V3
 
     @classmethod
     def frombytes(cls, octets):
         memv = memoryview(octets).cast(cls.typecode)
-        return cls(*memv)
+        return cls(memv)

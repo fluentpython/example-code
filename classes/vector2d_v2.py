@@ -1,12 +1,12 @@
 """
 A 2-dimensional vector class
 
-    >>> v1 = Vector(3, 4)
+    >>> v1 = Vector2d(3, 4)
     >>> x, y = v1
     >>> x, y
     (3.0, 4.0)
     >>> v1
-    Vector(3.0, 4.0)
+    Vector2d(3.0, 4.0)
     >>> v1_clone = eval(repr(v1))
     >>> v1 == v1_clone
     True
@@ -17,15 +17,15 @@ A 2-dimensional vector class
     b'\\x00\\x00\\x00\\x00\\x00\\x00\\x08@\\x00\\x00\\x00\\x00\\x00\\x00\\x10@'
     >>> abs(v1)
     5.0
-    >>> bool(v1), bool(Vector(0, 0))
+    >>> bool(v1), bool(Vector2d(0, 0))
     (True, False)
 
 
 Test of ``.frombytes()`` class method:
 
-    >>> v1_clone = Vector.frombytes(bytes(v1))
+    >>> v1_clone = Vector2d.frombytes(bytes(v1))
     >>> v1_clone
-    Vector(3.0, 4.0)
+    Vector2d(3.0, 4.0)
     >>> v1 == v1_clone
     True
 
@@ -42,33 +42,34 @@ Tests of ``format()`` with Cartesian coordinates:
 
 Tests of the ``angle`` method::
 
-    >>> Vector(0, 0).angle()
+    >>> Vector2d(0, 0).angle()
     0.0
-    >>> Vector(1, 0).angle()
+    >>> Vector2d(1, 0).angle()
     0.0
     >>> epsilon = 10**-8
-    >>> abs(Vector(0, 1).angle() - math.pi/2) < epsilon
+    >>> abs(Vector2d(0, 1).angle() - math.pi/2) < epsilon
     True
-    >>> abs(Vector(1, 1).angle() - math.pi/4) < epsilon
+    >>> abs(Vector2d(1, 1).angle() - math.pi/4) < epsilon
     True
 
 
 Tests of ``format()`` with polar coordinates:
 
-    >>> format(Vector(1, 1), 'p')  # doctest:+ELLIPSIS
+    >>> format(Vector2d(1, 1), 'p')  # doctest:+ELLIPSIS
     '<1.414213..., 0.785398...>'
-    >>> format(Vector(1, 1), '.3ep')
+    >>> format(Vector2d(1, 1), '.3ep')
     '<1.414e+00, 7.854e-01>'
-    >>> format(Vector(1, 1), '0.5fp')
+    >>> format(Vector2d(1, 1), '0.5fp')
     '<1.41421, 0.78540>'
 
 """
 
+# BEGIN VECTOR2D_V2
 from array import array
 import math
 
 
-class Vector:
+class Vector2d:
     typecode = 'd'
 
     def __init__(self, x, y):
@@ -79,13 +80,13 @@ class Vector:
         return (i for i in (self.x, self.y))
 
     def __repr__(self):
-        return 'Vector({!r}, {!r})'.format(*self)
+        return 'Vector2d({!r}, {!r})'.format(*self)
 
     def __str__(self):
         return str(tuple(self))
 
     def __bytes__(self):
-        return bytes(array(Vector.typecode, self))
+        return bytes(array(Vector2d.typecode, self))
 
     def __eq__(self, other):
         return tuple(self) == tuple(other)
@@ -99,20 +100,19 @@ class Vector:
     def angle(self):
         return math.atan2(self.y, self.x)
 
-# BEGIN VECTOR_V2_FORMAT
     def __format__(self, fmt_spec=''):
-        if fmt_spec.endswith('p'):  # <1>
-            fmt_spec = fmt_spec[:-1]  # <2>
-            coords = (abs(self), self.angle())  # <3>
-            outer_fmt = '<{}, {}>'  # <4>
+        if fmt_spec.endswith('p'):
+            fmt_spec = fmt_spec[:-1]
+            coords = (abs(self), self.angle())
+            outer_fmt = '<{}, {}>'
         else:
-            coords = self  # <5>
-            outer_fmt = '({}, {})'  # <6>
-        components = (format(c, fmt_spec) for c in coords)  # <7>
-        return outer_fmt.format(*components)  # <8>
-# END VECTOR_V2_FORMAT
+            coords = self
+            outer_fmt = '({}, {})'
+        components = (format(c, fmt_spec) for c in coords)
+        return outer_fmt.format(*components)
 
     @classmethod
     def frombytes(cls, octets):
         memv = memoryview(octets).cast(cls.typecode)
         return cls(*memv)
+# END VECTOR2D_V2
