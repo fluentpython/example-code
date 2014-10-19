@@ -1,7 +1,7 @@
 from java.lang.reflect import Modifier
 import Confidential
 
-message = Confidential('never expose this')
+message = Confidential('top secret text')
 fields = Confidential.getDeclaredFields()
 for field in fields:
     # list private fields only

@@ -4,6 +4,6 @@ public class Confidential {
 	private String hidden = "burn after reading";
 
 	public Confidential(String text) {
-		this.secret = text;
+		this.secret = text.toUpperCase();
 	}
 }
