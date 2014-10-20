@@ -1,9 +1,8 @@
 public class Confidential {
 
-	private String secret = "";
-	private String hidden = "burn after reading";
+    private String secret = "";
 
-	public Confidential(String text) {
-		this.secret = text.toUpperCase();
-	}
+    public Confidential(String text) {
+        secret = text.toUpperCase();
+    }
 }
