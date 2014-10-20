@@ -2,6 +2,8 @@
 A 2-dimensional vector class
 
     >>> v1 = Vector2d(3, 4)
+    >>> print(v1.x, v1.y)
+    3.0 4.0
     >>> x, y = v1
     >>> x, y
     (3.0, 4.0)
@@ -14,7 +16,7 @@ A 2-dimensional vector class
     (3.0, 4.0)
     >>> octets = bytes(v1)
     >>> octets
-    b'\\x00\\x00\\x00\\x00\\x00\\x00\\x08@\\x00\\x00\\x00\\x00\\x00\\x00\\x10@'
+    b'd\\x00\\x00\\x00\\x00\\x00\\x00\\x08@\\x00\\x00\\x00\\x00\\x00\\x00\\x10@'
     >>> abs(v1)
     5.0
     >>> bool(v1), bool(Vector2d(0, 0))
@@ -80,13 +82,15 @@ class Vector2d:
         return (i for i in (self.x, self.y))
 
     def __repr__(self):
-        return 'Vector2d({!r}, {!r})'.format(*self)
+        class_name = type(self).__name__
+        return '{}({!r}, {!r})'.format(class_name, *self)
 
     def __str__(self):
         return str(tuple(self))
 
     def __bytes__(self):
-        return bytes(array(Vector2d.typecode, self))
+        return (bytes([ord(self.typecode)]) +
+                bytes(array(self.typecode, self)))
 
     def __eq__(self, other):
         return tuple(self) == tuple(other)
@@ -113,6 +117,7 @@ class Vector2d:
 
     @classmethod
     def frombytes(cls, octets):
-        memv = memoryview(octets).cast(cls.typecode)
+        typecode = chr(octets[0])
+        memv = memoryview(octets[1:]).cast(typecode)
         return cls(*memv)
 # END VECTOR2D_V2

@@ -2,46 +2,34 @@
 A 2-dimensional vector class
 
     >>> v1 = Vector2d(3, 4)
-    >>> x, y = v1  #<1>
+    >>> print(v1.x, v1.y)
+    3.0 4.0
+    >>> x, y = v1
     >>> x, y
     (3.0, 4.0)
-    >>> v1  #<2>
+    >>> v1
     Vector2d(3.0, 4.0)
-    >>> v1_clone = eval(repr(v1))  #<3>
+    >>> v1_clone = eval(repr(v1))
     >>> v1 == v1_clone
     True
-    >>> print(v1)  #<4>
+    >>> print(v1)
     (3.0, 4.0)
-    >>> octets = bytes(v1)  #<5>
+    >>> octets = bytes(v1)
     >>> octets
-    b'\\x00\\x00\\x00\\x00\\x00\\x00\\x08@\\x00\\x00\\x00\\x00\\x00\\x00\\x10@'
-    >>> abs(v1)  #<6>
+    b'd\\x00\\x00\\x00\\x00\\x00\\x00\\x08@\\x00\\x00\\x00\\x00\\x00\\x00\\x10@'
+    >>> abs(v1)
     5.0
-    >>> bool(v1), bool(Vector2d(0, 0))  #<7>
+    >>> bool(v1), bool(Vector2d(0, 0))
     (True, False)
 
-Test of .frombytes() class method:
+
+Test of ``.frombytes()`` class method:
 
     >>> v1_clone = Vector2d.frombytes(bytes(v1))
     >>> v1_clone
     Vector2d(3.0, 4.0)
     >>> v1 == v1_clone
     True
-
-So far, Vector2d instances are unhashable:
-
-# BEGIN VECTOR2D_V1_UNHASHABLE_DEMO
-    >>> v1 = Vector2d(3, 4)
-    >>> hash(v1)
-    Traceback (most recent call last):
-      ...
-    TypeError: unhashable type: 'Vector2d'
-    >>> set([v1])
-    Traceback (most recent call last):
-      ...
-    TypeError: unhashable type: 'Vector2d'
-
-# END VECTOR2D_V1_UNHASHABLE_DEMO
 
 """
 
@@ -60,13 +48,15 @@ class Vector2d:
         return (i for i in (self.x, self.y))
 
     def __repr__(self):
-        return 'Vector2d({!r}, {!r})'.format(*self)
+        class_name = type(self).__name__
+        return '{}({!r}, {!r})'.format(class_name, *self)
 
     def __str__(self):
         return str(tuple(self))
 
     def __bytes__(self):
-        return bytes(array(Vector2d.typecode, self))
+        return (bytes([ord(self.typecode)]) +
+                bytes(array(self.typecode, self)))
 
     def __eq__(self, other):
         return tuple(self) == tuple(other)
@@ -80,6 +70,7 @@ class Vector2d:
 # BEGIN VECTOR2D_V1
     @classmethod  # <1>
     def frombytes(cls, octets):  # <2>
-        memv = memoryview(octets).cast(cls.typecode)  # <3>
-        return cls(*memv)  # <4>
+        typecode = chr(octets[0])  # <3>
+        memv = memoryview(octets[1:]).cast(typecode)  # <4>
+        return cls(*memv)  # <5>
 # END VECTOR2D_V1

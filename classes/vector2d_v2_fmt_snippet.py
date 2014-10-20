@@ -79,7 +79,8 @@ class Vector2d:
         return (i for i in (self.x, self.y))
 
     def __repr__(self):
-        return 'Vector2d({!r}, {!r})'.format(*self)
+        class_name = type(self).__name__
+        return '{}({!r}, {!r})'.format(class_name, *self)
 
     def __str__(self):
         return str(tuple(self))

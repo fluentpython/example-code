@@ -2,26 +2,28 @@
 A 2-dimensional vector class
 
     >>> v1 = Vector2d(3, 4)
-    >>> x, y = v1  #<1>
+    >>> print(v1.x, v1.y)
+    3.0 4.0
+    >>> x, y = v1
     >>> x, y
     (3.0, 4.0)
-    >>> v1  #<2>
+    >>> v1
     Vector2d(3.0, 4.0)
-    >>> v1_clone = eval(repr(v1))  #<3>
+    >>> v1_clone = eval(repr(v1))
     >>> v1 == v1_clone
     True
-    >>> print(v1)  #<4>
+    >>> print(v1)
     (3.0, 4.0)
-    >>> octets = bytes(v1)  #<5>
+    >>> octets = bytes(v1)
     >>> octets
-    b'\\x00\\x00\\x00\\x00\\x00\\x00\\x08@\\x00\\x00\\x00\\x00\\x00\\x00\\x10@'
-    >>> abs(v1)  #<6>
+    b'd\\x00\\x00\\x00\\x00\\x00\\x00\\x08@\\x00\\x00\\x00\\x00\\x00\\x00\\x10@'
+    >>> abs(v1)
     5.0
-    >>> bool(v1), bool(Vector2d(0, 0))  #<7>
+    >>> bool(v1), bool(Vector2d(0, 0))
     (True, False)
 
 
-Test of .frombytes() class method:
+Test of ``.frombytes()`` class method:
 
     >>> v1_clone = Vector2d.frombytes(bytes(v1))
     >>> v1_clone
@@ -62,8 +64,8 @@ Tests of ``format()`` with polar coordinates:
     >>> format(Vector2d(1, 1), '0.5fp')
     '<1.41421, 0.78540>'
 
-# BEGIN VECTOR2D_V3_DEMO
-Test of `x` and `y` read-only properties:
+
+Tests of `x` and `y` read-only properties:
 
     >>> v1.x, v1.y
     (3.0, 4.0)
@@ -72,9 +74,7 @@ Test of `x` and `y` read-only properties:
       ...
     AttributeError: can't set attribute
 
-# END VECTOR2D_V3_HASH_DEMO
-
-# BEGIN VECTOR2D_V3_HASH_DEMO
+Tests of hashing:
 
     >>> v1 = Vector2d(3, 4)
     >>> v2 = Vector2d(3.1, 4.2)
@@ -84,7 +84,6 @@ Test of `x` and `y` read-only properties:
     2
 
 # END VECTOR2D_V3_DEMO
-
 
 """
 
@@ -116,21 +115,21 @@ class Vector2d:
         return (i for i in (self.x, self.y))
 
     def __repr__(self):
-        return 'Vector2d({!r}, {!r})'.format(*self)
+        class_name = type(self).__name__
+        return '{}({!r}, {!r})'.format(class_name, *self)
 
     def __str__(self):
         return str(tuple(self))
 
     def __bytes__(self):
-        return bytes(array(Vector2d.typecode, self))
+        return (bytes([ord(self.typecode)]) +
+                bytes(array(self.typecode, self)))
 
     def __eq__(self, other):
         return tuple(self) == tuple(other)
 
-# BEGIN VECTOR2D_V3_HASH
     def __hash__(self):
         return hash(self.x) ^ hash(self.y)
-# END VECTOR2D_V3_HASH
 
     def __abs__(self):
         return math.hypot(self.x, self.y)
@@ -154,5 +153,6 @@ class Vector2d:
 
     @classmethod
     def frombytes(cls, octets):
-        memv = memoryview(octets).cast(cls.typecode)
+        typecode = chr(octets[0])
+        memv = memoryview(octets[1:]).cast(typecode)
         return cls(*memv)
