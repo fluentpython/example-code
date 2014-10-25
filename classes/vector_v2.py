@@ -26,7 +26,7 @@ Tests with 2-dimensions (same results as ``vector2d_v1.py``)::
     (3.0, 4.0)
     >>> octets = bytes(v1)
     >>> octets
-    b'\\x00\\x00\\x00\\x00\\x00\\x00\\x08@\\x00\\x00\\x00\\x00\\x00\\x00\\x10@'
+    b'd\\x00\\x00\\x00\\x00\\x00\\x00\\x08@\\x00\\x00\\x00\\x00\\x00\\x00\\x10@'
     >>> abs(v1)
     5.0
     >>> bool(v1), bool(Vector([0, 0]))
@@ -132,7 +132,8 @@ class Vector:
         return str(tuple(self))
 
     def __bytes__(self):
-        return bytes(self._components)
+        return (bytes([ord(self.typecode)]) +
+                bytes(self._components))
 
     def __eq__(self, other):
         return tuple(self) == tuple(other)
@@ -160,5 +161,6 @@ class Vector:
 
     @classmethod
     def frombytes(cls, octets):
-        memv = memoryview(octets).cast(cls.typecode)
+        typecode = chr(octets[0])
+        memv = memoryview(octets[1:]).cast(typecode)
         return cls(memv)

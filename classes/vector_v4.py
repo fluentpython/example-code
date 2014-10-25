@@ -26,7 +26,7 @@ Tests with 2-dimensions (same results as ``vector2d_v1.py``)::
     (3.0, 4.0)
     >>> octets = bytes(v1)
     >>> octets
-    b'\\x00\\x00\\x00\\x00\\x00\\x00\\x08@\\x00\\x00\\x00\\x00\\x00\\x00\\x10@'
+    b'd\\x00\\x00\\x00\\x00\\x00\\x00\\x08@\\x00\\x00\\x00\\x00\\x00\\x00\\x10@'
     >>> abs(v1)
     5.0
     >>> bool(v1), bool(Vector([0, 0]))
@@ -109,8 +109,8 @@ Tests of dynamic attribute access::
     >>> v7 = Vector(range(10))
     >>> v7.x
     0.0
-    >>> v7.y, v7.z, v7.t, v7.u, v7.v, v7.w
-    (1.0, 2.0, 3.0, 4.0, 5.0, 6.0)
+    >>> v7.y, v7.z, v7.t
+    (1.0, 2.0, 3.0)
 
 Dynamic attribute lookup failures::
 
@@ -168,14 +168,16 @@ class Vector:
         return str(tuple(self))
 
     def __bytes__(self):
-        return bytes(self._components)
+        return (bytes([ord(self.typecode)]) +
+                bytes(self._components))
 
     def __eq__(self, other):
-        return tuple(self) == tuple(other)
+        return (len(self) == len(other) and
+                all(a == b for a, b in zip(self, other)))
 
     def __hash__(self):
         hashes = (hash(x) for x in self)
-        return functools.reduce(operator.xor, hashes)
+        return functools.reduce(operator.xor, hashes, 0)
 
     def __abs__(self):
         return math.sqrt(sum(x * x for x in self))
@@ -196,7 +198,7 @@ class Vector:
             msg = '{.__name__} indices must be integers'
             raise TypeError(msg.format(cls))
 
-    shortcut_names = 'xyztuvw'
+    shortcut_names = 'xyzt'
 
     def __getattr__(self, name):
         cls = type(self)  # <1>
@@ -209,5 +211,6 @@ class Vector:
 
     @classmethod
     def frombytes(cls, octets):
-        memv = memoryview(octets).cast(cls.typecode)
+        typecode = chr(octets[0])
+        memv = memoryview(octets[1:]).cast(typecode)
         return cls(memv)

@@ -1,6 +1,5 @@
-# BEGIN VECTOR_V5
 """
-A multi-dimensional ``Vector`` class, take 5
+A multi-dimensional ``Vector`` class, take 6
 
 A ``Vector`` is built from an iterable of numbers::
 
@@ -182,6 +181,21 @@ Tests of ``format()`` with spherical coordinates in 2D, 3D and 4D::
     '<4.000e+00, 1.047e+00, 9.553e-01, 7.854e-01>'
     >>> format(Vector([0, 1, 0, 0]), '0.5fh')
     '<1.00000, 1.57080, 0.00000, 0.00000>'
+
+
+Tests of operator `==`::
+
+    >>> v1 = Vector(range(1, 4))
+    >>> v2 = Vector([1.0, 2.0, 3.0])
+    >>> v1 == v2
+    True
+    >>> from vector2d_v3 import Vector2d
+    >>> Vector([7, 8]) == Vector2d(7, 8)
+    True
+    >>> v1 == (1, 2, 3)
+    False
+
+
 """
 
 from array import array
@@ -189,7 +203,7 @@ import reprlib
 import math
 import functools
 import operator
-import itertools  # <1>
+import itertools
 
 
 class Vector:
@@ -213,9 +227,14 @@ class Vector:
         return (bytes([ord(self.typecode)]) +
                 bytes(self._components))
 
+# BEGIN VECTOR_V6_EQ
     def __eq__(self, other):
-        return (len(self) == len(other) and
-                all(a == b for a, b in zip(self, other)))
+        if isinstance(other, Vector):
+            return (len(self) == len(other) and
+                    all(a == b for a, b in zip(self, other)))
+        else:
+            return NotImplemented
+# END VECTOR_V6_EQ
 
     def __hash__(self):
         hashes = (hash(x) for x in self)
@@ -251,7 +270,7 @@ class Vector:
         msg = '{.__name__!r} object has no attribute {!r}'
         raise AttributeError(msg.format(cls, name))
 
-    def angle(self, n):  # <2>
+    def angle(self, n):
         r = math.sqrt(sum(x * x for x in self[n:]))
         a = math.atan2(r, self[n-1])
         if (n == len(self) - 1) and (self[-1] < 0):
@@ -259,24 +278,31 @@ class Vector:
         else:
             return a
 
-    def angles(self):  # <3>
+    def angles(self):
         return (self.angle(n) for n in range(1, len(self)))
 
     def __format__(self, fmt_spec=''):
         if fmt_spec.endswith('h'):  # hyperspherical coordinates
             fmt_spec = fmt_spec[:-1]
             coords = itertools.chain([abs(self)],
-                                     self.angles())  # <4>
-            outer_fmt = '<{}>'  # <5>
+                                     self.angles())
+            outer_fmt = '<{}>'
         else:
             coords = self
-            outer_fmt = '({})'  # <6>
-        components = (format(c, fmt_spec) for c in coords)  # <7>
-        return outer_fmt.format(', '.join(components))  # <8>
+            outer_fmt = '({})'
+        components = (format(c, fmt_spec) for c in coords)
+        return outer_fmt.format(', '.join(components))
 
     @classmethod
     def frombytes(cls, octets):
         typecode = chr(octets[0])
         memv = memoryview(octets[1:]).cast(typecode)
         return cls(memv)
-# END VECTOR_V5
+
+    def __add__(self, other):
+        if len(self) != len(other):
+            cls_name = type(self).__name__
+            msg = 'cannot add {!r} of different dimensions'
+            raise ValueError(msg.format(cls_name))
+        return Vector(a + b for a, b in zip(self, other))
+

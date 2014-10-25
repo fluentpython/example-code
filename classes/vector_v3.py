@@ -26,7 +26,7 @@ Tests with 2-dimensions (same results as ``vector2d_v1.py``)::
     (3.0, 4.0)
     >>> octets = bytes(v1)
     >>> octets
-    b'\\x00\\x00\\x00\\x00\\x00\\x00\\x08@\\x00\\x00\\x00\\x00\\x00\\x00\\x10@'
+    b'd\\x00\\x00\\x00\\x00\\x00\\x00\\x08@\\x00\\x00\\x00\\x00\\x00\\x00\\x10@'
     >>> abs(v1)
     5.0
     >>> bool(v1), bool(Vector([0, 0]))
@@ -109,8 +109,9 @@ Tests of dynamic attribute access::
     >>> v7 = Vector(range(10))
     >>> v7.x
     0.0
-    >>> v7.y, v7.z, v7.t, v7.u, v7.v, v7.w
-    (1.0, 2.0, 3.0, 4.0, 5.0, 6.0)
+    >>> v7.y, v7.z, v7.t
+    (1.0, 2.0, 3.0)
+
 
 Dynamic attribute lookup failures::
 
@@ -128,6 +129,26 @@ Dynamic attribute lookup failures::
       ...
     AttributeError: 'Vector' object has no attribute 'spam'
 
+
+Tests of preventing attributes from 'a' to 'z'::
+
+    >>> v1.x = 7
+    Traceback (most recent call last):
+      ...
+    AttributeError: readonly attribute 'x'
+    >>> v1.w = 7
+    Traceback (most recent call last):
+      ...
+    AttributeError: can't set attributes 'a' to 'z' in 'Vector'
+
+Other attributes can be set::
+
+    >>> v1.X = 'albatross'
+    >>> v1.X
+    'albatross'
+    >>> v1.ni = 'Ni!'
+    >>> v1.ni
+    'Ni!'
 
 """
 
@@ -154,7 +175,8 @@ class Vector:
         return str(tuple(self))
 
     def __bytes__(self):
-        return bytes(self._components)
+        return (bytes([ord(self.typecode)]) +
+                bytes(self._components))
 
     def __eq__(self, other):
         return tuple(self) == tuple(other)
@@ -178,8 +200,8 @@ class Vector:
             msg = '{.__name__} indices must be integers'
             raise TypeError(msg.format(cls))
 
-# BEGIN VECTOR_V3
-    shortcut_names = 'xyztuvw'
+# BEGIN VECTOR_V3_GETATTR
+    shortcut_names = 'xyzt'
 
     def __getattr__(self, name):
         cls = type(self)  # <1>
@@ -190,9 +212,27 @@ class Vector:
         msg = '{.__name__!r} object has no attribute {!r}' # <5>
         raise AttributeError(msg.format(cls, name))
 
-# END VECTOR_V3
+# END VECTOR_V3_GETATTR
+# BEGIN VECTOR_V3_SETATTR
+    def __setattr__(self, name, value):
+        cls = type(self)
+        if len(name) == 1:  # <1>
+            if name in cls.shortcut_names:  # <2>
+                error = 'readonly attribute {attr_name!r}'
+            elif name.islower():  # <3>
+                error = "can't set attributes 'a' to 'z' in {cls_name!r}"
+            else:
+                error = ''  # <4>
+            if error:  # <5>
+                msg = error.format(cls_name=cls.__name__, attr_name=name)
+                raise AttributeError(msg)
+        super().__setattr__(name, value)  # <6>
+
+# END VECTOR_V3_SETATTR
+
 
     @classmethod
     def frombytes(cls, octets):
-        memv = memoryview(octets).cast(cls.typecode)
+        typecode = chr(octets[0])
+        memv = memoryview(octets[1:]).cast(typecode)
         return cls(memv)
