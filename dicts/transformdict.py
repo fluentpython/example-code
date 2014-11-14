@@ -1,11 +1,13 @@
-"""Trasformdict: a mapping that trasforms keys on lookup
+"""Trasformdict: a mapping that transforms keys on lookup
 
-This module and the test_transformdict.py module were extracted from
-a patch contributed by Antoine Pitrou implementing his PEP 455 --
-"Adding a key-transforming dictionary to collections".
+This module and ``test_transformdict.py`` were extracted from a
+patch contributed to Python by Antoine Pitrou implementing his
+PEP 455 -- Adding a key-transforming dictionary to collections.
 
-As I write this, the patch was not merged to Python 3.5, but it can be
-tracked as issue #18986 "Add a case-insensitive case-preserving dict"
+As of Nov. 14, 2014, the patch was not yet merged to Python 3.5
+(which is in pre-alpha). The patch is ``transformdict3.patch``,
+part of issue #18986: Add a case-insensitive case-preserving dict.
+
 http://bugs.python.org/issue18986
 """
 
