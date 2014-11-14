@@ -1,5 +1,5 @@
 """
-A multi-dimensional ``Vector`` class, take 6: operator ``+``
+A multi-dimensional ``Vector`` class, take 7: operator ``*``
 
 A ``Vector`` is built from an iterable of numbers::
 
@@ -226,6 +226,33 @@ Tests of ``+`` with an unsuitable operand:
     Traceback (most recent call last):
       ...
     TypeError: unsupported operand type(s) for +: 'Vector' and 'str'
+
+
+Basic tests of operator ``*``::
+
+    >>> v1 = Vector([1, 2, 3])
+    >>> v1 * 10
+    Vector([10.0, 20.0, 30.0])
+    >>> 10 * v1
+    Vector([10.0, 20.0, 30.0])
+
+
+Tests of ``*`` with unusual but valid operands::
+
+    >>> v1 * True
+    Vector([1.0, 2.0, 3.0])
+    >>> from fractions import Fraction
+    >>> v1 * Fraction(1, 3)  # doctest:+ELLIPSIS
+    Vector([0.3333..., 0.6666..., 1.0])
+
+
+Tests of ``*`` with unsuitable operands::
+
+    >>> v1 * (1, 2)
+    Traceback (most recent call last):
+      ...
+    TypeError: can't multiply sequence by non-int of type 'Vector'
+
 """
 
 from array import array
@@ -234,6 +261,7 @@ import math
 import functools
 import operator
 import itertools
+import numbers
 
 
 class Vector:
@@ -324,7 +352,6 @@ class Vector:
         memv = memoryview(octets[1:]).cast(typecode)
         return cls(memv)
 
-# BEGIN VECTOR_V6
     def __add__(self, other):
         try:
             pairs = itertools.zip_longest(self, other, fillvalue=0.0)
@@ -334,4 +361,12 @@ class Vector:
 
     def __radd__(self, other):
         return self + other
-# END VECTOR_V6
+
+    def __mul__(self, scalar):
+        if isinstance(scalar, numbers.Real):
+            return Vector(n * scalar for n in self)
+        else:
+            return NotImplemented
+
+    def __rmul__(self, scalar):
+        return self * scalar

@@ -206,10 +206,10 @@ class Vector:
     def __getattr__(self, name):
         cls = type(self)  # <1>
         if len(name) == 1:  # <2>
-            pos = cls.shortcut_names.find(name) # <3>
-            if 0 <= pos < len(self._components): # <4>
+            pos = cls.shortcut_names.find(name)  # <3>
+            if 0 <= pos < len(self._components):  # <4>
                 return self._components[pos]
-        msg = '{.__name__!r} object has no attribute {!r}' # <5>
+        msg = '{.__name__!r} object has no attribute {!r}'  # <5>
         raise AttributeError(msg.format(cls, name))
 
 # END VECTOR_V3_GETATTR
@@ -229,7 +229,6 @@ class Vector:
         super().__setattr__(name, value)  # <6>
 
 # END VECTOR_V3_SETATTR
-
 
     @classmethod
     def frombytes(cls, octets):
