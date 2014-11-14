@@ -1,4 +1,4 @@
-"""Trasformdict: a mapping that transforms keys on lookup
+"""Transformdict: a mapping that transforms keys on lookup
 
 This module and ``test_transformdict.py`` were extracted from a
 patch contributed to Python by Antoine Pitrou implementing his
@@ -81,7 +81,7 @@ class TransformDict(MutableMapping):
         del self._data[transformed]
         del self._original[transformed]
 
-    # Methods overriden to mitigate the performance overhead.
+    # Methods overridden to mitigate the performance overhead.
 
     def clear(self):
         'D.clear() -> None.  Remove all items from D.'
