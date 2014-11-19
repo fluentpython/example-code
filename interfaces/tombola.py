@@ -1,23 +1,26 @@
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 
 
-class Tombola(metaclass=ABCMeta):  # <1>
+class Tombola(ABC):  # <1>
 
     @abstractmethod
     def __init__(self, iterable):  # <2>
-        raise NotImplementedError
+        """New instance is loaded from an iterable."""
 
     @abstractmethod
-    def load(self):
-        raise NotImplementedError
+    def load(self, iterable):
+        """Add items from an iterable."""
 
     @abstractmethod
-    def pop(self):
-        raise NotImplementedError
+    def pick(self):  # <3>
+        """Remove item at random, returning it.
 
-    def loaded(self):  # <3>
+        This method should raise `LookupError` when the instance is empty.
+        """
+
+    def loaded(self):  # <4>
         try:
-            item = self.pop()
+            item = self.pick()
         except LookupError:
             return False
         else:

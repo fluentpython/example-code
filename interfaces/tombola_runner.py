@@ -4,49 +4,30 @@ import doctest
 
 from tombola import Tombola
 
-TESTS = 'tombola_tests.rst'
+TEST_FILE = 'tombola_tests.rst'
+MODULE_NAMES = 'bingo lotto tombolist drum'.split()
+TEST_MSG = '{0:16} {1.attempted:2} tests, {1.failed:2} failed - {2}'
 
-MODULES = 'bingo lotto tombolist drum'.split()
 
+def test(cls, verbose=False):
 
-def test_module(module_name, verbose=False):
-
-    module = importlib.import_module(module_name)
-
-    tombola_class = None
-    for name in dir(module):
-        obj = getattr(module, name)
-        if (isinstance(obj, type) and
-                issubclass(obj, Tombola) and
-                obj.__module__ == module_name):
-            tombola_class = obj
-            break  # stop at first matching class
-
-    if tombola_class is None:
-        print('ERROR: no Tombola subclass found in', module_name)
-        sys.exit(1)
-
-    res = doctest.testfile(TESTS,
-                           globs={'TombolaUnderTest': tombola_class},
+    res = doctest.testfile(TEST_FILE,
+                           globs={'TombolaUnderTest': cls},
                            verbose=verbose,
                            optionflags=doctest.REPORT_ONLY_FIRST_FAILURE)
-    print('{:10} {}'.format(module_name, res))
+    tag = 'FAIL' if res.failed else 'OK'
+    print(TEST_MSG.format(cls.__name__, res, tag))
 
 
 if __name__ == '__main__':
 
-    args = sys.argv[:]
-    if '-v' in args:
-        args.remove('-v')
-        verbose = True
-    else:
-        verbose = False
+    for name in MODULE_NAMES:  # import modules to test, by name
+        importlib.import_module(name)
 
-    if len(args) == 2:
-        module_names = [args[1]]
-    else:
-        module_names = MODULES
+    verbose = '-v' in sys.argv
 
-    for name in module_names:
-        print('*' * 60, name)
-        test_module(name, verbose)
+    real_subclasses = Tombola.__subclasses__()
+    virtual_subclasses = list(Tombola._abc_registry)
+
+    for cls in real_subclasses + virtual_subclasses:
+        test(cls, verbose)

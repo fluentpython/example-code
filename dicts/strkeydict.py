@@ -42,7 +42,6 @@ Tests for update using a `dict` or a sequence of pairs::
 # BEGIN STRKEYDICT
 
 import collections
-import collections.abc
 
 
 class StrKeyDict(collections.UserDict):  # <1>
@@ -57,16 +56,5 @@ class StrKeyDict(collections.UserDict):  # <1>
 
     def __setitem__(self, key, item):
         self.data[str(key)] = item   # <4>
-
-    def update(self, iterable=None, **kwds):
-        if iterable is not None:
-            if isinstance(iterable, collections.abc.Mapping):  # <5>
-                pairs = iterable.items()
-            else:
-                pairs = ((k, v) for k, v in iterable)  # <6>
-            for key, value in pairs:
-                self[key] = value  # <7>
-        if kwds:
-            self.update(kwds)  # <8>
 
 # END STRKEYDICT

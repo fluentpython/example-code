@@ -13,5 +13,5 @@ class TumblingDrum(Tombola):
         self._balls.extend(iterable)
         shuffle(self._balls)
 
-    def pop(self):
+    def pick(self):
         return self._balls.pop()

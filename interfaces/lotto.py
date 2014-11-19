@@ -17,7 +17,7 @@ class LotteryBlower(Tombola):
         self._balls.extend(iterable)
         self.randomizer.shuffle(self._balls)  # <2>
 
-    def pop(self):
+    def pick(self):
         return self._balls.pop()  # <3>
 
     def loaded(self):  # <4>

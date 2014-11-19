@@ -7,64 +7,71 @@ Every concrete subclass of Tombola should pass these tests.
 
 Create and load instance from iterable::
 
-	>>> balls = list(range(3))
-	>>> globe = TombolaUnderTest(balls)
-	>>> globe.loaded()
-	True
+    >>> balls = list(range(3))
+    >>> globe = TombolaUnderTest(balls)
+    >>> globe.loaded()
+    True
 
 
-Pop and collect balls::
+Pick and collect balls::
 
-	>>> picks = []
-	>>> picks.append(globe.pop())
-	>>> picks.append(globe.pop())
-	>>> picks.append(globe.pop())
+    >>> picks = []
+    >>> picks.append(globe.pick())
+    >>> picks.append(globe.pick())
+    >>> picks.append(globe.pick())
 
 
 Check state and results::
 
-	>>> globe.loaded()
-	False
-	>>> sorted(picks) == balls
-	True
+    >>> globe.loaded()
+    False
+    >>> sorted(picks) == balls
+    True
 
 
 Reload::
 
-	>>> globe.load(balls)
-	>>> globe.loaded()
-	True
-	>>> picks = [globe.pop() for i in balls]
-	>>> globe.loaded()
-	False
+    >>> globe.load(balls)
+    >>> globe.loaded()
+    True
+    >>> picks = [globe.pick() for i in balls]
+    >>> globe.loaded()
+    False
 
 
-Load and pop 20 balls to verify that the order has changed::
+Check that `LookupError` (or a subclass) is the exception
+thrown when the device is empty::
 
-	>>> balls = list(range(20))
-	>>> globe = TombolaUnderTest(balls)
-	>>> picks = []
-	>>> while globe.loaded():
-	...     picks.append(globe.pop())
-	>>> len(picks) == len(balls)
-	True
-	>>> picks != balls
-	True
+    >>> globe = TombolaUnderTest([])
+    >>> try:
+    ...     globe.pick()
+    ... except LookupError as exc:
+    ...     print('OK')
+    OK
 
 
-Also check that the order is not simply reversed either::
+Load and pick 100 balls to verify that they are all come out::
 
-	>>> picks[::-1] != balls
-	True
+    >>> balls = list(range(100))
+    >>> globe = TombolaUnderTest(balls)
+    >>> picks = []
+    >>> while globe.loaded():
+    ...     picks.append(globe.pick())
+    >>> len(picks) == len(balls)
+    True
+    >>> set(picks) == set(balls)
+    True
 
-Note: last 2 tests each have 1 chance in 20! (factorial) of failing even if the implementation is OK. 1/20!, or approximately 4.11e-19, is the probability of the 20 balls coming out, by chance, in the exact order the were loaded.
 
-Check that `LookupError` (or a subclass) is the exception thrown when the device is empty::
+Check that the order has changed is not simply reversed either::
 
-	>>> globe = TombolaUnderTest([])
-	>>> try:
-	...     globe.pop()
-	... except LookupError as exc:
-	...     print('OK')
-	OK
+    >>> picks != balls
+    True
+    >>> picks[::-1] != balls
+    True
 
+Note: the previous 2 tests have a *very* small chance of failing
+even if the implementation is OK. The probability of the 100 
+balls coming out, by chance, in the order they were loaded is
+1/100!, or approximately 1.07e-158. It's much easier to win the 
+Lotto or to become a billionaire working as a programmer.

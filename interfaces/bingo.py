@@ -11,9 +11,9 @@ class BingoCage(Tombola):  # <1>
     def load(self, items):
         self._balls.extend(items)
 
-    def pop(self):
+    def pick(self):
         try:
-            position = random.randrange(len(self._balls))  # <4>
+            position = random.randrange(len(self._balls))  # <3>
         except ValueError:
             raise LookupError('pop from empty BingoCage')
-        return self._balls.pop(position)
+        return self._balls.pop(position)  # <4>

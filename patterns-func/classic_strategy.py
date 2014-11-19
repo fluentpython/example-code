@@ -28,7 +28,7 @@
 """
 # BEGIN CLASSIC_STRATEGY
 
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 from collections import namedtuple
 
 Customer = namedtuple('Customer', 'name fidelity')
@@ -69,7 +69,7 @@ class Order:  # the Context
         return fmt.format(self.total(), self.due())
 
 
-class Promotion(metaclass=ABCMeta):  # the Strategy
+class Promotion(ABC):  # the Strategy: an Abstract Base Class
 
     @abstractmethod
     def discount(self, order):
