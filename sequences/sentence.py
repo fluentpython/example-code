@@ -12,10 +12,10 @@ class Sentence:
 
     def __init__(self, text):
         self.text = text
-        self.words = RE_WORD.findall(text)  #<1>
+        self.words = RE_WORD.findall(text)  # <1>
 
     def __getitem__(self, index):
-        return self.words[index]  #<2>
+        return self.words[index]  # <2>
 
     def __repr__(self):
-        return 'Sentence(%s)' % reprlib.repr(self.text)  #<3>
+        return 'Sentence(%s)' % reprlib.repr(self.text)  # <3>

@@ -1,17 +1,12 @@
-from abc import ABC, abstractmethod
+import abc
 
+class Tombola(abc.ABC):  # <1>
 
-class Tombola(ABC):  # <1>
-
-    @abstractmethod
-    def __init__(self, iterable):  # <2>
-        """New instance is loaded from an iterable."""
-
-    @abstractmethod
-    def load(self, iterable):
+    @abc.abstractmethod
+    def load(self, iterable):  # <2>
         """Add items from an iterable."""
 
-    @abstractmethod
+    @abc.abstractmethod
     def pick(self):  # <3>
         """Remove item at random, returning it.
 

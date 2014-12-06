@@ -16,6 +16,4 @@ class TomboList(list):  # <2>
 
     def loaded(self): return bool(self)  # <6>
 
-"""
-Tombola.register(TomboList)  # <- Python 3.2 or earlier
-"""
+# Tombola.register(TomboList)  # <- Python 3.2 or earlier

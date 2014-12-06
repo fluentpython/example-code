@@ -1,8 +1,13 @@
 """StrKeyDict always converts non-string keys to `str`
 
+Test for initializer: keys are converted to `str`.
+
+    >>> d = StrKeyDict([(2, 'two'), ('4', 'four')])
+    >>> sorted(d.keys())
+    ['2', '4']
+
 Tests for item retrieval using `d[key]` notation::
 
-    >>> d = StrKeyDict([('2', 'two'), ('4', 'four')])
     >>> d['2']
     'two'
     >>> d[4]
@@ -11,6 +16,15 @@ Tests for item retrieval using `d[key]` notation::
     Traceback (most recent call last):
       ...
     KeyError: '1'
+
+Tests for item retrieval using `d.get(key)` notation::
+
+    >>> d.get('2')
+    'two'
+    >>> d.get(4)
+    'four'
+    >>> d.get(1, 'N/A')
+    'N/A'
 
 Tests for the `in` operator::
 

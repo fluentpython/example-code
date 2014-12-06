@@ -8,7 +8,7 @@ Every concrete subclass of Tombola should pass these tests.
 Create and load instance from iterable::
 
     >>> balls = list(range(3))
-    >>> globe = TombolaUnderTest(balls)
+    >>> globe = ConcreteTombola(balls)
     >>> globe.loaded()
     True
 
@@ -42,7 +42,7 @@ Reload::
 Check that `LookupError` (or a subclass) is the exception
 thrown when the device is empty::
 
-    >>> globe = TombolaUnderTest([])
+    >>> globe = ConcreteTombola([])
     >>> try:
     ...     globe.pick()
     ... except LookupError as exc:
@@ -53,7 +53,7 @@ thrown when the device is empty::
 Load and pick 100 balls to verify that they are all come out::
 
     >>> balls = list(range(100))
-    >>> globe = TombolaUnderTest(balls)
+    >>> globe = ConcreteTombola(balls)
     >>> picks = []
     >>> while globe.loaded():
     ...     picks.append(globe.pick())
@@ -75,3 +75,6 @@ even if the implementation is OK. The probability of the 100
 balls coming out, by chance, in the order they were loaded is
 1/100!, or approximately 1.07e-158. It's much easier to win the 
 Lotto or to become a billionaire working as a programmer.
+
+THE END
+
