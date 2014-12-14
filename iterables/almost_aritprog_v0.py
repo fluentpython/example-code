@@ -8,8 +8,8 @@ Arithmetic progression class
 
 """
 
-import array
 from collections import abc
+
 
 class ArithmeticProgression:
 
@@ -29,7 +29,8 @@ class ArithmeticProgressionIterator(abc.Iterator):
         self._index = 0
 
     def __next__(self):
-        result = self._ap.begin + self._ap.step * self._index
+        first = type(self._ap.begin + self._ap.step)(self._ap.begin)
+        result = first + self._ap.step * self._index
         if result < self._ap.end:
             self._index += 1
             return result

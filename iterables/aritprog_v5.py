@@ -9,6 +9,5 @@ def aritprog_gen(begin, step, end=None):
     tail_gen = itertools.count(begin+step, step)
     if end is not None:
         tail_gen = itertools.takewhile(lambda n: n < end, tail_gen)
-    for x in tail_gen:
-        yield x
+    yield from tail_gen
 # END ARITPROG_ITERTOOLS

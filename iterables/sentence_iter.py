@@ -22,10 +22,10 @@ class Sentence:
         return 'Sentence(%s)' % reprlib.repr(self.text)
 
     def __iter__(self):  # <1>
-        return SentenceIter(self.words)  # <2>
+        return SentenceIterator(self.words)  # <2>
 
 
-class SentenceIter:
+class SentenceIterator:
 
     def __init__(self, words):
         self.words = words  # <3>

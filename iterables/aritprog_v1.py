@@ -1,48 +1,44 @@
 """
 Arithmetic progression class
 
+# BEGIN ARITPROG_CLASS_DEMO
+
+    >>> ap = ArithmeticProgression(0, 1, 3)
+    >>> list(ap)
+    [0, 1, 2]
     >>> ap = ArithmeticProgression(1, .5, 3)
     >>> list(ap)
     [1.0, 1.5, 2.0, 2.5]
+    >>> ap = ArithmeticProgression(0, 1/3, 1)
+    >>> list(ap)
+    [0.0, 0.3333333333333333, 0.6666666666666666]
+    >>> from fractions import Fraction
+    >>> ap = ArithmeticProgression(0, Fraction(1, 3), 1)
+    >>> list(ap)
+    [Fraction(0, 1), Fraction(1, 3), Fraction(2, 3)]
+    >>> from decimal import Decimal
+    >>> ap = ArithmeticProgression(0, Decimal('.1'), .3)
+    >>> list(ap)
+    [Decimal('0.0'), Decimal('0.1'), Decimal('0.2')]
 
-
+# END ARITPROG_CLASS_DEMO
 """
 
-import array
-from collections import abc
 
+# BEGIN ARITPROG_CLASS
 class ArithmeticProgression:
 
-    def __init__(self, begin, step, end):
+    def __init__(self, begin, step, end=None):  # <1>
         self.begin = begin
         self.step = step
-        self.end = end
-        self._build()
-
-    def _build(self):
-        self._numbers = array.array('d')
-        n = self.begin
-        while n < self.end:
-            self._numbers.append(n)
-            n += self.step
+        self.end = end  # None -> "infinite" series
 
     def __iter__(self):
-        return ArithmeticProgressionIterator(self._numbers)
-
-
-class ArithmeticProgressionIterator(abc.Iterator):
-
-    def __init__(self, series):
-        self._series = series
-        self._index = 0
-
-    def __next__(self):
-        if self._index < len(self._series):
-            item = self._series[self._index]
-            self._index += 1
-            return item
-        else:
-            raise StopIteration
-
-
-
+        result = type(self.begin + self.step)(self.begin)  # <2>
+        forever = self.end is None  # <3>
+        index = 0
+        while forever or result < self.end:  # <4>
+            yield result  # <5>
+            index += 1
+            result = self.begin + self.step * index  # <6>
+# END ARITPROG_CLASS
