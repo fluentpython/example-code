@@ -34,6 +34,9 @@ class SentenceSlice:
         else:
             return self.words[position]
 
+    def __len__(self, index):
+        return len(self.words)
+
     # helper functions -- implementation detail
     def _handle_defaults(self, position):
         """handle missing or overflow/underflow start/stop"""
