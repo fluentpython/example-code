@@ -1,4 +1,4 @@
-concurrency/flags/img/
+concurrency/flags/img/*.gif
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
