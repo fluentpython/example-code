@@ -11,7 +11,7 @@ GLOBAL_TIMEOUT = 300  # seconds
 
 times = {}
 
-def main(num_threads):
+def main(source, num_threads):
     pool = futures.ThreadPoolExecutor(num_threads)
     pending = {}
     t0 = time.time()
@@ -19,7 +19,7 @@ def main(num_threads):
     for iso_cc in sorted(cf.cc2name):
         print('get:', iso_cc)
         times[iso_cc] = [time.time() - t0]
-        job = pool.submit(fetch, iso_cc)
+        job = pool.submit(fetch, iso_cc, source)
         pending[job] = iso_cc
     to_download = len(pending)
     downloaded = 0
@@ -39,17 +39,22 @@ def main(num_threads):
         print('{}\t{:.6g}\t{:.6g}'.format(iso_cc, start, end))
 
 if __name__ == '__main__':
-    if len(sys.argv) == 2:
-        num_threads = int(sys.argv[1])
-    else:
-        num_threads = DEFAULT_NUM_THREADS
-    main(num_threads)
+    import argparse
+
+    source_names = ', '.join(sorted(cf.SOURCE_URLS))
+    parser = argparse.ArgumentParser(description='Download flag images.')
+    parser.add_argument('source', help='one of: ' + source_names)
+    parser.add_argument('-t', '--threads', type=int, default=DEFAULT_NUM_THREADS,
+                   help='number of threads (default: %s)' % DEFAULT_NUM_THREADS)
+
+    args = parser.parse_args()
+    main(args.source, args.threads)
 
 """
-From localhost nginx:
-real    0m1.163s
-user    0m1.001s
-sys     0m0.289s
+From CIA, 1 thread:
+real    2m0.832s
+user    0m4.685s
+sys     0m0.366s
 
 
 

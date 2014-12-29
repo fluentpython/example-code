@@ -16,7 +16,11 @@ NGINX_URL = 'http://localhost:8080/ciaflags/{gec}.gif'
 # Vaurien
 VAURIEN_URL = 'http://localhost:8000/ciaflags/{gec}.gif'
 
-BASE_URL = VAURIEN_URL
+SOURCE_URLS = {
+    'CIA' : CIA_URL,
+    'NGINX' : NGINX_URL,
+    'VAURIEN' : VAURIEN_URL,
+}
 
 DEST_PATH_NAME = 'img/{cc}.gif'
 
@@ -34,8 +38,9 @@ def _load():
             cc2gec[iso_cc] = gec
 
 
-def flag_url(iso_cc):
-    return BASE_URL.format(gec=cc2gec[iso_cc].lower())
+def flag_url(iso_cc, source='CIA'):
+    base_url = SOURCE_URLS[source.upper()]
+    return base_url.format(gec=cc2gec[iso_cc].lower())
 
 def iso_file_name(iso_cc):
     return DEST_PATH_NAME.format(cc=iso_cc.lower())
