@@ -1,10 +1,8 @@
 import java.math.BigInteger;
 
 class CorrectFactorial {
-    static final BigInteger two = new BigInteger("2");
-
     public static BigInteger factorial(BigInteger n) {
-        return n.compareTo(two) < 0 ? BigInteger.ONE
+        return n.compareTo(BigInteger.ONE) <= 0 ? BigInteger.ONE
                     : n.multiply(factorial(n.subtract(BigInteger.ONE)));
     }
 
