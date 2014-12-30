@@ -12,7 +12,7 @@ class SimpleFactorial {
     }
 }
 
-/* output: ncorrect results starting with 21!
+/* output: incorrect results starting with 21!
 
 1! = 1
 2! = 2
