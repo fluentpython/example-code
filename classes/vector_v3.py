@@ -211,8 +211,8 @@ class Vector:
                 return self._components[pos]
         msg = '{.__name__!r} object has no attribute {!r}'  # <5>
         raise AttributeError(msg.format(cls, name))
-
 # END VECTOR_V3_GETATTR
+
 # BEGIN VECTOR_V3_SETATTR
     def __setattr__(self, name, value):
         cls = type(self)

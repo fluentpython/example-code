@@ -6,7 +6,7 @@ __ http://code.activestate.com/recipes/355045-spreadsheet/
 Demonstration::
 
     >>> from math import sin, pi
-    >>> ss = Spreadsheet(sin=sin, pi=pi, abs=abs)
+    >>> ss = Spreadsheet(sin=sin, pi=pi)
     >>> ss['a1'] = '-5'
     >>> ss['a2'] = 'a1*6'
     >>> ss['a3'] = 'a2*7'
@@ -20,11 +20,6 @@ Demonstration::
     >>> ss['c1'] = 'abs(a2)'
     >>> ss['c1']
     30
-    >>> ss['c2'] = 'len(a2)'
-    >>> ss['c2']
-    Traceback (most recent call last):
-      ...
-    NameError: name 'len' is not defined
     >>> ss['d1'] = '3*'
     >>> ss['d1']
     Traceback (most recent call last):
@@ -37,8 +32,7 @@ class Spreadsheet:
 
     def __init__(self, **tools):
         self._cells = {}
-        self._tools = {'__builtins__' : {}}
-        self._tools.update(tools)
+        self._tools = tools
 
     def __setitem__(self, key, formula):
         self._cells[key] = formula
