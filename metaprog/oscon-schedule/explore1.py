@@ -1,7 +1,8 @@
 """
-explore.py: Script to download and explore the OSCON schedule feed
+explore1.py: Script to explore the OSCON schedule feed
 
-    >>> raw_feed = load_json()
+    >>> from osconfeed import load
+    >>> raw_feed = load()
     >>> feed = FrozenJSON(raw_feed)
     >>> sorted(feed.Schedule.keys())
     ['conferences', 'events', 'speakers', 'venues']
@@ -24,25 +25,7 @@ explore.py: Script to download and explore the OSCON schedule feed
 
 """
 
-from urllib.request import urlopen
-import warnings
-import os
-import json
 from collections import abc
-
-URL = 'http://www.oreilly.com/pub/sc/osconfeed'
-JSON_NAME = 'osconfeed.json'
-
-
-def load_json():
-    if not os.path.exists(JSON_NAME):
-        msg = 'downloading {} to {}'.format(URL, JSON_NAME)
-        warnings.warn(msg)
-        with urlopen(URL) as remote, open(JSON_NAME, 'wb') as local:
-            local.write(remote.read())
-
-    with open(JSON_NAME) as fp:
-        return json.load(fp)
 
 
 class FrozenJSON:

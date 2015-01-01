@@ -1,7 +1,7 @@
 """
-explore0.py: Script to download and explore the OSCON schedule feed
+osconfeed.py: Script to download the OSCON schedule feed
 
-    >>> feed = load_json()
+    >>> feed = load()
     >>> sorted(feed['Schedule'].keys())
     ['conferences', 'events', 'speakers', 'venues']
     >>> for key, value in sorted(feed['Schedule'].items()):
@@ -29,10 +29,10 @@ import os
 import json
 
 URL = 'http://www.oreilly.com/pub/sc/osconfeed'
-JSON_NAME = 'osconfeed.json'
+JSON_NAME = 'data/osconfeed.json'
 
 
-def load_json():
+def load():
     if not os.path.exists(JSON_NAME):
         msg = 'downloading {} to {}'.format(URL, JSON_NAME)
         warnings.warn(msg)

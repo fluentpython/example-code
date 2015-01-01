@@ -1,23 +1,24 @@
 """
+schedule1.py: traversing OSCON schedule data
 
->>> db = shelve.open(DB_NAME)
->>> if CONFERENCE not in db: load_db(db)
->>> event = db['event.33950']
->>> record = db['speaker.3471']
->>> record.name
-'Anna Martelli Ravenscroft'
->>> record.twitter
-'annaraven'
->>> db.close()
+    >>> import shelve
+    >>> db = shelve.open(DB_NAME)
+    >>> if CONFERENCE not in db: load_db(db)
+    >>> event = db['event.33950']
+    >>> speaker = db['speaker.3471']
+    >>> speaker.name
+    'Anna Martelli Ravenscroft'
+    >>> speaker.twitter
+    'annaraven'
+    >>> db.close()
 
 """
 
 import warnings
-import shelve
 
-from explore import load_json
+import osconfeed
 
-DB_NAME = 'schedule_db'
+DB_NAME = 'data/schedule1_db'
 CONFERENCE = 'conference.115'
 
 
@@ -27,7 +28,7 @@ class Record:
 
 
 def load_db(db):
-    raw_data = load_json()
+    raw_data = osconfeed.load()
     warnings.warn('loading ' + DB_NAME)
     for collection, rec_list in raw_data['Schedule'].items():
         rec_type = collection[:-1]

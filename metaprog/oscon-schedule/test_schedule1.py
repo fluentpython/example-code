@@ -1,7 +1,7 @@
 import shelve
 import pytest
 
-import schedule
+import schedule1 as schedule
 
 
 @pytest.yield_fixture

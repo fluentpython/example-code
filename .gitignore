@@ -1,4 +1,5 @@
 concurrency/flags/img/*.gif
+metaprog/oscon-schedule/data/schedule?_db
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

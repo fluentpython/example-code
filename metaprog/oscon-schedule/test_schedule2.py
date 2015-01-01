@@ -34,9 +34,15 @@ def test_speaker_record(db):
     assert speaker.name == 'Anna Martelli Ravenscroft'
 
 
+def test_dbrecord(db):
+    schedule.DbRecord.set_db(db)
+    venue = schedule.DbRecord.get('venue.1585')
+    assert venue.name == 'Exhibit Hall B'
+
+
 def test_event_record(db):
     event = db['event.33950']
-    assert event.name == 'There *Will* Be Bugs'
+    assert repr(event) == "<Event 'There *Will* Be Bugs'>"
 
 
 def test_event_venue(db):
@@ -54,8 +60,8 @@ def test_event_speakers(db):
     anna_and_alex = [db['speaker.3471'], db['speaker.5199']]
     assert event.speakers == anna_and_alex
 
+
 def test_event_no_speakers(db):
     schedule.Event.set_db(db)
     event = db['event.36848']
     assert len(event.speakers) == 0
-

@@ -1,9 +1,25 @@
+"""
+schedule2.py: traversing OSCON schedule data
+
+    >>> import shelve
+    >>> db = shelve.open(DB_NAME)
+    >>> if CONFERENCE not in db: load_db(db)
+    >>> DbRecord.set_db(db)
+    >>> event = Event.get('event.33950')
+    >>> event
+    <Event 'There *Will* Be Bugs'>
+    >>> event.speakers[0].name
+    'Anna Martelli Ravenscroft'
+    >>> db.close()
+
+"""
+
 import warnings
 import inspect
 
-from explore import load_json
+import osconfeed
 
-DB_NAME = 'schedule2_db'
+DB_NAME = 'data/schedule2_db'
 CONFERENCE = 'conference.115'
 
 
@@ -26,11 +42,18 @@ class Record:
         return '<{} {}>'.format(cls_name, ident)
 
 
-class Event(Record):
+class DbRecord(Record):
 
     @classmethod
     def set_db(cls, db):
         cls._db = db
+
+    @classmethod
+    def get(cls, ident):
+        return cls._db[ident]
+
+
+class Event(DbRecord):
 
     @property
     def venue(self):
@@ -47,7 +70,7 @@ class Event(Record):
 
 
 def load_db(db):
-    raw_data = load_json()
+    raw_data = osconfeed.load()
     warnings.warn('loading ' + DB_NAME)
     for collection, rec_list in raw_data['Schedule'].items():
         rec_type = collection[:-1]
