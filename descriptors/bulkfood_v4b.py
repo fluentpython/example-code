@@ -36,32 +36,45 @@ instance::
     >>> raisins._Quantity_1
     6.95
 
+If the descriptor is accessed in the class, the descriptor object is
+returned:
+
+    >>> LineItem.price  # doctest: +ELLIPSIS
+    <bulkfood_v4b.Quantity object at 0x...>
+    >>> br_nuts = LineItem('Brazil nuts', 10, 34.95)
+    >>> br_nuts.price
+    34.95
+
 """
 
 
-# BEGIN LINEITEM_V4
+# BEGIN LINEITEM_V4B
 class Quantity:
-    __counter = 0  # <1>
+    __counter = 0
 
     def __init__(self):
-        cls = self.__class__  # <2>
+        cls = self.__class__
         prefix = cls.__name__
         index = cls.__counter
-        self.storage_name = '_{}_{}'.format(prefix, index)  # <3>
-        cls.__counter += 1  # <4>
+        self.storage_name = '_{}_{}'.format(prefix, index)
+        cls.__counter += 1
 
-    def __get__(self, instance, owner):  # <5>
-        return getattr(instance, self.storage_name)  # <6>
+    def __get__(self, instance, owner):
+        if instance is None:
+            return self  # <1>
+        else:
+            return getattr(instance, self.storage_name)  # <2>
 
     def __set__(self, instance, value):
         if value > 0:
-            setattr(instance, self.storage_name, value)  # <7>
+            setattr(instance, self.storage_name, value)
         else:
             raise ValueError('value must be > 0')
+# END LINEITEM_V4B
 
 
 class LineItem:
-    weight = Quantity()  # <8>
+    weight = Quantity()
     price = Quantity()
 
     def __init__(self, description, weight, price):
@@ -71,4 +84,3 @@ class LineItem:
 
     def subtotal(self):
         return self.weight * self.price
-# END LINEITEM_V4

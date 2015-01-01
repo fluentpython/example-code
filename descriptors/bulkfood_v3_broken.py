@@ -34,6 +34,7 @@ No change was made::
 
 """
 
+
 class Quantity:
 
     def __init__(self, storage_name):

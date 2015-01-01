@@ -33,6 +33,7 @@ No change was made::
 
 """
 
+
 # BEGIN LINEITEM_V3
 class Quantity:  # <1>
 
