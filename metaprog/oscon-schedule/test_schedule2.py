@@ -13,16 +13,16 @@ def db():
 
 
 def test_record_attr_access():
-    rec = schedule.Record({'spam': 99, 'eggs': 12})
+    rec = schedule.Record(spam=99, eggs=12)
     assert rec.spam == 99
     assert rec.eggs == 12
 
 
 def test_record_repr():
-    rec = schedule.Record({'spam': 99, 'eggs': 12})
-    assert repr(rec).startswith('<Record object at 0x')
-    rec2 = schedule.Record({'name': 'Fido'})
-    assert repr(rec2) == "<Record 'Fido'>"
+    rec = schedule.DbRecord(spam=99, eggs=12)
+    assert 'DbRecord object at 0x' in repr(rec)
+    rec2 = schedule.DbRecord(serial=13)
+    assert repr(rec2) == "<DbRecord serial=13>"
 
 
 def test_conference_record(db):
@@ -34,9 +34,14 @@ def test_speaker_record(db):
     assert speaker.name == 'Anna Martelli Ravenscroft'
 
 
+def test_missing_db_exception():
+    with pytest.raises(schedule.MissingDatabaseError):
+        schedule.DbRecord.fetch('venue.1585')
+
+
 def test_dbrecord(db):
     schedule.DbRecord.set_db(db)
-    venue = schedule.DbRecord.get('venue.1585')
+    venue = schedule.DbRecord.fetch('venue.1585')
     assert venue.name == 'Exhibit Hall B'
 
 

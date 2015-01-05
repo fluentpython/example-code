@@ -4,27 +4,25 @@ explore2.py: Script to explore the OSCON schedule feed
     >>> from osconfeed import load
     >>> raw_feed = load()
     >>> feed = FrozenJSON(raw_feed)
+    >>> len(feed.Schedule.speakers)
+    357
     >>> sorted(feed.Schedule.keys())
     ['conferences', 'events', 'speakers', 'venues']
-    >>> for key, value in sorted(feed.Schedule.items()):
-    ...     print('{:3} {}'.format(len(value), key))
-    ...
-      1 conferences
-    484 events
-    357 speakers
-     53 venues
     >>> feed.Schedule.speakers[-1].name
     'Carina C. Zona'
-    >>> carina = feed.Schedule.speakers[-1]
-    >>> carina.twitter
-    'cczona'
-    >>> feed.Schedule.events[40].name
+    >>> talk = feed.Schedule.events[40]
+    >>> talk.name
     'There *Will* Be Bugs'
-    >>> feed.Schedule.events[40].speakers
+    >>> talk.speakers
     [3471, 5199]
+    >>> talk.flavor
+    Traceback (most recent call last):
+      ...
+    KeyError: 'flavor'
 
 """
 
+# BEGIN EXPLORE2
 from collections import abc
 
 
@@ -33,11 +31,11 @@ class FrozenJSON:
        using attribute notation
     """
 
-    def __new__(cls, arg):
+    def __new__(cls, arg):  # <1>
         if isinstance(arg, abc.Mapping):
-            return super().__new__(cls)
-        elif isinstance(arg, abc.MutableSequence):
-            return [FrozenJSON(item) for item in arg]
+            return super().__new__(cls)  # <2>
+        elif isinstance(arg, abc.MutableSequence):  # <3>
+            return [cls(item) for item in arg]
         else:
             return arg
 
@@ -48,4 +46,5 @@ class FrozenJSON:
         if hasattr(self._data, name):
             return getattr(self._data, name)
         else:
-            return FrozenJSON(self._data[name])
+            return FrozenJSON(self._data[name])  # <4>
+# END EXPLORE2

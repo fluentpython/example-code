@@ -4,82 +4,128 @@ schedule2.py: traversing OSCON schedule data
     >>> import shelve
     >>> db = shelve.open(DB_NAME)
     >>> if CONFERENCE not in db: load_db(db)
-    >>> DbRecord.set_db(db)
-    >>> event = Event.get('event.33950')
-    >>> event
+
+# BEGIN SCHEDULE2_DEMO
+
+    >>> DbRecord.set_db(db)  # <1>
+    >>> event = DbRecord.fetch('event.33950')  # <2>
+    >>> event  # <3>
     <Event 'There *Will* Be Bugs'>
-    >>> event.speakers[0].name
-    'Anna Martelli Ravenscroft'
+    >>> event.venue  # <4>
+    <DbRecord serial='venue.1449'>
+    >>> event.venue.name  # <5>
+    'Portland 251'
+    >>> for spkr in event.speakers:  # <6>
+    ...     print('{0.serial}: {0.name}'.format(spkr))
+    ...
+    speaker.3471: Anna Martelli Ravenscroft
+    speaker.5199: Alex Martelli
+
+# END SCHEDULE2_DEMO
+
     >>> db.close()
 
 """
 
+# BEGIN SCHEDULE2_RECORD
 import warnings
-import inspect
+import inspect  # <1>
 
 import osconfeed
 
-DB_NAME = 'data/schedule2_db'
+DB_NAME = 'data/schedule2_db'  # <2>
 CONFERENCE = 'conference.115'
 
 
 class Record:
-    def __init__(self, mapping):
-        self.__dict__.update(mapping)
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
 
-    def __eq__(self, other):
+    def __eq__(self, other):  # <3>
         if isinstance(other, Record):
             return self.__dict__ == other.__dict__
         else:
             return NotImplemented
+# END SCHEDULE2_RECORD
+
+
+# BEGIN SCHEDULE2_DBRECORD
+class MissingDatabaseError(RuntimeError):
+    """Raised when a database is required but was not set."""  # <1>
+
+
+class DbRecord(Record):  # <2>
+
+    _db = None  # <3>
+
+    @staticmethod  # <4>
+    def set_db(db):
+        DbRecord._db = db  # <5>
+
+    @staticmethod  # <6>
+    def get_db():
+        return DbRecord._db
+
+    @classmethod  # <7>
+    def fetch(cls, ident):
+        db = cls.get_db()
+        try:
+            return db[ident]  # <8>
+        except TypeError:
+            if db is None:  # <9>
+                msg = "database not set; call '{}.set_db(my_db)'"
+                raise MissingDatabaseError(msg.format(cls.__name__))
+            else:  # <10>
+                raise
 
     def __repr__(self):
-        if hasattr(self, 'name'):
-            ident = repr(self.name)
+        if hasattr(self, 'serial'):  # <11>
+            cls_name = self.__class__.__name__
+            return '<{} serial={!r}>'.format(cls_name, self.serial)
         else:
-            ident = 'object at ' + hex(id(self))
-        cls_name = self.__class__.__name__
-        return '<{} {}>'.format(cls_name, ident)
+            return super().__repr__()  # <12>
+# END SCHEDULE2_DBRECORD
 
 
-class DbRecord(Record):
-
-    @classmethod
-    def set_db(cls, db):
-        cls._db = db
-
-    @classmethod
-    def get(cls, ident):
-        return cls._db[ident]
-
-
-class Event(DbRecord):
+# BEGIN SCHEDULE2_EVENT
+class Event(DbRecord):  # <1>
 
     @property
     def venue(self):
-        key = self.venue_serial
-        return self._db['venue.{}'.format(key)]
+        key = 'venue.{}'.format(self.venue_serial)
+        return self.fetch(key)  # <2>
 
     @property
     def speakers(self):
-        spkr_serials = self.__dict__['speakers']
-        if not hasattr(self, '_speaker_refs'):
-            self._speaker_refs = [self._db['speaker.{}'.format(key)]
-                                  for key in spkr_serials]
-        return self._speaker_refs
+        if not hasattr(self, '_speaker_objs'):  # <3>
+            spkr_serials = self.__dict__['speakers']  # <4>
+            self._speaker_objs = [self.fetch('speaker.{}'.format(key))
+                                  for key in spkr_serials]  # <5>
+        return self._speaker_objs  # <6>
+
+    def __repr__(self):
+        if hasattr(self, 'name'):  # <7>
+            cls_name = self.__class__.__name__
+            return '<{} {!r}>'.format(cls_name, self.name)
+        else:
+            return super().__repr__()  # <8>
+# END SCHEDULE2_EVENT
 
 
+# BEGIN SCHEDULE2_LOAD
 def load_db(db):
     raw_data = osconfeed.load()
     warnings.warn('loading ' + DB_NAME)
     for collection, rec_list in raw_data['Schedule'].items():
-        rec_type = collection[:-1]
-        for fields in rec_list:
-            cls_name = rec_type.capitalize()
-            cls = globals().get(cls_name, Record)
-            if inspect.isclass(cls) and issubclass(cls, Record):
-                record = cls(fields)
-            else:
-                Record(fields)
-            key = '{}.{}'.format(rec_type, fields['serial'])
-            db[key] = record
+        record_type = collection[:-1]  # <1>
+        cls_name = record_type.capitalize()  # <2>
+        cls = globals().get(cls_name, DbRecord)  # <3>
+        if inspect.isclass(cls) and issubclass(cls, DbRecord):  # <4>
+            factory = cls  # <5>
+        else:
+            factory = DbRecord  # <6>
+        for record in rec_list:  # <7>
+            key = '{}.{}'.format(record_type, record['serial'])
+            record['serial'] = key
+            db[key] = factory(**record)  # <>
+# END SCHEDULE2_LOAD

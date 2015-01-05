@@ -1,30 +1,30 @@
 """
 explore1.py: Script to explore the OSCON schedule feed
 
+# BEGIN EXPLORE1_DEMO
     >>> from osconfeed import load
     >>> raw_feed = load()
-    >>> feed = FrozenJSON(raw_feed)
-    >>> sorted(feed.Schedule.keys())
+    >>> feed = FrozenJSON(raw_feed)  # <1>
+    >>> len(feed.Schedule.speakers)  # <2>
+    357
+    >>> sorted(feed.Schedule.keys())  # <3>
     ['conferences', 'events', 'speakers', 'venues']
-    >>> for key, value in sorted(feed.Schedule.items()):
-    ...     print('{:3} {}'.format(len(value), key))
-    ...
-      1 conferences
-    484 events
-    357 speakers
-     53 venues
-    >>> feed.Schedule.speakers[-1].name
+    >>> feed.Schedule.speakers[-1].name  # <4>
     'Carina C. Zona'
-    >>> carina = feed.Schedule.speakers[-1]
-    >>> carina.twitter
-    'cczona'
-    >>> feed.Schedule.events[40].name
+    >>> talk = feed.Schedule.events[40]  # <5>
+    >>> talk.name
     'There *Will* Be Bugs'
-    >>> feed.Schedule.events[40].speakers
+    >>> talk.speakers  # <6>
     [3471, 5199]
+    >>> talk.flavor  # <7>
+    Traceback (most recent call last):
+      ...
+    KeyError: 'flavor'
 
+# END EXPLORE1_DEMO
 """
 
+# BEGIN EXPLORE1
 from collections import abc
 
 
@@ -34,19 +34,20 @@ class FrozenJSON:
     """
 
     def __init__(self, mapping):
-        self._data = dict(mapping)
+        self._data = dict(mapping)  # <1>
 
-    def __getattr__(self, name):
+    def __getattr__(self, name):  # <2>
         if hasattr(self._data, name):
-            return getattr(self._data, name)
+            return getattr(self._data, name)  # <3>
         else:
-            return FrozenJSON.build(self._data[name])
+            return FrozenJSON.build(self._data[name])  # <4>
 
     @classmethod
-    def build(cls, obj):
-        if isinstance(obj, abc.Mapping):
+    def build(cls, obj):  # <5>
+        if isinstance(obj, abc.Mapping):  # <6>
             return cls(obj)
-        elif isinstance(obj, abc.MutableSequence):
+        elif isinstance(obj, abc.MutableSequence):  # <7>
             return [cls.build(item) for item in obj]
-        else:
+        else:  # <8>
             return obj
+# END EXPLORE1

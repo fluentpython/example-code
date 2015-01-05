@@ -1,43 +1,49 @@
 """
 osconfeed.py: Script to download the OSCON schedule feed
 
-    >>> feed = load()
-    >>> sorted(feed['Schedule'].keys())
+# BEGIN OSCONFEED_DEMO
+
+    >>> feed = load()  # <1>
+    >>> sorted(feed['Schedule'].keys())  # <2>
     ['conferences', 'events', 'speakers', 'venues']
     >>> for key, value in sorted(feed['Schedule'].items()):
-    ...     print('{:3} {}'.format(len(value), key))
+    ...     print('{:3} {}'.format(len(value), key))  # <3>
     ...
       1 conferences
     484 events
     357 speakers
      53 venues
-    >>> feed['Schedule']['speakers'][-1]['name']
+    >>> feed['Schedule']['speakers'][-1]['name']  # <4>
     'Carina C. Zona'
-    >>> carina = feed['Schedule']['speakers'][-1]
-    >>> carina['twitter']
-    'cczona'
+    >>> feed['Schedule']['speakers'][-1]['serial']  # <5>
+    141590
     >>> feed['Schedule']['events'][40]['name']
     'There *Will* Be Bugs'
-    >>> feed['Schedule']['events'][40]['speakers']
+    >>> feed['Schedule']['events'][40]['speakers']  # <6>
     [3471, 5199]
 
+
+# END OSCONFEED_DEMO
 """
 
+# BEGIN OSCONFEED
 from urllib.request import urlopen
 import warnings
 import os
 import json
 
 URL = 'http://www.oreilly.com/pub/sc/osconfeed'
-JSON_NAME = 'data/osconfeed.json'
+JSON = 'data/osconfeed.json'
 
 
 def load():
-    if not os.path.exists(JSON_NAME):
-        msg = 'downloading {} to {}'.format(URL, JSON_NAME)
-        warnings.warn(msg)
-        with urlopen(URL) as remote, open(JSON_NAME, 'wb') as local:
+    if not os.path.exists(JSON):
+        msg = 'downloading {} to {}'.format(URL, JSON)
+        warnings.warn(msg)  # <1>
+        with urlopen(URL) as remote, open(JSON, 'wb') as local:  # <2>
             local.write(remote.read())
 
-    with open(JSON_NAME) as fp:
-        return json.load(fp)
+    with open(JSON) as fp:
+        return json.load(fp)  # <3>
+
+# END OSCONFEED

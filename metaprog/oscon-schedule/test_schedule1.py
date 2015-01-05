@@ -13,7 +13,7 @@ def db():
 
 
 def test_record_class():
-    rec = schedule.Record({'spam': 99, 'eggs': 12})
+    rec = schedule.Record(spam=99, eggs=12)
     assert rec.spam == 99
     assert rec.eggs == 12
 
