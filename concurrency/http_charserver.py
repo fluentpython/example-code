@@ -1,20 +1,25 @@
+#!/usr/bin/env python3
+
 import asyncio
 from aiohttp import web
 
 from charfinder import UnicodeNameIndex
 
-TEMPLATE = '''
+PAGE_TPL = '''
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>title</title>
+    <title>Charserver</title>
   </head>
   <body>
-    <form action="/">
-      <input type="search" name="query" value="{query}">
-      <input type="submit" value="find">
-    </form>
+    <p>
+        <form action="/">
+          <input type="search" name="query" value="{query}">
+          <input type="submit" value="find">
+        Examples: {links}
+        </form>
+    </p>
     <p>{message}</p>
     <hr>
   <pre>
@@ -25,6 +30,10 @@ TEMPLATE = '''
 '''
 
 CONTENT_TYPE = 'text/html; charset=UTF-8'
+
+EXAMPLE_WORDS = ('chess cat circled Malayalam digit Roman face Ethiopic'
+                 ' black mark symbol dot operator Braille hexagram').split()
+LINK_TPL = '<a href="/?query={0}" title="find &quot;{0}&quot;">{0}</a>'
 
 index = None  # a UnicodeNameIndex instance
 
@@ -41,9 +50,12 @@ def handle(request):
     else:
         lines = []
         res = ''
-        msg = 'Type words describing characters, e.g. chess.'
+        msg = 'Type words describing characters.'
 
-    text = TEMPLATE.format(query=query, result=res, message=msg)
+    links = ', '.join(LINK_TPL.format(word)
+                      for word in sorted(EXAMPLE_WORDS, key=str.upper))
+    text = PAGE_TPL.format(query=query, result=res,
+                           message=msg, links=links)
     return web.Response(content_type=CONTENT_TYPE, text=text)
 
 

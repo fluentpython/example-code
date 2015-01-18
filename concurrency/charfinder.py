@@ -37,7 +37,10 @@ For exploring words that occur in the character names, there is the
         1 DOLLAR
         1 SMALL
     >>> index = UnicodeNameIndex()
-    >>> index.word_report(7)
+    >>> index.word_report(10)
+    75821 CJK
+    75761 IDEOGRAPH
+    74656 UNIFIED
     13196 SYLLABLE
     11735 HANGUL
      7616 LETTER
@@ -46,9 +49,9 @@ For exploring words that occur in the character names, there is the
      2122 SMALL
      1709 CAPITAL
 
-Note: character names starting with the string ``'CJK UNIFIED IDEOGRAPH'``
-are not indexed. Those names are not useful for searching, since the only
-unique part of the name is the codepoint in hexadecimal.
+Note: characters with names starting with 'CJK UNIFIED IDEOGRAPH'
+are indexed with those three words only, excluding the hexadecimal
+codepoint at the end of the name.
 
 """
 
@@ -134,19 +137,6 @@ class UnicodeNameIndex:
         return res
 
     def word_report(self, top=None):
-        """
-        Generate report with most frequent words
-
-            >>> index = UnicodeNameIndex()
-            >>> index.word_report(7)
-            13196 SYLLABLE
-            11735 HANGUL
-             7616 LETTER
-             2232 WITH
-             2180 SIGN
-             2122 SMALL
-             1709 CAPITAL
-        """
         for postings, key in self.word_rank(top):
             print('{:5} {}'.format(postings, key))
 
