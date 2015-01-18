@@ -40,11 +40,11 @@ class FrozenJSON:
             return arg
 
     def __init__(self, mapping):
-        self._data = dict(mapping)
+        self.__data = dict(mapping)
 
     def __getattr__(self, name):
-        if hasattr(self._data, name):
-            return getattr(self._data, name)
+        if hasattr(self.__data, name):
+            return getattr(self.__data, name)
         else:
-            return FrozenJSON(self._data[name])  # <4>
+            return FrozenJSON(self.__data[name])  # <4>
 # END EXPLORE2

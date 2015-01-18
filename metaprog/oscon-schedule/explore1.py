@@ -9,14 +9,21 @@ explore1.py: Script to explore the OSCON schedule feed
     357
     >>> sorted(feed.Schedule.keys())  # <3>
     ['conferences', 'events', 'speakers', 'venues']
-    >>> feed.Schedule.speakers[-1].name  # <4>
+    >>> for key, value in sorted(feed.Schedule.items()): # <4>
+    ...     print('{:3} {}'.format(len(value), key))
+    ...
+      1 conferences
+    484 events
+    357 speakers
+     53 venues
+    >>> feed.Schedule.speakers[-1].name  # <5>
     'Carina C. Zona'
-    >>> talk = feed.Schedule.events[40]  # <5>
+    >>> talk = feed.Schedule.events[40]  # <6>
     >>> talk.name
     'There *Will* Be Bugs'
-    >>> talk.speakers  # <6>
+    >>> talk.speakers  # <7>
     [3471, 5199]
-    >>> talk.flavor  # <7>
+    >>> talk.flavor  # <8>
     Traceback (most recent call last):
       ...
     KeyError: 'flavor'
@@ -34,13 +41,13 @@ class FrozenJSON:
     """
 
     def __init__(self, mapping):
-        self._data = dict(mapping)  # <1>
+        self.__data = dict(mapping)  # <1>
 
     def __getattr__(self, name):  # <2>
-        if hasattr(self._data, name):
-            return getattr(self._data, name)  # <3>
+        if hasattr(self.__data, name):
+            return getattr(self.__data, name)  # <3>
         else:
-            return FrozenJSON.build(self._data[name])  # <4>
+            return FrozenJSON.build(self.__data[name])  # <4>
 
     @classmethod
     def build(cls, obj):  # <5>

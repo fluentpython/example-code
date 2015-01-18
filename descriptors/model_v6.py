@@ -32,9 +32,28 @@ class Validated(abc.ABC, AutoStorage):  # <3>
     def validate(self, instance, value):  # <6>
         """return validated value or raise ValueError"""
 
+INVALID = object()
+
+class Check(Validated):
+
+    def __init__(self, checker):
+        super().__init__()
+        self.checker = checker
+        if checker.__doc__ is None:
+            doc = ''
+        else:
+            doc = checker.__doc__ + '; '
+        self.message = doc + '{!r} is not valid.'
+
+
+    def validate(self, instance, value):
+        result = self.checker(value)
+        if result is INVALID:
+            raise ValueError(self.message.format(value))
+        return result
+
 
 class Quantity(Validated):  # <7>
-    """a number greater than zero"""
 
     def validate(self, instance, value):
         if value <= 0:
@@ -43,7 +62,6 @@ class Quantity(Validated):  # <7>
 
 
 class NonBlank(Validated):
-    """a string with at least one non-space character"""
 
     def validate(self, instance, value):
         value = value.strip()

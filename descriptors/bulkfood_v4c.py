@@ -29,11 +29,11 @@ instance::
 
     >>> raisins = LineItem('Golden raisins', 10, 6.95)
     >>> dir(raisins)  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-    ['_Quantity_0', '_Quantity_1', '__class__', ...
+    ['_Quantity:0', '_Quantity:1', '__class__', ...
      'description', 'price', 'subtotal', 'weight']
-    >>> raisins._Quantity_0
+    >>> getattr(raisins, '_Quantity:0')
     10
-    >>> raisins._Quantity_1
+    >>> getattr(raisins, '_Quantity:1')
     6.95
 
 If the descriptor is accessed in the class, the descriptor object is

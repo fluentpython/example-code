@@ -28,12 +28,12 @@ alternate attributes, created by the descriptors in each ``LineItem``
 instance::
 
     >>> raisins = LineItem('Golden raisins', 10, 6.95)
-    >>> sorted(dir(raisins))  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-    [..., '_quantity_0', '_quantity_1', 'description',
-     'price', 'subtotal', 'weight']
-    >>> raisins._quantity_0
+    >>> dir(raisins)  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+    [... '_quantity:0', '_quantity:1', 'description',
+    'price', 'subtotal', 'weight']
+    >>> getattr(raisins, '_quantity:0')
     10
-    >>> raisins._quantity_1
+    >>> getattr(raisins, '_quantity:1')
     6.95
 
 """
@@ -46,24 +46,22 @@ def quantity():  # <1>
     except AttributeError:
         quantity.counter = 0  # <3>
 
-    storage_name = '_{}_{}'.format('quantity', quantity.counter)  # <4>
+    storage_name = '_{}:{}'.format('quantity', quantity.counter)  # <4>
 
-    @property  # <5>
-    def prop(self):
-        return getattr(self, storage_name)
+    def qty_getter(instance):  # <5>
+        return getattr(instance, storage_name)
 
-    @prop.setter
-    def prop(self, value):
+    def qty_setter(instance, value):
         if value > 0:
-            setattr(self, storage_name, value)
+            setattr(instance, storage_name, value)
         else:
             raise ValueError('value must be > 0')
 
-    return prop  # <6>
-
+    return property(qty_getter, qty_setter)
+# END LINEITEM_V4_PROP
 
 class LineItem:
-    weight = quantity()  # <7>
+    weight = quantity()
     price = quantity()
 
     def __init__(self, description, weight, price):
@@ -73,4 +71,4 @@ class LineItem:
 
     def subtotal(self):
         return self.weight * self.price
-# END LINEITEM_V4_PROP
+

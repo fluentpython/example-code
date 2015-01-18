@@ -15,8 +15,8 @@ But, without validation, these public attributes can cause trouble::
     >>> raisins = LineItem('Golden raisins', 10, 6.95)
     >>> raisins.subtotal()
     69.5
-    >>> raisins.weight = -20
-    >>> raisins.subtotal()
+    >>> raisins.weight = -20  # garbage in...
+    >>> raisins.subtotal()    # garbage out...
     -139.0
 
 # END LINEITEM_PROBLEM_V1

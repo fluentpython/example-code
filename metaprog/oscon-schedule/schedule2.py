@@ -56,15 +56,15 @@ class MissingDatabaseError(RuntimeError):
 
 class DbRecord(Record):  # <2>
 
-    _db = None  # <3>
+    __db = None  # <3>
 
     @staticmethod  # <4>
     def set_db(db):
-        DbRecord._db = db  # <5>
+        DbRecord.__db = db  # <5>
 
     @staticmethod  # <6>
     def get_db():
-        return DbRecord._db
+        return DbRecord.__db
 
     @classmethod  # <7>
     def fetch(cls, ident):
@@ -93,22 +93,23 @@ class Event(DbRecord):  # <1>
     @property
     def venue(self):
         key = 'venue.{}'.format(self.venue_serial)
-        return self.fetch(key)  # <2>
+        return self.__class__.fetch(key)  # <2>
 
     @property
     def speakers(self):
         if not hasattr(self, '_speaker_objs'):  # <3>
             spkr_serials = self.__dict__['speakers']  # <4>
-            self._speaker_objs = [self.fetch('speaker.{}'.format(key))
-                                  for key in spkr_serials]  # <5>
-        return self._speaker_objs  # <6>
+            fetch = self.__class__.fetch  # <5>
+            self._speaker_objs = [fetch('speaker.{}'.format(key))
+                                  for key in spkr_serials]  # <6>
+        return self._speaker_objs  # <7>
 
     def __repr__(self):
-        if hasattr(self, 'name'):  # <7>
+        if hasattr(self, 'name'):  # <8>
             cls_name = self.__class__.__name__
             return '<{} {!r}>'.format(cls_name, self.name)
         else:
-            return super().__repr__()  # <8>
+            return super().__repr__()  # <9>
 # END SCHEDULE2_EVENT
 
 
@@ -127,5 +128,5 @@ def load_db(db):
         for record in rec_list:  # <7>
             key = '{}.{}'.format(record_type, record['serial'])
             record['serial'] = key
-            db[key] = factory(**record)  # <>
+            db[key] = factory(**record)  # <8>
 # END SCHEDULE2_LOAD

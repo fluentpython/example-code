@@ -1,166 +1,199 @@
-
-
 """
-Data descriptor (a.k.a. overriding or enforced descriptor):
+Overriding descriptor (a.k.a. data descriptor or enforced descriptor):
 
-    >>> o = Model()
-    >>> o.data  # doctest: +ELLIPSIS
-    DataDescriptor.__get__() invoked with args:
-        self     =  <descriptorkinds.DataDescriptor object at 0x...>
-        instance =  <descriptorkinds.Model object at 0x...>
-        owner    =  <class 'descriptorkinds.Model'>
-    >>> Model.data  # doctest: +ELLIPSIS
-    DataDescriptor.__get__() invoked with args:
-        self     =  <descriptorkinds.DataDescriptor object at 0x...>
-        instance =  None
-        owner    =  <class 'descriptorkinds.Model'>
+# BEGIN DESCR_KINDS_DEMO1
 
+    >>> obj = Managed()  # <1>
+    >>> obj.over  # <2>
+    -> Overriding.__get__(<Overriding object>, <Managed object>, <class Managed>)
+    >>> Managed.over  # <3>
+    -> Overriding.__get__(<Overriding object>, None, <class Managed>)
+    >>> obj.over = 7  # <4>
+    -> Overriding.__set__(<Overriding object>, <Managed object>, 7)
+    >>> obj.over  # <5>
+    -> Overriding.__get__(<Overriding object>, <Managed object>, <class Managed>)
+    >>> obj.__dict__['over'] = 8  # <6>
+    >>> vars(obj)  # <7>
+    {'over': 8}
+    >>> obj.over  # <8>
+    -> Overriding.__get__(<Overriding object>, <Managed object>, <class Managed>)
 
-A data descriptor cannot be shadowed by assigning to an instance:
+# END DESCR_KINDS_DEMO1
 
-    >>> o.data = 7  # doctest: +ELLIPSIS
-    DataDescriptor.__set__() invoked with args:
-        self     =  <descriptorkinds.DataDescriptor object at 0x...>
-        instance =  <descriptorkinds.Model object at 0x...>
-        value    =  7
-    >>> o.data  # doctest: +ELLIPSIS
-    DataDescriptor.__get__() invoked with args:
-        self     =  <descriptorkinds.DataDescriptor object at 0x...>
-        instance =  <descriptorkinds.Model object at 0x...>
-        owner    =  <class 'descriptorkinds.Model'>
+Overriding descriptor without ``__get__``:
 
+(these tests are reproduced below without +ELLIPSIS directives for inclusion in the book;
+look for DESCR_KINDS_DEMO2)
 
-Not even by poking the attribute into the instance ``__dict__``:
+    >>> obj.over_no_get  # doctest: +ELLIPSIS
+    <descriptorkinds.OverridingNoGet object at 0x...>
+    >>> Managed.over_no_get  # doctest: +ELLIPSIS
+    <descriptorkinds.OverridingNoGet object at 0x...>
+    >>> obj.over_no_get = 7
+    -> OverridingNoGet.__set__(<OverridingNoGet object>, <Managed object>, 7)
+    >>> obj.over_no_get  # doctest: +ELLIPSIS
+    <descriptorkinds.OverridingNoGet object at 0x...>
+    >>> obj.__dict__['over_no_get'] = 9
+    >>> obj.over_no_get
+    9
+    >>> obj.over_no_get = 7
+    -> OverridingNoGet.__set__(<OverridingNoGet object>, <Managed object>, 7)
+    >>> obj.over_no_get
+    9
 
-    >>> o.__dict__['data'] = 8
-    >>> o.data  # doctest: +ELLIPSIS
-    DataDescriptor.__get__() invoked with args:
-        self     =  <descriptorkinds.DataDescriptor object at 0x...>
-        instance =  <descriptorkinds.Model object at 0x...>
-        owner    =  <class 'descriptorkinds.Model'>
+Non-overriding descriptor (a.k.a. non-data descriptor or shadowable descriptor):
 
+# BEGIN DESCR_KINDS_DEMO3
 
-Data descriptor without ``__get__``:
-
-    >>> o.data_no_get  # doctest: +ELLIPSIS
-    <descriptorkinds.DataDescriptorNoGet object at 0x...>
-    >>> Model.data_no_get   # doctest: +ELLIPSIS
-    <descriptorkinds.DataDescriptorNoGet object at 0x...>
-    >>> o.data_no_get = 7  # doctest: +ELLIPSIS
-    DataDescriptorNoGet.__set__() invoked with args:
-        self     =  <descriptorkinds.DataDescriptorNoGet object at 0x...>
-        instance =  <descriptorkinds.Model object at 0x...>
-        value    =  7
-    >>> o.data_no_get  # doctest: +ELLIPSIS
-    <descriptorkinds.DataDescriptorNoGet object at 0x...>
-
-
-Poking the attribute into the instance ``__dict__`` means you can read the new
-value for the attribute, but setting it still triggers ``__set__``:
-
-    >>> o.__dict__['data_no_get'] = 8
-    >>> o.data_no_get
-    8
-    >>> o.data_no_get = 7  # doctest: +ELLIPSIS
-    DataDescriptorNoGet.__set__() invoked with args:
-        self     =  <descriptorkinds.DataDescriptorNoGet object at 0x...>
-        instance =  <descriptorkinds.Model object at 0x...>
-        value    =  7
-    >>> o.data_no_get  # doctest: +ELLIPSIS
-    8
-
-
-Non-data descriptor (a.k.a. non-overriding or shadowable descriptor):
-
-    >>> o = Model()
-    >>> o.non_data  # doctest: +ELLIPSIS
-    NonDataDescriptor.__get__() invoked with args:
-        self     =  <descriptorkinds.NonDataDescriptor object at 0x...>
-        instance =  <descriptorkinds.Model object at 0x...>
-        owner    =  <class 'descriptorkinds.Model'>
-    >>> Model.non_data  # doctest: +ELLIPSIS
-    NonDataDescriptor.__get__() invoked with args:
-        self     =  <descriptorkinds.NonDataDescriptor object at 0x...>
-        instance =  None
-        owner    =  <class 'descriptorkinds.Model'>
-
-
-A non-data descriptor can be shadowed by assigning to an instance:
-
-    >>> o.non_data = 7
-    >>> o.non_data
+    >>> obj = Managed()
+    >>> obj.non_over  # <1>
+    -> NonOverriding.__get__(<NonOverriding object>, <Managed object>, <class Managed>)
+    >>> obj.non_over = 7  # <2>
+    >>> obj.non_over  # <3>
     7
+    >>> Managed.non_over  # <4>
+    -> NonOverriding.__get__(<NonOverriding object>, None, <class Managed>)
+    >>> del obj.non_over  # <5>
+    >>> obj.non_over  # <6>
+    -> NonOverriding.__get__(<NonOverriding object>, <Managed object>, <class Managed>)
 
-
-Methods are non-data descriptors:
-
-    >>> o.spam  # doctest: +ELLIPSIS
-    <bound method Model.spam of <descriptorkinds.Model object at 0x...>>
-    >>> Model.spam  # doctest: +ELLIPSIS
-    <function Model.spam at 0x...>
-    >>> o.spam()  # doctest: +ELLIPSIS
-    Model.spam() invoked with arg:
-        self     =  <descriptorkinds.Model object at 0x...>
-    >>> o.spam = 7
-    >>> o.spam
-    7
-
+# END DESCR_KINDS_DEMO3
 
 No descriptor type survives being overwritten on the class itself:
 
-    >>> Model.data = 1
-    >>> o.data
-    1
-    >>> Model.data_no_get = 2
-    >>> o.data_no_get
-    2
-    >>> Model.non_data = 3
-    >>> o.non_data
+# BEGIN DESCR_KINDS_DEMO4
+
+    >>> obj = Managed()  # <1>
+    >>> Managed.over = 1  # <2>
+    >>> Managed.over_no_get = 2
+    >>> Managed.non_over = 3
+    >>> obj.over, obj.over_no_get, obj.non_over  # <3>
+    (1, 2, 3)
+
+# END DESCR_KINDS_DEMO4
+
+Methods are non-overriding descriptors:
+
+    >>> obj.spam  # doctest: +ELLIPSIS
+    <bound method Managed.spam of <descriptorkinds.Managed object at 0x...>>
+    >>> Managed.spam  # doctest: +ELLIPSIS
+    <function Managed.spam at 0x...>
+    >>> obj.spam()
+    -> Managed.spam(<Managed object>)
+    >>> Managed.spam()
+    Traceback (most recent call last):
+      ...
+    TypeError: spam() missing 1 required positional argument: 'self'
+    >>> Managed.spam(obj)
+    -> Managed.spam(<Managed object>)
+    >>> Managed.spam.__get__(obj)  # doctest: +ELLIPSIS
+    <bound method Managed.spam of <descriptorkinds.Managed object at 0x...>>
+    >>> obj.spam.__func__ is Managed.spam
+    True
+    >>> obj.spam = 7
+    >>> obj.spam
     7
+
 
 """
 
+"""
+NOTE: These tests are here because I can't add callouts after +ELLIPSIS
+directives and if doctest runs them without +ELLIPSIS I get test failures.
 
-class DataDescriptor:
-    "a.k.a. overriding or enforced descriptor"
+# BEGIN DESCR_KINDS_DEMO2
+
+    >>> obj.over_no_get  # <1>
+    <__main__.OverridingNoGet object at 0x665bcc>
+    >>> Managed.over_no_get  # <2>
+    <__main__.OverridingNoGet object at 0x665bcc>
+    >>> obj.over_no_get = 7  # <3>
+    -> OverridingNoGet.__set__(<OverridingNoGet object>, <Managed object>, 7)
+    >>> obj.over_no_get  # <4>
+    <__main__.OverridingNoGet object at 0x665bcc>
+    >>> obj.__dict__['over_no_get'] = 9  # <5>
+    >>> obj.over_no_get  # <6>
+    9
+    >>> obj.over_no_get = 7  # <7>
+    -> OverridingNoGet.__set__(<OverridingNoGet object>, <Managed object>, 7)
+    >>> obj.over_no_get  # <8>
+    9
+
+# END DESCR_KINDS_DEMO2
+
+Methods are non-overriding descriptors:
+
+# BEGIN DESCR_KINDS_DEMO5
+
+    >>> obj = Managed()
+    >>> obj.spam  # <1>
+    <bound method Managed.spam of <descriptorkinds.Managed object at 0x74c80c>>
+    >>> Managed.spam  # <2>
+    <function Managed.spam at 0x734734>
+    >>> obj.spam = 7  # <3>
+    >>> obj.spam
+    7
+
+# END DESCR_KINDS_DEMO5
+
+"""
+
+# BEGIN DESCR_KINDS
+
+### auxiliary functions for display only ###
+
+def cls_name(obj_or_cls):
+    cls = type(obj_or_cls)
+    if cls is type:
+        cls = obj_or_cls
+    return cls.__name__.split('.')[-1]
+
+def display(obj):
+    cls = type(obj)
+    if cls is type:
+        return '<class {}>'.format(obj.__name__)
+    elif cls in [type(None), int]:
+        return repr(obj)
+    else:
+        return '<{} object>'.format(cls_name(obj))
+
+def print_args(name, *args):
+    pseudo_args = ', '.join(display(x) for x in args)
+    print('-> {}.__{}__({})'.format(cls_name(args[0]), name, pseudo_args))
+
+
+### essential classes for this example ###
+
+class Overriding:  # <1>
+    """a.k.a. data descriptor or enforced descriptor"""
 
     def __get__(self, instance, owner):
-        print('DataDescriptor.__get__() invoked with args:')
-        print('    self     = ', self)
-        print('    instance = ', instance)
-        print('    owner    = ', owner)
+        print_args('get', self, instance, owner)  # <2>
 
     def __set__(self, instance, value):
-        print('DataDescriptor.__set__() invoked with args:')
-        print('    self     = ', self)
-        print('    instance = ', instance)
-        print('    value    = ', value)
+        print_args('set', self, instance, value)
 
 
-class DataDescriptorNoGet:
+class OverridingNoGet:  # <3>
+    """an overriding descriptor without ``__get__``"""
 
     def __set__(self, instance, value):
-        print('DataDescriptorNoGet.__set__() invoked with args:')
-        print('    self     = ', self)
-        print('    instance = ', instance)
-        print('    value    = ', value)
+        print_args('set', self, instance, value)
 
 
-class NonDataDescriptor:
-    "a.k.a. non-overriding or shadowable descriptor"
+class NonOverriding:  # <4>
+    """a.k.a. non-data or shadowable descriptor"""
 
     def __get__(self, instance, owner):
-        print('NonDataDescriptor.__get__() invoked with args:')
-        print('    self     = ', self)
-        print('    instance = ', instance)
-        print('    owner    = ', owner)
+        print_args('get', self, instance, owner)
 
 
-class Model:
-    data = DataDescriptor()
-    data_no_get = DataDescriptorNoGet()
-    non_data = NonDataDescriptor()
+class Managed:  # <5>
+    over = Overriding()
+    over_no_get = OverridingNoGet()
+    non_over = NonOverriding()
 
-    def spam(self):
-        print('Model.spam() invoked with arg:')
-        print('    self     = ', self)
+    def spam(self):  # <6>
+        print('-> Managed.spam({})'.format(display(self)))
+
+# END DESCR_KINDS

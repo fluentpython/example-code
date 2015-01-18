@@ -1,0 +1,201 @@
+#!/usr/bin/env python3
+
+"""
+Unicode character finder utility:
+find characters based on words in their official names.
+
+This can be used from the command line, just pass words as arguments.
+
+Here is the ``main`` function which makes it happen::
+
+    >>> main('rook')  # doctest: +NORMALIZE_WHITESPACE
+    U+2656  ♖  WHITE CHESS ROOK
+    U+265C  ♜  BLACK CHESS ROOK
+    (2 matches for 'rook')
+    >>> main('rook', 'black')  # doctest: +NORMALIZE_WHITESPACE
+    U+265C  ♜  BLACK CHESS ROOK
+    (1 match for 'rook black')
+    >>> main('white bishop')  # doctest: +NORMALIZE_WHITESPACE
+    U+2657  ♗   WHITE CHESS BISHOP
+    (1 match for 'white bishop')
+    >>> main("jabberwocky's vest")
+    (No match for "jabberwocky's vest")
+
+
+For exploring words that occur in the character names, there is the
+``word_report`` function::
+
+    >>> index = UnicodeNameIndex(sample_chars)
+    >>> index.word_report()
+        3 SIGN
+        2 A
+        2 EURO
+        2 LATIN
+        2 LETTER
+        1 CAPITAL
+        1 CURRENCY
+        1 DOLLAR
+        1 SMALL
+    >>> index = UnicodeNameIndex()
+    >>> index.word_report(7)
+    13196 SYLLABLE
+    11735 HANGUL
+     7616 LETTER
+     2232 WITH
+     2180 SIGN
+     2122 SMALL
+     1709 CAPITAL
+
+Note: character names starting with the string ``'CJK UNIFIED IDEOGRAPH'``
+are not indexed. Those names are not useful for searching, since the only
+unique part of the name is the codepoint in hexadecimal.
+
+"""
+
+import sys
+import re
+import unicodedata
+import pickle
+import warnings
+
+RE_WORD = re.compile('\w+')
+
+INDEX_NAME = 'charfinder_index.pickle'
+MINIMUM_SAVE_LEN = 10000
+CJK_PREFIX = 'CJK UNIFIED IDEOGRAPH'
+
+sample_chars = [
+    '$',  # DOLLAR SIGN
+    'A',  # LATIN CAPITAL LETTER A
+    'a',  # LATIN SMALL LETTER A
+    '\u20a0',  # EURO-CURRENCY SIGN
+    '\u20ac',  # EURO SIGN
+]
+
+
+def tokenize(text):
+    """return iterable of uppercased words"""
+    for match in RE_WORD.finditer(text):
+        yield match.group().upper()
+
+
+class UnicodeNameIndex:
+
+    def __init__(self, chars=None):
+        self.load(chars)
+
+    def load(self, chars=None):
+        self.index = None
+        if chars is None:
+            try:
+                with open(INDEX_NAME, 'rb') as fp:
+                    self.index = pickle.load(fp)
+            except OSError:
+                pass
+        if self.index is None:
+            self.build_index(chars)
+        if len(self.index) > MINIMUM_SAVE_LEN:
+            try:
+                self.save()
+            except OSError as exc:
+                warnings.warn('Could not save {!r}: {}'
+                              .format(INDEX_NAME, exc))
+
+    def save(self):
+        with open(INDEX_NAME, 'wb') as fp:
+            pickle.dump(self.index, fp)
+
+    def build_index(self, chars=None):
+        if chars is None:
+            chars = (chr(i) for i in range(32, sys.maxunicode))
+        index = {}
+        for char in chars:
+            try:
+                name = unicodedata.name(char)
+            except ValueError:
+                continue
+            if name.startswith(CJK_PREFIX):
+                name = CJK_PREFIX
+            code = ord(char)
+
+            for word in tokenize(name):
+                index.setdefault(word, set()).add(code)
+
+        self.index = index
+
+    def __len__(self):
+        return len(self.index)
+
+    def word_rank(self, top=None):
+        res = [(len(self.index[key]), key) for key in self.index]
+        res.sort(key=lambda item: (-item[0], item[1]))
+        if top is not None:
+            res = res[:top]
+        return res
+
+    def word_report(self, top=None):
+        """
+        Generate report with most frequent words
+
+            >>> index = UnicodeNameIndex()
+            >>> index.word_report(7)
+            13196 SYLLABLE
+            11735 HANGUL
+             7616 LETTER
+             2232 WITH
+             2180 SIGN
+             2122 SMALL
+             1709 CAPITAL
+        """
+        for postings, key in self.word_rank(top):
+            print('{:5} {}'.format(postings, key))
+
+    def find_codes(self, query):
+        result_sets = []
+        for word in tokenize(query):
+            if word in self.index:
+                result_sets.append(self.index[word])
+            else:  # shorcut: no such word
+                result_sets = []
+                break
+        if result_sets:
+            result = result_sets[0]
+            result.intersection_update(*result_sets[1:])
+        else:
+            result = set()
+        if len(result) > 0:
+            for code in sorted(result):
+                yield code
+
+    def describe(self, code):
+        code_str = 'U+{:04X}'.format(code)
+        char = chr(code)
+        name = unicodedata.name(char)
+        return '{:7}\t{}\t{}'.format(code_str, char, name)
+
+    def find_descriptions(self, query):
+        for code in self.find_codes(query):
+            yield self.describe(code)
+
+
+def main(*args):
+    index = UnicodeNameIndex()
+    query = ' '.join(args)
+    counter = 0
+    for line in index.find_descriptions(query):
+        print(line)
+        counter += 1
+    if counter == 0:
+        msg = 'No match'
+    elif counter == 1:
+        msg = '1 match'
+    else:
+        msg = '{} matches'.format(counter)
+    print('({} for {!r})'.format(msg, query))
+
+
+if __name__ == '__main__':
+    if len(sys.argv) > 1:
+        main(*sys.argv[1:])
+    else:
+        print('Usage: {} word1 [word2]...'.format(sys.argv[0]))

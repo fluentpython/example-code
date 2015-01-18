@@ -23,36 +23,47 @@ No change was made::
     >>> raisins.weight
     10
 
+The value of the attributes managed by the properties are stored in
+instance attributes, created in each ``LineItem`` instance::
+
+# BEGIN LINEITEM_V2_PROP_DEMO
+    >>> nutmeg = LineItem('Moluccan nutmeg', 8, 13.95)
+    >>> nutmeg.weight, nutmeg.price  # <1>
+    (8, 13.95)
+    >>> sorted(vars(nutmeg).items())  # <2>
+    [('description', 'Moluccan nutmeg'), ('price', 13.95), ('weight', 8)]
+
+# END LINEITEM_V2_PROP_DEMO
 
 """
 
 
-# BEGIN LINEITEM_V2_PROP
+# BEGIN LINEITEM_V2_PROP_FACTORY_FUNCTION
 def quantity(storage_name):  # <1>
 
-    @property  # <2>
-    def new_prop(self):
-        return self.__dict__[storage_name]  # <3>
+    def qty_getter(instance):  # <2>
+        return instance.__dict__[storage_name]  # <3>
 
-    @new_prop.setter
-    def new_prop(self, value):
+    def qty_setter(instance, value):  # <4>
         if value > 0:
-            self.__dict__[storage_name] = value  # <4>
+            instance.__dict__[storage_name] = value  # <5>
         else:
             raise ValueError('value must be > 0')
 
-    return new_prop  # <5>
+    return property(qty_getter, qty_setter)  # <6>
+# END LINEITEM_V2_PROP_FACTORY_FUNCTION
 
 
+# BEGIN LINEITEM_V2_PROP_CLASS
 class LineItem:
-    weight = quantity('weight')  # <6>
-    price = quantity('price')  # <7>
+    weight = quantity('weight')  # <1>
+    price = quantity('price')  # <2>
 
     def __init__(self, description, weight, price):
         self.description = description
-        self.weight = weight
+        self.weight = weight  # <3>
         self.price = price
 
     def subtotal(self):
-        return self.weight * self.price
-# END LINEITEM_V2_PROP
+        return self.weight * self.price  # <4>
+# END LINEITEM_V2_PROP_CLASS

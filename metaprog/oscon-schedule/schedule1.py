@@ -10,10 +10,8 @@ schedule1.py: traversing OSCON schedule data
     >>> speaker = db['speaker.3471']  # <4>
     >>> type(speaker)  # <5>
     <class 'schedule1.Record'>
-    >>> speaker.name  # <6>
-    'Anna Martelli Ravenscroft'
-    >>> speaker.twitter
-    'annaraven'
+    >>> speaker.name, speaker.twitter  # <6>
+    ('Anna Martelli Ravenscroft', 'annaraven')
     >>> db.close()  # <7>
 
 # END SCHEDULE1_DEMO
@@ -23,7 +21,7 @@ schedule1.py: traversing OSCON schedule data
 # BEGIN SCHEDULE1
 import warnings
 
-import osconfeed
+import osconfeed  # <1>
 
 DB_NAME = 'data/schedule1_db'
 CONFERENCE = 'conference.115'
@@ -31,17 +29,17 @@ CONFERENCE = 'conference.115'
 
 class Record:
     def __init__(self, **kwargs):
-        self.__dict__.update(kwargs)  # <1>
+        self.__dict__.update(kwargs)  # <2>
 
 
 def load_db(db):
-    raw_data = osconfeed.load()  # <2>
+    raw_data = osconfeed.load()  # <3>
     warnings.warn('loading ' + DB_NAME)
-    for collection, rec_list in raw_data['Schedule'].items():  # <3>
-        record_type = collection[:-1]  # <4>
+    for collection, rec_list in raw_data['Schedule'].items():  # <4>
+        record_type = collection[:-1]  # <5>
         for record in rec_list:
-            key = '{}.{}'.format(record_type, record['serial'])  # <5>
-            record['serial'] = key  # <6>
-            db[key] = Record(**record)  # <7>
+            key = '{}.{}'.format(record_type, record['serial'])  # <6>
+            record['serial'] = key  # <7>
+            db[key] = Record(**record)  # <8>
 
 # END SCHEDULE1
