@@ -1,4 +1,5 @@
 concurrency/flags/img/*.gif
+concurrency/charfinder_index.pickle
 metaprog/oscon-schedule/data/schedule?_db
 
 # Byte-compiled / optimized / DLL files
