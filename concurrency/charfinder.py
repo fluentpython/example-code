@@ -167,22 +167,23 @@ class UnicodeNameIndex:
         for code in self.find_codes(query):
             yield self.describe(code)
 
+    @staticmethod  # not an instance method due to concurrency
+    def status(query, counter):
+        if counter == 0:
+            msg = 'No match'
+        elif counter == 1:
+            msg = '1 match'
+        else:
+            msg = '{} matches'.format(counter)
+        return '{} for {!r}'.format(msg, query)
+
 
 def main(*args):
     index = UnicodeNameIndex()
     query = ' '.join(args)
-    counter = 0
-    for line in index.find_descriptions(query):
+    for n, line in enumerate(index.find_descriptions(query), 1):
         print(line)
-        counter += 1
-    if counter == 0:
-        msg = 'No match'
-    elif counter == 1:
-        msg = '1 match'
-    else:
-        msg = '{} matches'.format(counter)
-    print('({} for {!r})'.format(msg, query))
-
+    print('({})'.format(index.status(query, n)))
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:

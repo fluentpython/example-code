@@ -10,14 +10,6 @@ PROMPT = b'?> '
 index = None  # a UnicodeNameIndex instance
 
 
-def writeln(writer, arg):
-    if isinstance(arg, str):
-        lines = [arg]
-    else:
-        lines = arg
-    writer.writelines(line.encode() + CRLF for line in lines)
-
-
 @asyncio.coroutine
 def handle_queries(reader, writer):
     while True:
@@ -28,21 +20,16 @@ def handle_queries(reader, writer):
             query = data.decode().strip()
         except UnicodeDecodeError:
             query = '\x00'
-        if ord(query[:1]) < 32:
-            break
         client = writer.get_extra_info('peername')
-        print('Received from {}: {}'.format(client, query))
-        lines = list(index.find_descriptions(query))
-        if lines:
-            writeln(writer, lines)
-            plural = 'es' if len(lines) > 1 else ''
-            msg = '({} match{} for {!r})'.format(len(lines), plural, query)
-            writeln(writer, msg)
-            print('Sent: {} lines + total'.format(len(lines)))
-        else:
-            writeln(writer, '(No match for {!r})'.format(query))
-            print('Sent: 1 line, no match')
-        yield from writer.drain()
+        print('Received from {}: {!r}'.format(client, query))
+        if query:
+            if ord(query[:1]) < 32:
+                break
+            lines = list(index.find_descriptions(query))
+            if lines:
+                writer.writelines(line.encode() + CRLF for line in lines)
+            writer.write(index.status(query, len(lines)).encode() + CRLF)
+            yield from writer.drain()
 
     print('Close the client socket')
     writer.close()

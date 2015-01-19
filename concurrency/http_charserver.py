@@ -45,8 +45,7 @@ def handle(request):
     if query:
         lines = list(index.find_descriptions(query))
         res = '\n'.join(lines)
-        plural = 'es' if len(lines) > 1 else ''
-        msg = '{} match{} for {!r}'.format(len(lines), plural, query)
+        msg = index.status(query, len(lines))
     else:
         lines = []
         res = ''
