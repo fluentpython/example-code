@@ -2,11 +2,9 @@ import asyncio
 
 @asyncio.coroutine
 def show_remaining():
-    remaining = 5
-    while remaining:
+    for remaining in range(5, 0, -1):
         print('Remaining: ', remaining)
         yield from asyncio.sleep(1)
-        remaining -= 1
 
 def main():
     loop = asyncio.get_event_loop()

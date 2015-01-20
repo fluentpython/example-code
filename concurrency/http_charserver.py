@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import sys
 import asyncio
 from aiohttp import web
 
@@ -55,26 +56,28 @@ def handle(request):
                       for word in sorted(EXAMPLE_WORDS, key=str.upper))
     text = PAGE_TPL.format(query=query, result=res,
                            message=msg, links=links)
+    print('Sending {} results'.format(len(lines)))
     return web.Response(content_type=CONTENT_TYPE, text=text)
 
 
 @asyncio.coroutine
-def init(loop):
+def init(loop, address, port):
     app = web.Application(loop=loop)
     app.router.add_route('GET', '/', handle)
 
     server = yield from loop.create_server(app.make_handler(),
-                                           '127.0.0.1', 8080)
+                                           address, port)
     host = server.sockets[0].getsockname()
     print('Serving on {}. Hit CTRL-C to stop.'.format(host))
 
 
-def main():
+def main(address="127.0.0.1", port=8888):
+    port = int(port)
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(init(loop))
+    loop.run_until_complete(init(loop, address, port))
     loop.run_forever()
 
-
+    
 if __name__ == '__main__':
     index = UnicodeNameIndex()
-    main()
+    main(*sys.argv[1:])

@@ -1,0 +1,12 @@
+<map version="0.9.0">
+<!-- To view this file, download free mind mapping software FreeMind from http://freemind.sourceforge.net -->
+<node CREATED="1421704544481" ID="ID_1903556943" MODIFIED="1421714803674" TEXT="Concurrency">
+<node CREATED="1421704705118" ID="ID_598225085" MODIFIED="1421714763865" POSITION="left" TEXT="threading"/>
+<node CREATED="1421704717848" ID="ID_1699689274" MODIFIED="1421704738402" POSITION="left" TEXT="multiprocessing"/>
+<node CREATED="1421704568997" ID="ID_48551069" MODIFIED="1421714690188" POSITION="left" TEXT="parallelism"/>
+<node CREATED="1421705811900" ID="ID_740158806" MODIFIED="1421714796092" POSITION="right" TEXT="event-based">
+<node CREATED="1421706014013" ID="ID_1223527993" MODIFIED="1421706021925" TEXT="callbacks"/>
+<node CREATED="1421706028536" ID="ID_151937226" MODIFIED="1421706038694" TEXT="coroutines"/>
+</node>
+</node>
+</map>
