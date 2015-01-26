@@ -1,6 +1,6 @@
 import pytest
 
-from charfinder import UnicodeNameIndex, tokenize, sample_chars
+from charfinder import UnicodeNameIndex, tokenize, sample_chars, query_type
 from unicodedata import name
 
 
@@ -12,6 +12,10 @@ def sample_index():
 @pytest.fixture(scope="module")
 def full_index():
     return UnicodeNameIndex()
+
+
+def test_query_type():
+    assert query_type('blue') == 'NAME'
 
 
 def test_tokenize():

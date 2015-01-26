@@ -62,6 +62,8 @@ import pickle
 import warnings
 
 RE_WORD = re.compile('\w+')
+RE_UNICODE_NAME = re.compile('^[A-Z0-9 -]+$')
+RE_CODEPOINT = re.compile('U\+([0-9A-F]{4,6})')
 
 INDEX_NAME = 'charfinder_index.pickle'
 MINIMUM_SAVE_LEN = 10000
@@ -80,6 +82,15 @@ def tokenize(text):
     """return iterable of uppercased words"""
     for match in RE_WORD.finditer(text):
         yield match.group().upper()
+
+def query_type(text):
+    text_upper = text.upper()
+    if 'U+' in text_upper:
+        return 'CODEPOINT'
+    elif RE_UNICODE_NAME.match(text_upper):
+        return 'NAME'
+    else:
+        return 'CHARACTERS'
 
 
 class UnicodeNameIndex:
