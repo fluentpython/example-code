@@ -18,15 +18,23 @@ from 2007-01-01.
 import sys
 import argparse
 import re
-import imghdr
 import time
 import datetime
+import os
+import imghdr
+import warnings
 
 import requests
 
-SAVE_DIR = 'pictures/'
-POTD_PATH = 'Template:POTD/'
-POTD_BASE_URL = 'http://en.wikipedia.org/wiki/' + POTD_PATH
+SAVE_DIR = 'downloaded/'
+
+#POTD_BASE_URL = 'http://en.wikipedia.org/wiki/Template:POTD/'
+POTD_BASE_URL = 'http://127.0.0.1:8001/Template-POTD/'
+
+REMOTE_PICT_BASE_URL = 'http://upload.wikimedia.org/wikipedia/'
+LOCAL_PICT_BASE_URL = 'http://127.0.0.1:8001/'
+PICT_BASE_URL = LOCAL_PICT_BASE_URL
+
 POTD_IMAGE_RE = re.compile(r'src="(//upload\..*?)"')
 PODT_EARLIEST_TEMPLATE = '2007-01-01'
 
@@ -35,12 +43,11 @@ RE_MONTH = RE_YEAR + r'-([01]\d)'
 RE_DATE = RE_MONTH + r'-([0-3]\d)'
 ISO_DATE_FMT = '%Y-%m-%d'
 
-DATEFORMS = [
-    ('date', re.compile('^' + RE_DATE + '$')),
-    ('month', re.compile('^' + RE_MONTH + '$')),
-    ('year', re.compile('^' + RE_YEAR + '$'))
-]
+PICT_EXCEPTIONS = {
+        '2013-06-15', # .webm movie [1]
+    }
 
+#[1] http://en.wikipedia.org/wiki/Template:POTD/2013-06-15
 
 class NoPictureForDate(Exception):
     '''No Picture of the Day found for {iso_date}'''
@@ -51,29 +58,13 @@ class NoPictureTemplateBefore(ValueError):
 
 
 def get_picture_url(iso_date):
-    page_url = POTD_BASE_URL+iso_date
+    page_url = POTD_BASE_URL + iso_date
+    print(page_url)
     response = requests.get(page_url)
     pict_url = POTD_IMAGE_RE.search(response.text)
     if pict_url is None:
         raise NoPictureForDate(iso_date)
     return 'http:' + pict_url.group(1)
-
-
-def get_picture(iso_date):
-    pict_url = get_picture_url(iso_date)
-    response = requests.get(pict_url)
-    octets = response.content
-    return octets
-
-
-def get_picture_type(octets):
-    pict_type = imghdr.what(None, octets)
-    if pict_type is None:
-        if (octets.startswith(b'<') and
-                b'<svg' in octets[:200] and
-                octets.rstrip().endswith(b'</svg>')):
-            pict_type = 'svg'
-    return pict_type
 
 
 def validate_date(text):
@@ -116,8 +107,8 @@ def gen_dates(iso_parts):
         yield iso_parts
 
 
-def get_picture_urls(dates, verbose=False, save_fixture=False):
-    urls = []
+def get_picture_urls(dates, verbose=False):
+    date_urls = []
     count = 0
     for date in dates:
         try:
@@ -132,8 +123,50 @@ def get_picture_urls(dates, verbose=False, save_fixture=False):
             print(url.split('/')[-1])
         else:
             print(url)
-        urls.append(url)
-    return urls
+        date_urls.append((date, url))
+    return date_urls
+
+
+def picture_type(octets):
+    pict_type = imghdr.what(None, octets)
+    if pict_type is None:
+        if (octets.startswith(b'<') and
+                b'<svg' in octets[:200] and
+                octets.rstrip().endswith(b'</svg>')):
+            pict_type = 'svg'
+    return pict_type
+
+
+def get_pictures(dates, verbose=False):
+    urls_ok = []
+    try:
+        os.makedirs(SAVE_DIR)
+    except FileExistsError:
+        pass
+    for date, url in get_picture_urls(dates, verbose):
+        if PICT_BASE_URL == LOCAL_PICT_BASE_URL:
+            url = url.replace(REMOTE_PICT_BASE_URL, PICT_BASE_URL)
+        response = requests.get(url)
+        if response.status_code != 200:
+            warnings.warn('HTTP code {}: {}'.format(response.status_code, url))
+            continue
+        octets = response.content
+        if date not in PICT_EXCEPTIONS:
+            assert picture_type(octets) is not None, url
+        file_path = url.replace(PICT_BASE_URL, '')
+        file_name = os.path.basename(file_path)
+        path = os.path.join(SAVE_DIR, date.split('-')[0])
+        file_path = os.path.join(path, file_name)
+        #import pdb; pdb.set_trace()
+        try:
+            os.makedirs(path)
+        except FileExistsError:
+            pass
+        with open(file_path, 'wb') as fp:
+            fp.write(octets)
+        urls_ok.append(url)
+        print(file_path)
+    return urls_ok
 
 
 def parse_args(argv):
@@ -175,7 +208,12 @@ def main(argv, get_picture_urls):
 
     t0 = time.time()
 
-    urls = get_picture_urls(dates, args.verbose, args.fixture_save)
+    if args.url_only:
+        urls = get_picture_urls(dates, args.verbose)
+    else:
+        urls = get_pictures(dates, args.verbose)
+
+
 
     elapsed = time.time() - t0
     if args.verbose:

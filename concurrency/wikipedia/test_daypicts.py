@@ -7,13 +7,6 @@ import pytest
 from daypicts import *
 
 
-GIF_MIN = (b'GIF89a\x01\x00\x01\x00\x00\xff\x00,\x00\x00'
-           b'\x00\x00\x01\x00\x01\x00\x00\x02\x00;')
-SVG_MIN = b'<svg xmlns="http://www.w3.org/2000/svg"></svg>'
-SVG_XML_DECL = b'<?xml version="1.0" encoding="UTF-8"?>' + SVG_MIN
-NOISE = b'\xb0\x0bU\xbe]L\n\x92\xbe\xc6\xf65"\xcc\xa3\xe3'
-
-
 @pytest.mark.network
 def test_get_picture_url_existing():
     url = get_picture_url('2012-01-01')
@@ -26,19 +19,6 @@ def test_get_picture_url_existing():
 def test_get_picture_url_not_existing():
     with pytest.raises(NoPictureForDate):
         get_picture_url('2013-09-12')
-
-
-def test_get_picture_type_imghdr():
-    assert get_picture_type(GIF_MIN) == 'gif'
-
-
-def test_get_picture_type_svg():
-    assert get_picture_type(SVG_MIN) == 'svg'
-    assert get_picture_type(SVG_XML_DECL) == 'svg'
-
-
-def test_get_picture_type_unknown():
-    assert get_picture_type(NOISE) is None
 
 
 def test_validate_full_date():
@@ -85,3 +65,23 @@ def test_gen_year_dates_leap():
     dates = list(gen_year_dates('2012'))
     assert len(dates) == 366
     assert dates[365] == '2012-12-31'
+
+
+GIF_MIN = (b'GIF89a\x01\x00\x01\x00\x00\xff\x00,\x00\x00'
+           b'\x00\x00\x01\x00\x01\x00\x00\x02\x00;')
+SVG_MIN = b'<svg xmlns="http://www.w3.org/2000/svg"></svg>'
+SVG_XML_DECL = b'<?xml version="1.0" encoding="UTF-8"?>' + SVG_MIN
+NOISE = b'\xb0\x0bU\xbe]L\n\x92\xbe\xc6\xf65"\xcc\xa3\xe3'
+
+def test_picture_type_imghdr():
+    assert picture_type(GIF_MIN) == 'gif'
+
+
+def test_picture_type_svg():
+    assert picture_type(SVG_MIN) == 'svg'
+    assert picture_type(SVG_XML_DECL) == 'svg'
+
+
+def test_picture_type_unknown():
+    assert picture_type(NOISE) is None
+
