@@ -7,13 +7,12 @@ from concurrent import futures
 
 from daypicts import main, get_picture_url, NoPictureForDate
 
-MAX_NUM_THREADS = 400
 GLOBAL_TIMEOUT = 300  # seconds
+MAX_CONCURRENT_REQUESTS = 30
 
 
 def get_picture_urls(dates, verbose=False):
-    num_threads = min(len(dates), MAX_NUM_THREADS)
-    pool = futures.ThreadPoolExecutor(num_threads)
+    pool = futures.ThreadPoolExecutor(MAX_CONCURRENT_REQUESTS)
 
     pending = {}
     for date in dates:

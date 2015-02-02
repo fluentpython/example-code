@@ -6,19 +6,19 @@ import sys
 import asyncio
 import aiohttp
 
-from daypicts import main
-from daypicts import NoPictureForDate
-from daypicts import POTD_BASE_URL
-from daypicts import POTD_IMAGE_RE
+from daypicts import main, NoPictureForDate
+from daypicts import POTD_BASE_URL, POTD_IMAGE_RE
 
 GLOBAL_TIMEOUT = 300  # seconds
+MAX_CONCURRENT_REQUESTS = 30
 
 
 @asyncio.coroutine
-def get_picture_url(iso_date):
+def get_picture_url(iso_date, semaphore):
     page_url = POTD_BASE_URL+iso_date
-    response = yield from aiohttp.request('GET', page_url)
-    text = yield from response.text()
+    with (yield from semaphore):
+        response = yield from aiohttp.request('GET', page_url)
+        text = yield from response.text()
     pict_url = POTD_IMAGE_RE.search(text)
     if pict_url is None:
         raise NoPictureForDate(iso_date)
@@ -27,7 +27,8 @@ def get_picture_url(iso_date):
 
 @asyncio.coroutine
 def get_picture_urls(dates, verbose=False):
-    tasks = [get_picture_url(date) for date in dates]
+    semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
+    tasks = [get_picture_url(date, semaphore) for date in dates]
     urls = []
     count = 0
     # get results as jobs are done

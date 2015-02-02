@@ -43,7 +43,8 @@ def test_find_word_1_match(sample_index):
 
 
 def test_find_word_1_match_character_result(sample_index):
-    res = [name(char) for char in sample_index.find_chars('currency')]
+    res = [name(char) for char in
+           sample_index.find_chars('currency').items]
     assert res == ['EURO-CURRENCY SIGN']
 
 

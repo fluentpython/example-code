@@ -1,6 +1,7 @@
 concurrency/flags/img/*.gif
-concurrency/charfinder_index.pickle
+concurrency/charfinder/charfinder_index.pickle
 metaprog/oscon-schedule/data/schedule?_db
+concurrency/wikipedia/fixture/docroot/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

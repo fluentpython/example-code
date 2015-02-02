@@ -75,9 +75,8 @@ def form(request):
 @asyncio.coroutine
 def get_chars(request):
     peername = request.transport.get_extra_info('peername')
-    query = request.GET.get('query', '')
-    limit = request.GET.get('query', 0)
     print('Request from: {}, GET data: {!r}'.format(peername, dict(request.GET)))
+    query = request.GET.get('query', '')
     if query:
         try:
             start = int(request.GET.get('start', 0))
@@ -85,12 +84,9 @@ def get_chars(request):
         except ValueError:
             raise web.HTTPBadRequest()
         stop = min(stop, start+RESULTS_PER_REQUEST)
-        chars = list(index.find_chars(query, start, stop))
+        num_results, chars = index.find_chars(query, start, stop)
     else:
-        chars = []
-        start = 0
-        stop = 0
-    num_results = len(chars)
+        raise web.HTTPBadRequest()
     text = ''.join(char if n % 64 else char+'\n'
             for n, char in enumerate(chars, 1))
     response_data = {'total': num_results, 'start': start, 'stop': stop}
@@ -98,7 +94,7 @@ def get_chars(request):
           query=query, **response_data))
     response_data['chars'] = text
     json_obj = json.dumps(response_data)
-    print('Sending {} results'.format(num_results))
+    print('Sending {} characters'.format(len(text)))
     headers = {'Access-Control-Allow-Origin': '*'}
     return web.Response(content_type=TEXT_TYPE, headers=headers, text=json_obj)
 

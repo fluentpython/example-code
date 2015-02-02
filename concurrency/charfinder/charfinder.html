@@ -7,20 +7,21 @@
     //(function() {
       var BASE_URL = 'http://127.0.0.1:8888/chars';
       var RESULTS_PER_REQUEST = 10;
-      var REQUEST_DELAY = 1000;  // in milliseconds
+      var REQUEST_DELAY = 100;  // in milliseconds
       var httpRequest = new XMLHttpRequest();
       httpRequest.onreadystatechange = processResponse;
 
       function requestMaker(start) {
         var makeRequest = function (event) {
           var query = document.getElementById('queryField').value;
-          var limit = RESULTS_PER_REQUEST;
-          httpRequest.open('GET', BASE_URL+'?query='+query+'&limit='+limit);
+          var stop = start + RESULTS_PER_REQUEST;
+          var params = '?query='+query+'&start='+start+'&stop='+stop;
+          httpRequest.open('GET', BASE_URL+params);
           httpRequest.send();
           document.getElementById('message').textContent = 'Query: ' + query;
           var table = document.getElementById('results');
           var tr;
-          while (tr = table.lastChild) table.removeChild(tr);
+          if (start == 0) while (tr = table.lastChild) table.removeChild(tr);
           return false; // don't submit form
         }
         return makeRequest;
@@ -104,7 +105,7 @@
         var table = document.getElementById('results');
         var tr;
         var characters = getSymbols(results.chars);
-        for (var i=results.start; i < results.stop; i++) {
+        for (var i=0; i < characters.length; i++) {
           ch = characters[i];
           if (ch == '\n') continue;
           if (ch == '\x00') break;
@@ -116,9 +117,10 @@
           tr.cells[1].appendChild(document.createTextNode(ch));
           tr.id = hexCode;
           table.appendChild(tr);
-          if (results.stop < results.total) {
-            setTimeout(requestMaker(results.stop)(), REQUEST_DELAY);
-          }
+        }
+        // setTimeout(getDescriptions, REQUEST_DELAY/2)
+        if (results.stop < results.total) {
+          setTimeout(requestMaker(results.stop), REQUEST_DELAY);
         }
       }
       window.onload = function() {

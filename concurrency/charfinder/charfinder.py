@@ -98,6 +98,8 @@ def query_type(text):
 
 CharDescription = namedtuple('CharDescription', 'code_str char name')
 
+QueryResult = namedtuple('QueryResult', 'len items')
+
 class UnicodeNameIndex:
 
     def __init__(self, chars=None):
@@ -169,12 +171,14 @@ class UnicodeNameIndex:
         if result_sets:
             result = result_sets[0].intersection(*result_sets[1:])
             result = sorted(result)  # must sort for consistency
-            for char in itertools.islice(result, start, stop):
-                yield char
+            result_iter = itertools.islice(result, start, stop)
+            return QueryResult(len(result),
+                               (char for char in result_iter))
+        return QueryResult(0, ())
 
     def find_codes(self, query, start=0, stop=None):
         return (ord(char) for char
-                in self.find_chars(query, start, stop))
+                in self.find_chars(query, start, stop).items)
 
     def describe(self, char):
         code_str = 'U+{:04X}'.format(ord(char))
@@ -183,6 +187,10 @@ class UnicodeNameIndex:
 
     def find_descriptions(self, query, start=0, stop=None):
         for char in self.find_chars(query, start, stop):
+            yield self.describe(char)
+
+    def get_descriptions(self, chars):
+        for char in chars:
             yield self.describe(char)
 
     def describe_str(self, char):

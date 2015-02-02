@@ -25,7 +25,8 @@ import datetime
 import requests
 
 SAVE_DIR = 'pictures/'
-POTD_BASE_URL = 'http://en.wikipedia.org/wiki/Template:POTD/'
+POTD_PATH = 'Template:POTD/'
+POTD_BASE_URL = 'http://en.wikipedia.org/wiki/' + POTD_PATH
 POTD_IMAGE_RE = re.compile(r'src="(//upload\..*?)"')
 PODT_EARLIEST_TEMPLATE = '2007-01-01'
 
@@ -84,7 +85,7 @@ def validate_date(text):
     test_parts = parts[:]
     while len(test_parts) < 3:
         test_parts.append(1)
-    date = datetime.datetime(*(int(part) for part in test_parts))
+    date = datetime.date(*(int(part) for part in test_parts))
     iso_date = date.strftime(ISO_DATE_FMT)
     iso_date = iso_date[:1+len(parts)*3]
     if iso_date < PODT_EARLIEST_TEMPLATE:
@@ -95,7 +96,7 @@ def validate_date(text):
 def gen_month_dates(iso_month):
     first = datetime.datetime.strptime(iso_month+'-01', ISO_DATE_FMT)
     one_day = datetime.timedelta(days=1)
-    date = first
+    date = first.date()
     while date.month == first.month:
         yield date.strftime(ISO_DATE_FMT)
         date += one_day
@@ -115,6 +116,26 @@ def gen_dates(iso_parts):
         yield iso_parts
 
 
+def get_picture_urls(dates, verbose=False, save_fixture=False):
+    urls = []
+    count = 0
+    for date in dates:
+        try:
+            url = get_picture_url(date)
+        except NoPictureForDate as exc:
+            if verbose:
+                print('*** {!r} ***'.format(exc))
+            continue
+        count += 1
+        if verbose:
+            print(format(count, '3d'), end=' ')
+            print(url.split('/')[-1])
+        else:
+            print(url)
+        urls.append(url)
+    return urls
+
+
 def parse_args(argv):
     parser = argparse.ArgumentParser(description=main.__doc__)
     date_help = 'YYYY-MM-DD or YYYY-MM or YYYY: year, month and day'
@@ -123,6 +144,8 @@ def parse_args(argv):
                         help='maximum number of items to fetch')
     parser.add_argument('-u', '--url_only', action='store_true',
                         help='get picture URLS only')
+    parser.add_argument('-f', '--fixture_save', action='store_true',
+                        help='save data for local test fixture')
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='display progress information')
     args = parser.parse_args(argv)
@@ -145,26 +168,6 @@ def parse_args(argv):
     return dates, args
 
 
-def get_picture_urls(dates, verbose=False):
-    urls = []
-    count = 0
-    for date in dates:
-        try:
-            url = get_picture_url(date)
-        except NoPictureForDate as exc:
-            if verbose:
-                print('*** {!r} ***'.format(exc))
-            continue
-        count += 1
-        if verbose:
-            print(format(count, '3d'), end=' ')
-            print(url.split('/')[-1])
-        else:
-            print(url)
-        urls.append(url)
-    return urls
-
-
 def main(argv, get_picture_urls):
     """Get Wikipedia "Picture of The Day" for date, month or year"""
 
@@ -172,7 +175,7 @@ def main(argv, get_picture_urls):
 
     t0 = time.time()
 
-    urls = get_picture_urls(dates, args.verbose)
+    urls = get_picture_urls(dates, args.verbose, args.fixture_save)
 
     elapsed = time.time() - t0
     if args.verbose:
