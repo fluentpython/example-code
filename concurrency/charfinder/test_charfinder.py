@@ -42,6 +42,11 @@ def test_find_word_1_match(sample_index):
     assert res == [(8352, 'EURO-CURRENCY SIGN')]
 
 
+def test_find_word_1_match_character_result(sample_index):
+    res = [name(char) for char in sample_index.find_chars('currency')]
+    assert res == ['EURO-CURRENCY SIGN']
+
+
 def test_find_word_2_matches(sample_index):
     res = [(code, name(chr(code)))
            for code in sample_index.find_codes('Euro')]
@@ -88,3 +93,22 @@ def test_find_1_word_2_matches_full(full_index):
 def test_find_3_words_no_matches_full(full_index):
     res = list(full_index.find_codes('no such character'))
     assert len(res) == 0
+
+
+def test_find_with_start(sample_index):
+    res = [(code, name(chr(code)))
+           for code in sample_index.find_codes('sign', 1)]
+    assert res == [(8352, 'EURO-CURRENCY SIGN'), (8364, 'EURO SIGN')]
+
+
+def test_find_with_stop(sample_index):
+    res = [(code, name(chr(code)))
+           for code in sample_index.find_codes('sign', 0, 2)]
+    assert res == [(36, 'DOLLAR SIGN'), (8352, 'EURO-CURRENCY SIGN')]
+
+
+def test_find_with_start_stop(sample_index):
+    res = [(code, name(chr(code)))
+           for code in sample_index.find_codes('sign', 1, 2)]
+    assert res == [(8352, 'EURO-CURRENCY SIGN')]
+

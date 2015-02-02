@@ -26,11 +26,11 @@ def handle_queries(reader, writer):
         if query:
             if ord(query[:1]) < 32:
                 break
-            lines = list(index.find_descriptions(query))
+            lines = list(index.find_description_strs(query))
             if lines:
                 writer.writelines(line.encode() + CRLF for line in lines)
             writer.write(index.status(query, len(lines)).encode() + CRLF)
-    
+
             yield from writer.drain()
             print('Sent {} results'.format(len(lines)))
 

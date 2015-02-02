@@ -1,0 +1,12 @@
+What's New in Python 2.5 - PEP 342: New Generator Features
+http://docs.python.org/release/2.5/whatsnew/pep-342.html
+
+PEP 342 -- Coroutines via Enhanced Generators
+http://www.python.org/dev/peps/pep-0342/
+
+PEP 380 -- Syntax for Delegating to a Subgenerator
+http://www.python.org/dev/peps/pep-0380/
+
+Coroutines For the Working Python Developer
+http://sdiehl.github.io/coroutine-tutorial/
+

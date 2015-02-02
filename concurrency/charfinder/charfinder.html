@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Charserver</title>
+    <script type="text/javascript">
+    //(function() {
+      var BASE_URL = 'http://127.0.0.1:8888/chars';
+      var RESULTS_PER_REQUEST = 10;
+      var REQUEST_DELAY = 1000;  // in milliseconds
+      var httpRequest = new XMLHttpRequest();
+      httpRequest.onreadystatechange = processResponse;
+
+      function requestMaker(start) {
+        var makeRequest = function (event) {
+          var query = document.getElementById('queryField').value;
+          var limit = RESULTS_PER_REQUEST;
+          httpRequest.open('GET', BASE_URL+'?query='+query+'&limit='+limit);
+          httpRequest.send();
+          document.getElementById('message').textContent = 'Query: ' + query;
+          var table = document.getElementById('results');
+          var tr;
+          while (tr = table.lastChild) table.removeChild(tr);
+          return false; // don't submit form
+        }
+        return makeRequest;
+      }
+
+      function processResponse() {
+        if (httpRequest.readyState === 4) {
+          var query = document.getElementById('queryField').value;
+          if (httpRequest.status === 200) {
+            fillTable(httpRequest.responseText);
+          } else {
+            alert('query: ' + query + '\nstatus: '+httpRequest.status);
+          }
+        }
+      }
+
+      function getSymbols(string) {  
+        // needed for iterating over Unicode characters after U+FFFF
+        var length = string.length;
+        var index = -1;
+        var output = [];
+        var character;
+        var charCode;
+        while (++index < length) {
+          character = string.charAt(index);
+          charCode = character.charCodeAt(0);
+          if (charCode >= 0xD800 && charCode <= 0xDBFF) {
+            output.push(character + string.charAt(++index));
+          } else {
+            output.push(character);
+          }
+        }
+        return output;
+      }
+
+      // from: https://developer.mozilla.org/...
+      // en-US/docs/Web/JavaScript/Reference/Global_Objects/String/charCodeAt
+      function knownCharCodeAt(str, idx) {
+        str += '';
+        var code,
+            end = str.length;
+
+        var surrogatePairs = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g;
+        while ((surrogatePairs.exec(str)) != null) {
+          var li = surrogatePairs.lastIndex;
+          if (li - 2 < idx) {
+            idx++;
+          }
+          else {
+            break;
+          }
+        }
+        if (idx >= end || idx < 0) {
+          return NaN;
+        }
+        code = str.charCodeAt(idx);
+        var hi, low;
+        if (0xD800 <= code && code <= 0xDBFF) {
+          hi = code;
+          // Go one further, "characters" is part of a surrogate pair
+          low = str.charCodeAt(idx + 1);
+          return ((hi - 0xD800) * 0x400) + (low - 0xDC00) + 0x10000;
+        }
+        return code;
+      }
+
+      function codePointStr(uniChar) {
+        if (uniChar.length == 1) {
+          var code = uniChar.charCodeAt(0);
+        } else {  // characters after U+FFFF
+          var code = knownCharCodeAt(uniChar, 0);
+        };
+        var codeStr = code.toString(16);
+        var padding = Array(Math.max(4 - codeStr.length + 1, 0)).join(0);
+        return 'U+' + padding + codeStr.toUpperCase();
+      }
+
+      function fillTable(responseData) {
+        var results = JSON.parse(responseData);
+        console.log(results);
+        var table = document.getElementById('results');
+        var tr;
+        var characters = getSymbols(results.chars);
+        for (var i=results.start; i < results.stop; i++) {
+          ch = characters[i];
+          if (ch == '\n') continue;
+          if (ch == '\x00') break;
+          var hexCode = codePointStr(ch);
+          tr = document.createElement('tr');
+          tr.appendChild(document.createElement('td'));
+          tr.appendChild(document.createElement('th'));
+          tr.cells[0].appendChild(document.createTextNode(hexCode));
+          tr.cells[1].appendChild(document.createTextNode(ch));
+          tr.id = hexCode;
+          table.appendChild(tr);
+          if (results.stop < results.total) {
+            setTimeout(requestMaker(results.stop)(), REQUEST_DELAY);
+          }
+        }
+      }
+      window.onload = function() {
+        var requester = requestMaker(0);
+        document.getElementById('queryForm').onsubmit = requester;
+        document.getElementById('queryButton').onclick = requester;
+      }
+    //})();
+    </script>
+  </head>
+  <body>
+    <p>
+        <form id="queryForm">
+          <input id="queryField" type="search" name="query" value="">
+          <input id="queryButton" type="button" value="find">
+        Examples: {links}
+        </form>
+    </p>
+    <p id="message">{message}</p>
+    <hr>
+  <table id="results">
+  </table>
+  </body>
+</html>

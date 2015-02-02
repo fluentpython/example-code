@@ -23,18 +23,24 @@ PAGE_TPL = '''
     </p>
     <p>{message}</p>
     <hr>
-  <pre>
+  <table>
 {result}
-  </pre>
+  </table>
   </body>
 </html>
 '''
 
-CONTENT_TYPE = 'text/html; charset=UTF-8'
-
-EXAMPLE_WORDS = ('chess cat circled Malayalam digit Roman face Ethiopic'
+EXAMPLE_WORDS = ('bismillah chess cat circled Malayalam digit Roman face Ethiopic'
                  ' black mark symbol dot operator Braille hexagram').split()
+
 LINK_TPL = '<a href="/?query={0}" title="find &quot;{0}&quot;">{0}</a>'
+
+LINKS_HTML =  ', '.join(LINK_TPL.format(word)
+                        for word in sorted(EXAMPLE_WORDS, key=str.upper))
+
+ROW_TPL = '<tr><td>{code_str}</td><th>{char}</th><td>{name}</td></tr>'
+
+CONTENT_TYPE = 'text/html; charset=UTF-8'
 
 index = None  # a UnicodeNameIndex instance
 
@@ -44,19 +50,18 @@ def handle(request):
     query = request.GET.get('query', '')
     print('Query: {!r}'.format(query))
     if query:
-        lines = list(index.find_descriptions(query))
-        res = '\n'.join(lines)
-        msg = index.status(query, len(lines))
+        descriptions = list(index.find_descriptions(query))
+        res = '\n'.join(ROW_TPL.format(**vars(descr))
+                        for descr in descriptions)
+        msg = index.status(query, len(descriptions))
     else:
-        lines = []
+        descriptions = []
         res = ''
         msg = 'Type words describing characters.'
 
-    links = ', '.join(LINK_TPL.format(word)
-                      for word in sorted(EXAMPLE_WORDS, key=str.upper))
     text = PAGE_TPL.format(query=query, result=res,
-                           message=msg, links=links)
-    print('Sending {} results'.format(len(lines)))
+                           message=msg, links=LINKS_HTML)
+    print('Sending {} results'.format(len(descriptions)))
     return web.Response(content_type=CONTENT_TYPE, text=text)
 
 
@@ -77,7 +82,7 @@ def main(address="127.0.0.1", port=8888):
     loop.run_until_complete(init(loop, address, port))
     loop.run_forever()
 
-    
+
 if __name__ == '__main__':
     index = UnicodeNameIndex()
     main(*sys.argv[1:])

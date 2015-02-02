@@ -60,6 +60,8 @@ import re
 import unicodedata
 import pickle
 import warnings
+import itertools
+from collections import namedtuple
 
 RE_WORD = re.compile('\w+')
 RE_UNICODE_NAME = re.compile('^[A-Z0-9 -]+$')
@@ -67,7 +69,8 @@ RE_CODEPOINT = re.compile('U\+([0-9A-F]{4,6})')
 
 INDEX_NAME = 'charfinder_index.pickle'
 MINIMUM_SAVE_LEN = 10000
-CJK_PREFIX = 'CJK UNIFIED IDEOGRAPH'
+CJK_UNI_PREFIX = 'CJK UNIFIED IDEOGRAPH'
+CJK_CMP_PREFIX = 'CJK COMPATIBILITY IDEOGRAPH'
 
 sample_chars = [
     '$',  # DOLLAR SIGN
@@ -83,6 +86,7 @@ def tokenize(text):
     for match in RE_WORD.finditer(text):
         yield match.group().upper()
 
+
 def query_type(text):
     text_upper = text.upper()
     if 'U+' in text_upper:
@@ -92,6 +96,7 @@ def query_type(text):
     else:
         return 'CHARACTERS'
 
+CharDescription = namedtuple('CharDescription', 'code_str char name')
 
 class UnicodeNameIndex:
 
@@ -128,12 +133,13 @@ class UnicodeNameIndex:
                 name = unicodedata.name(char)
             except ValueError:
                 continue
-            if name.startswith(CJK_PREFIX):
-                name = CJK_PREFIX
-            code = ord(char)
+            if name.startswith(CJK_UNI_PREFIX):
+                name = CJK_UNI_PREFIX
+            elif name.startswith(CJK_CMP_PREFIX):
+                name = CJK_CMP_PREFIX
 
             for word in tokenize(name):
-                index.setdefault(word, set()).add(code)
+                index.setdefault(word, set()).add(char)
 
         self.index = index
 
@@ -151,7 +157,8 @@ class UnicodeNameIndex:
         for postings, key in self.word_rank(top):
             print('{:5} {}'.format(postings, key))
 
-    def find_codes(self, query):
+    def find_chars(self, query, start=0, stop=None):
+        stop = sys.maxsize if stop is None else stop
         result_sets = []
         for word in tokenize(query):
             if word in self.index:
@@ -160,23 +167,30 @@ class UnicodeNameIndex:
                 result_sets = []
                 break
         if result_sets:
-            result = result_sets[0]
-            result.intersection_update(*result_sets[1:])
-        else:
-            result = set()
-        if len(result) > 0:
-            for code in sorted(result):
-                yield code
+            result = result_sets[0].intersection(*result_sets[1:])
+            result = sorted(result)  # must sort for consistency
+            for char in itertools.islice(result, start, stop):
+                yield char
 
-    def describe(self, code):
-        code_str = 'U+{:04X}'.format(code)
-        char = chr(code)
+    def find_codes(self, query, start=0, stop=None):
+        return (ord(char) for char
+                in self.find_chars(query, start, stop))
+
+    def describe(self, char):
+        code_str = 'U+{:04X}'.format(ord(char))
         name = unicodedata.name(char)
-        return '{:7}\t{}\t{}'.format(code_str, char, name)
+        return CharDescription(code_str, char, name)
 
-    def find_descriptions(self, query):
-        for code in self.find_codes(query):
-            yield self.describe(code)
+    def find_descriptions(self, query, start=0, stop=None):
+        for char in self.find_chars(query, start, stop):
+            yield self.describe(char)
+
+    def describe_str(self, char):
+        return '{:7}\t{}\t{}'.format(*self.describe(char))
+
+    def find_description_strs(self, query, start=0, stop=None):
+        for char in self.find_chars(query, start, stop):
+            yield self.describe_str(char)
 
     @staticmethod  # not an instance method due to concurrency
     def status(query, counter):
@@ -192,7 +206,8 @@ class UnicodeNameIndex:
 def main(*args):
     index = UnicodeNameIndex()
     query = ' '.join(args)
-    for n, line in enumerate(index.find_descriptions(query), 1):
+    n = 0
+    for n, line in enumerate(index.find_description_strs(query), 1):
         print(line)
     print('({})'.format(index.status(query, n)))
 
