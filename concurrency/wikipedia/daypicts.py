@@ -28,12 +28,14 @@ import requests
 
 SAVE_DIR = 'downloaded/'
 
-#POTD_BASE_URL = 'http://en.wikipedia.org/wiki/Template:POTD/'
-POTD_BASE_URL = 'http://127.0.0.1:8001/Template-POTD/'
+HTTP_PORT = 8002
+POTD_BASE_URL = 'http://en.wikipedia.org/wiki/Template:POTD/'
+#POTD_BASE_URL = 'http://127.0.0.1:{}/Template-POTD/'.format(HTTP_PORT)
 
 REMOTE_PICT_BASE_URL = 'http://upload.wikimedia.org/wikipedia/'
-LOCAL_PICT_BASE_URL = 'http://127.0.0.1:8001/'
-PICT_BASE_URL = LOCAL_PICT_BASE_URL
+#LOCAL_PICT_BASE_URL = 'http://127.0.0.1:{}/'.format(HTTP_PORT)
+LOCAL_PICT_BASE_URL = REMOTE_PICT_BASE_URL
+PICT_BASE_URL = REMOTE_PICT_BASE_URL
 
 POTD_IMAGE_RE = re.compile(r'src="(//upload\..*?)"')
 PODT_EARLIEST_TEMPLATE = '2007-01-01'
