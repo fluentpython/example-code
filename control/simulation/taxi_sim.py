@@ -3,14 +3,13 @@ import random
 import collections
 import queue
 
-Event = collections.namedtuple('Event', 'time actor description')
-
 FIND_CUSTOMER_INTERVAL = 4
 TRIP_DURATION = 10
 
+Event = collections.namedtuple('Event', 'time actor description')
 
 def compute_delay(interval):
-    return int(random.expovariate(1/interval))
+    return int(random.expovariate(1/interval)) + 1
 
 
 def taxi_process(sim, ident):
@@ -30,6 +29,7 @@ class Simulator:
         self.time = 0
 
     def run(self, end_time):
+        #import pdb; pdb.set_trace()
         taxis = [taxi_process(self, i) for i in range(3)]
         while self.time < end_time:
             for index, taxi in enumerate(taxis):
@@ -50,6 +50,9 @@ class Simulator:
 
 
 def main(args):
+    if 'debug' in args:  # for testing...
+        random.seed(0)  # get reproducible results
+        args.remove('debug')
     if args:
         end_time = int(args[0])
     else:
