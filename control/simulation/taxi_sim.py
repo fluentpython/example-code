@@ -32,7 +32,7 @@ class Simulator:
         self.actors = list(actors)
         self.time = 0
 
-    def schedule_events(self, end_time):
+    def schedule_events(self):
         for actor in list(self.actors):
             try:
                 future_event = next(actor)
@@ -43,7 +43,7 @@ class Simulator:
 
     def run(self, end_time):
         while self.time < end_time:
-            self.schedule_events(end_time)
+            self.schedule_events()
             if self.events.empty():
                 print('*** end of events ***')
                 break
