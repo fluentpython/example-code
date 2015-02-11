@@ -22,6 +22,8 @@ def taxi_process(ident, trips):
         trip_ends = prowling_ends + compute_delay(TRIP_DURATION)
         yield Event(trip_ends, ident, 'passenger dropped off')
 
+    yield Event(trip_ends + 1, ident, 'going home')
+
 
 class Simulator:
 
@@ -80,7 +82,7 @@ if __name__ == '__main__':
 """
 Sample run:
 
-$ python3 taxi_sim.py seed=5 110
+$ clear; python3 taxi_sim.py seed=5 110
 taxi: 0  Event(time=4, actor=0, description='passenger picked up')
 taxi: 1     Event(time=6, actor=1, description='passenger picked up')
 taxi: 2        Event(time=7, actor=2, description='passenger picked up')
@@ -91,6 +93,7 @@ taxi: 2        Event(time=33, actor=2, description='passenger dropped off')
 taxi: 0  Event(time=34, actor=0, description='passenger picked up')
 taxi: 0  Event(time=45, actor=0, description='passenger dropped off')
 taxi: 2        Event(time=45, actor=2, description='passenger picked up')
+taxi: 0  Event(time=46, actor=0, description='going home')
 taxi: 1     Event(time=47, actor=1, description='passenger dropped off')
 taxi: 2        Event(time=47, actor=2, description='passenger dropped off')
 taxi: 2        Event(time=49, actor=2, description='passenger picked up')
@@ -100,11 +103,13 @@ taxi: 2        Event(time=58, actor=2, description='passenger dropped off')
 taxi: 1     Event(time=59, actor=1, description='passenger picked up')
 taxi: 2        Event(time=59, actor=2, description='passenger picked up')
 taxi: 1     Event(time=63, actor=1, description='passenger dropped off')
+taxi: 1     Event(time=64, actor=1, description='going home')
 taxi: 2        Event(time=84, actor=2, description='passenger dropped off')
 taxi: 2        Event(time=90, actor=2, description='passenger picked up')
 taxi: 2        Event(time=92, actor=2, description='passenger dropped off')
 taxi: 2        Event(time=99, actor=2, description='passenger picked up')
 taxi: 2        Event(time=101, actor=2, description='passenger dropped off')
+taxi: 2        Event(time=102, actor=2, description='going home')
 *** end of events ***
 
 """
