@@ -10,10 +10,12 @@ Event = collections.namedtuple('Event', 'time actor action')
 
 
 def compute_delay(interval):
+    """Compute action delay using exponential distribution"""
     return int(random.expovariate(1/interval)) + 1
 
 
 def taxi_process(ident, trips):
+    """Yield to simulator issuing event at each state change"""
     trip_ends = 0
     for i in range(trips):
         prowling_ends = trip_ends + compute_delay(FIND_PASSENGER_INTERVAL)
@@ -33,6 +35,7 @@ class Simulator:
         self.time = 0
 
     def schedule_events(self):
+        """Advance each actor to next state, scheduling events"""
         for actor in list(self.actors):
             try:
                 future_event = next(actor)
@@ -42,6 +45,7 @@ class Simulator:
                 self.events.put(future_event)
 
     def run(self, end_time):
+        """Schedule and execute events until time is up"""
         while self.time < end_time:
             self.schedule_events()
             if self.events.empty():
@@ -66,6 +70,7 @@ def extract_seed(args):
 
 
 def main(args):
+    """Parse command line, build actors and run simulation"""
     extract_seed(args)
     if args:
         end_time = int(args[0])
