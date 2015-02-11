@@ -6,7 +6,7 @@ import queue
 FIND_PASSENGER_INTERVAL = 4
 TRIP_DURATION = 10
 
-Event = collections.namedtuple('Event', 'time actor description')
+Event = collections.namedtuple('Event', 'time actor action')
 
 
 def compute_delay(interval):
@@ -33,7 +33,7 @@ class Simulator:
         self.time = 0
 
     def schedule_events(self, end_time):
-        for index, actor in enumerate(list(self.actors)):
+        for actor in list(self.actors):
             try:
                 future_event = next(actor)
             except StopIteration:
@@ -83,33 +83,33 @@ if __name__ == '__main__':
 Sample run:
 
 $ clear; python3 taxi_sim.py seed=5 110
-taxi: 0  Event(time=4, actor=0, description='passenger picked up')
-taxi: 1     Event(time=6, actor=1, description='passenger picked up')
-taxi: 2        Event(time=7, actor=2, description='passenger picked up')
-taxi: 1     Event(time=20, actor=1, description='passenger dropped off')
-taxi: 1     Event(time=23, actor=1, description='passenger picked up')
-taxi: 0  Event(time=33, actor=0, description='passenger dropped off')
-taxi: 2        Event(time=33, actor=2, description='passenger dropped off')
-taxi: 0  Event(time=34, actor=0, description='passenger picked up')
-taxi: 0  Event(time=45, actor=0, description='passenger dropped off')
-taxi: 2        Event(time=45, actor=2, description='passenger picked up')
-taxi: 0  Event(time=46, actor=0, description='going home')
-taxi: 1     Event(time=47, actor=1, description='passenger dropped off')
-taxi: 2        Event(time=47, actor=2, description='passenger dropped off')
-taxi: 2        Event(time=49, actor=2, description='passenger picked up')
-taxi: 1     Event(time=50, actor=1, description='passenger picked up')
-taxi: 1     Event(time=58, actor=1, description='passenger dropped off')
-taxi: 2        Event(time=58, actor=2, description='passenger dropped off')
-taxi: 1     Event(time=59, actor=1, description='passenger picked up')
-taxi: 2        Event(time=59, actor=2, description='passenger picked up')
-taxi: 1     Event(time=63, actor=1, description='passenger dropped off')
-taxi: 1     Event(time=64, actor=1, description='going home')
-taxi: 2        Event(time=84, actor=2, description='passenger dropped off')
-taxi: 2        Event(time=90, actor=2, description='passenger picked up')
-taxi: 2        Event(time=92, actor=2, description='passenger dropped off')
-taxi: 2        Event(time=99, actor=2, description='passenger picked up')
-taxi: 2        Event(time=101, actor=2, description='passenger dropped off')
-taxi: 2        Event(time=102, actor=2, description='going home')
+taxi: 0  Event(time=4, actor=0, action='passenger picked up')
+taxi: 1     Event(time=6, actor=1, action='passenger picked up')
+taxi: 2        Event(time=7, actor=2, action='passenger picked up')
+taxi: 1     Event(time=20, actor=1, action='passenger dropped off')
+taxi: 1     Event(time=23, actor=1, action='passenger picked up')
+taxi: 0  Event(time=33, actor=0, action='passenger dropped off')
+taxi: 2        Event(time=33, actor=2, action='passenger dropped off')
+taxi: 0  Event(time=34, actor=0, action='passenger picked up')
+taxi: 0  Event(time=45, actor=0, action='passenger dropped off')
+taxi: 2        Event(time=45, actor=2, action='passenger picked up')
+taxi: 0  Event(time=46, actor=0, action='going home')
+taxi: 1     Event(time=47, actor=1, action='passenger dropped off')
+taxi: 2        Event(time=47, actor=2, action='passenger dropped off')
+taxi: 2        Event(time=49, actor=2, action='passenger picked up')
+taxi: 1     Event(time=50, actor=1, action='passenger picked up')
+taxi: 1     Event(time=58, actor=1, action='passenger dropped off')
+taxi: 2        Event(time=58, actor=2, action='passenger dropped off')
+taxi: 1     Event(time=59, actor=1, action='passenger picked up')
+taxi: 2        Event(time=59, actor=2, action='passenger picked up')
+taxi: 1     Event(time=63, actor=1, action='passenger dropped off')
+taxi: 1     Event(time=64, actor=1, action='going home')
+taxi: 2        Event(time=84, actor=2, action='passenger dropped off')
+taxi: 2        Event(time=90, actor=2, action='passenger picked up')
+taxi: 2        Event(time=92, actor=2, action='passenger dropped off')
+taxi: 2        Event(time=99, actor=2, action='passenger picked up')
+taxi: 2        Event(time=101, actor=2, action='passenger dropped off')
+taxi: 2        Event(time=102, actor=2, action='going home')
 *** end of events ***
 
 """
