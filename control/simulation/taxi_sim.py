@@ -91,8 +91,8 @@ class Simulator:
             except StopIteration:
                 del self.actors[current_event.actor_id]  # <12>
             else:
-                self.events.put(next_event)  # <14>
-        else:  # <15>
+                self.events.put(next_event)  # <13>
+        else:  # <14>
             msg = '*** end of simulation time: {} events pending ***'
             print(msg.format(self.events.qsize()))
 # END TAXI_SIMULATOR
