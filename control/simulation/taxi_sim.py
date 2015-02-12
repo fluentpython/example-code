@@ -2,7 +2,7 @@
 """
 Taxi simulator
 
-Sample run with two cars, random seed = 4::
+Sample run with two cars, random seed = 4. This is a valid doctest.
 
     >>> main(num_taxis=2, seed=10)
     taxi: 0  Event(time=0, proc=0, action='leave garage')
@@ -22,6 +22,8 @@ Sample run with two cars, random seed = 4::
     taxi: 1     Event(time=75, proc=1, action='drop off passenger')
     taxi: 1     Event(time=76, proc=1, action='going home')
     *** end of events ***
+
+See explanation and longer sample run at the end of this module.
 
 """
 
@@ -43,18 +45,20 @@ def compute_delay(interval):
     """Compute action delay using exponential distribution"""
     return int(random.expovariate(1/interval)) + 1
 
-
-def taxi_process(ident, trips, start_time=0):
+# BEGIN TAXI_PROCESS
+def taxi_process(ident, trips, start_time=0):  # <1>
     """Yield to simulator issuing event at each state change"""
-    time = yield Event(start_time, ident, 'leave garage')
-    for i in range(trips):
-        prowling_ends = time + compute_delay(SEARCH_INTERVAL)
-        time = yield Event(prowling_ends, ident, 'pick up passenger')
+    time = yield Event(start_time, ident, 'leave garage')  # <2>
+    for i in range(trips):  # <3>
+        prowling_ends = time + compute_delay(SEARCH_INTERVAL)  # <4>
+        time = yield Event(prowling_ends, ident, 'pick up passenger')  # <5>
 
-        trip_ends = time + compute_delay(TRIP_DURATION)
-        time = yield Event(trip_ends, ident, 'drop off passenger')
+        trip_ends = time + compute_delay(TRIP_DURATION)  # <6>
+        time = yield Event(trip_ends, ident, 'drop off passenger')  # <7>
 
-    yield Event(trip_ends + 1, ident, 'going home')
+    yield Event(time + 1, ident, 'going home')  # <8>
+    # <9>
+# END TAXI_PROCESS
 
 # BEGIN TAXI_SIMULATOR
 class Simulator:
@@ -129,10 +133,93 @@ if __name__ == '__main__':
 
 
 """
-Sample run:
+Notes for the ``taxi_process`` coroutine::
+
+<1> `taxi_process` will be called once per taxi, creating a generator
+    object to represent its operations. `ident` is the number of the taxi
+    (eg. 0, 1, 2 in the sample run); `trips` is the number of trips this
+    taxi will make before going home; `start_time` is when the taxi
+    leaves the garage.
+
+<2> The first `Event` yielded is `'leave garage'`. This suspends the
+    coroutine, and lets the simulation main loop proceed to the next
+    scheduled event. When it's time to reactivate this process, the main
+    loop will `send` the current simulation time, which is assigned to
+    `time`.
+
+<3> This block will be repeated once for each trip.
+
+<4> The ending time of the search for a passenger is computed.
+
+<5> An `Event` signaling passenger pick up is yielded. The coroutine
+    pauses here. When the time comes to reactivate this coroutine,
+    the main loop will again `send` the current time.
+
+<6> The ending time of the trip is computed, taking into account the
+    current `time`.
+
+<7> An `Event` signaling passenger drop off is yielded. Coroutine
+    suspended again, waiting for the main loop to send the time of when
+    it's time to continue.
+
+<8> The `for` loop ends after the given number of trips, and a final
+    `'going home'` event is yielded, to happen 1 minute after the current
+    time. The coroutine will suspend for the last time. When reactivated,
+    it will be sent the time from the simulation main loop, but here I
+    don't assign it to any variable because it will not be useful.
+
+<9> When the coroutine falls off the end, the coroutine object raises
+    `StopIteration`.
+
+
+Notes for the ``Simulator.run`` method::
+
+<1> The simulation `end_time` is the only required argument for `run`.
+
+<2> Use `sorted` to retrieve the `self.procs` items ordered by the
+    integer key; we don't care about the key, so assign it to `_`.
+
+<3> `next(proc)` primes each coroutine by advancing it to the first
+    yield, so it's ready to be sent data. An `Event` is yielded.
+
+<4> Add each event to the `self.events` `PriorityQueue`. The first
+    event for each taxi is `'leave garage'`, as seen in the sample run
+    (ex_taxi_process>>).
+
+<5> Main loop of the simulation: run until the current `time` equals
+    or exceeds the `end_time`.
+
+<6> The main loop may also exit if there are no pending events in the
+    queue.
+
+<7> Get `Event` with the smallest `time` in the queue; this is the
+    `current_event`.
+
+<8> Display the `Event`, identifying the taxi and adding indentation
+    according to the taxi id.
+
+<9> Update the simulation time with the time of the `current_event`.
+
+<10> Retrieve the coroutine for this taxi from the `self.procs`
+     dictionary.
+
+<11> Send the `time` to the coroutine. The coroutine will yield the
+     `next_event` or raise `StopIteration` it's finished.
+
+<12> If `StopIteration` was raised, delete the coroutine from the
+     `self.procs` dictionary.
+
+<13> Otherwise, put the `next_event` in the queue.
+
+<14> If the loop exits because the simulation time passed, display the
+     number of events pending (which may be zero by coincidence,
+     sometimes).
+
+
+Sample run from the command line::
 
 # BEGIN TAXI_SAMPLE_RUN
-$ $ clear; python3 taxi_sim.py -t 3 -s 19
+$ clear; python3 taxi_sim.py -t 3 -s 19
 taxi: 0  Event(time=0, proc=0, action='leave garage')
 taxi: 0  Event(time=5, proc=0, action='pick up passenger')
 taxi: 1     Event(time=10, proc=1, action='leave garage')
