@@ -5,22 +5,22 @@ Taxi simulator
 Sample run with two cars, random seed = 4::
 
     >>> main(num_taxis=2, seed=10)
-    taxi: 0  Event(time=0, actor_id=0, action='leave garage')
-    taxi: 0  Event(time=4, actor_id=0, action='pick up passenger')
-    taxi: 0  Event(time=10, actor_id=0, action='drop off passenger')
-    taxi: 1     Event(time=10, actor_id=1, action='leave garage')
-    taxi: 1     Event(time=11, actor_id=1, action='pick up passenger')
-    taxi: 0  Event(time=14, actor_id=0, action='pick up passenger')
-    taxi: 1     Event(time=28, actor_id=1, action='drop off passenger')
-    taxi: 0  Event(time=32, actor_id=0, action='drop off passenger')
-    taxi: 0  Event(time=33, actor_id=0, action='going home')
-    taxi: 1     Event(time=33, actor_id=1, action='pick up passenger')
-    taxi: 1     Event(time=35, actor_id=1, action='drop off passenger')
-    taxi: 1     Event(time=38, actor_id=1, action='pick up passenger')
-    taxi: 1     Event(time=42, actor_id=1, action='drop off passenger')
-    taxi: 1     Event(time=44, actor_id=1, action='pick up passenger')
-    taxi: 1     Event(time=75, actor_id=1, action='drop off passenger')
-    taxi: 1     Event(time=76, actor_id=1, action='going home')
+    taxi: 0  Event(time=0, proc=0, action='leave garage')
+    taxi: 0  Event(time=4, proc=0, action='pick up passenger')
+    taxi: 0  Event(time=10, proc=0, action='drop off passenger')
+    taxi: 1     Event(time=10, proc=1, action='leave garage')
+    taxi: 1     Event(time=11, proc=1, action='pick up passenger')
+    taxi: 0  Event(time=14, proc=0, action='pick up passenger')
+    taxi: 1     Event(time=28, proc=1, action='drop off passenger')
+    taxi: 0  Event(time=32, proc=0, action='drop off passenger')
+    taxi: 0  Event(time=33, proc=0, action='going home')
+    taxi: 1     Event(time=33, proc=1, action='pick up passenger')
+    taxi: 1     Event(time=35, proc=1, action='drop off passenger')
+    taxi: 1     Event(time=38, proc=1, action='pick up passenger')
+    taxi: 1     Event(time=42, proc=1, action='drop off passenger')
+    taxi: 1     Event(time=44, proc=1, action='pick up passenger')
+    taxi: 1     Event(time=75, proc=1, action='drop off passenger')
+    taxi: 1     Event(time=76, proc=1, action='going home')
     *** end of events ***
 
 """
@@ -36,7 +36,7 @@ DEFAULT_END_TIME = 80
 SEARCH_INTERVAL = 4
 TRIP_DURATION = 10
 
-Event = collections.namedtuple('Event', 'time actor_id action')
+Event = collections.namedtuple('Event', 'time proc action')
 
 
 def compute_delay(interval):
@@ -59,16 +59,16 @@ def taxi_process(ident, trips, start_time=0):
 # BEGIN TAXI_SIMULATOR
 class Simulator:
 
-    def __init__(self, actors):
+    def __init__(self, procs_map):
         self.events = queue.PriorityQueue()
-        self.actors = dict(actors)
+        self.procs = dict(procs_map)
 
 
     def run(self, end_time):  # <1>
         """Schedule and display events until time is up"""
         # schedule the first event for each cab
-        for _, actor in sorted(self.actors.items()):  # <2>
-            first_event = next(actor)  # <3>
+        for _, proc in sorted(self.procs.items()):  # <2>
+            first_event = next(proc)  # <3>
             self.events.put(first_event)  # <4>
 
         # main loop of the simulation
@@ -80,16 +80,16 @@ class Simulator:
 
             # get and display current event
             current_event = self.events.get()  # <7>
-            print('taxi:', current_event.actor_id,  # <8>
-                  current_event.actor_id * '   ', current_event)
+            print('taxi:', current_event.proc,  # <8>
+                  current_event.proc * '   ', current_event)
 
-            # schedule next action for current actor
+            # schedule next action for current proc
             time = current_event.time  # <9>
-            actor = self.actors[current_event.actor_id]  # <10>
+            proc = self.procs[current_event.proc]  # <10>
             try:
-                next_event = actor.send(time)  # <11>
+                next_event = proc.send(time)  # <11>
             except StopIteration:
-                del self.actors[current_event.actor_id]  # <12>
+                del self.procs[current_event.proc]  # <12>
             else:
                 self.events.put(next_event)  # <13>
         else:  # <14>
@@ -99,7 +99,7 @@ class Simulator:
 
 def main(end_time=DEFAULT_END_TIME, num_taxis=DEFAULT_NUMBER_OF_TAXIS,
          seed=None):
-    """Initialize random generator, build actors and run simulation"""
+    """Initialize random generator, build procs and run simulation"""
     if seed is not None:
         random.seed(seed)  # get reproducible results
 
@@ -133,36 +133,36 @@ Sample run:
 
 # BEGIN TAXI_SAMPLE_RUN
 $ $ clear; python3 taxi_sim.py -t 3 -s 19
-taxi: 0  Event(time=0, actor_id=0, action='leave garage')
-taxi: 0  Event(time=5, actor_id=0, action='pick up passenger')
-taxi: 1     Event(time=10, actor_id=1, action='leave garage')
-taxi: 1     Event(time=13, actor_id=1, action='pick up passenger')
-taxi: 2        Event(time=20, actor_id=2, action='leave garage')
-taxi: 0  Event(time=21, actor_id=0, action='drop off passenger')
-taxi: 1     Event(time=21, actor_id=1, action='drop off passenger')
-taxi: 1     Event(time=23, actor_id=1, action='pick up passenger')
-taxi: 2        Event(time=23, actor_id=2, action='pick up passenger')
-taxi: 1     Event(time=25, actor_id=1, action='drop off passenger')
-taxi: 1     Event(time=27, actor_id=1, action='pick up passenger')
-taxi: 2        Event(time=27, actor_id=2, action='drop off passenger')
-taxi: 2        Event(time=29, actor_id=2, action='pick up passenger')
-taxi: 1     Event(time=31, actor_id=1, action='drop off passenger')
-taxi: 2        Event(time=31, actor_id=2, action='drop off passenger')
-taxi: 1     Event(time=33, actor_id=1, action='pick up passenger')
-taxi: 2        Event(time=33, actor_id=2, action='pick up passenger')
-taxi: 2        Event(time=36, actor_id=2, action='drop off passenger')
-taxi: 2        Event(time=37, actor_id=2, action='pick up passenger')
-taxi: 2        Event(time=40, actor_id=2, action='drop off passenger')
-taxi: 1     Event(time=42, actor_id=1, action='drop off passenger')
-taxi: 1     Event(time=43, actor_id=1, action='going home')
-taxi: 0  Event(time=44, actor_id=0, action='pick up passenger')
-taxi: 2        Event(time=44, actor_id=2, action='pick up passenger')
-taxi: 0  Event(time=49, actor_id=0, action='drop off passenger')
-taxi: 0  Event(time=50, actor_id=0, action='going home')
-taxi: 2        Event(time=58, actor_id=2, action='drop off passenger')
-taxi: 2        Event(time=65, actor_id=2, action='pick up passenger')
-taxi: 2        Event(time=71, actor_id=2, action='drop off passenger')
-taxi: 2        Event(time=72, actor_id=2, action='going home')
+taxi: 0  Event(time=0, proc=0, action='leave garage')
+taxi: 0  Event(time=5, proc=0, action='pick up passenger')
+taxi: 1     Event(time=10, proc=1, action='leave garage')
+taxi: 1     Event(time=13, proc=1, action='pick up passenger')
+taxi: 2        Event(time=20, proc=2, action='leave garage')
+taxi: 0  Event(time=21, proc=0, action='drop off passenger')
+taxi: 1     Event(time=21, proc=1, action='drop off passenger')
+taxi: 1     Event(time=23, proc=1, action='pick up passenger')
+taxi: 2        Event(time=23, proc=2, action='pick up passenger')
+taxi: 1     Event(time=25, proc=1, action='drop off passenger')
+taxi: 1     Event(time=27, proc=1, action='pick up passenger')
+taxi: 2        Event(time=27, proc=2, action='drop off passenger')
+taxi: 2        Event(time=29, proc=2, action='pick up passenger')
+taxi: 1     Event(time=31, proc=1, action='drop off passenger')
+taxi: 2        Event(time=31, proc=2, action='drop off passenger')
+taxi: 1     Event(time=33, proc=1, action='pick up passenger')
+taxi: 2        Event(time=33, proc=2, action='pick up passenger')
+taxi: 2        Event(time=36, proc=2, action='drop off passenger')
+taxi: 2        Event(time=37, proc=2, action='pick up passenger')
+taxi: 2        Event(time=40, proc=2, action='drop off passenger')
+taxi: 1     Event(time=42, proc=1, action='drop off passenger')
+taxi: 1     Event(time=43, proc=1, action='going home')
+taxi: 0  Event(time=44, proc=0, action='pick up passenger')
+taxi: 2        Event(time=44, proc=2, action='pick up passenger')
+taxi: 0  Event(time=49, proc=0, action='drop off passenger')
+taxi: 0  Event(time=50, proc=0, action='going home')
+taxi: 2        Event(time=58, proc=2, action='drop off passenger')
+taxi: 2        Event(time=65, proc=2, action='pick up passenger')
+taxi: 2        Event(time=71, proc=2, action='drop off passenger')
+taxi: 2        Event(time=72, proc=2, action='going home')
 *** end of events ***
 # END TAXI_SAMPLE_RUN
 
