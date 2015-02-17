@@ -45,7 +45,7 @@ Result = collections.namedtuple('Result', 'sum terms average')
 
 def adder_coro(initial=0):
     total = initial
-    num_terms = 0
+    count = 0
     while True:
         try:
             term = yield total
@@ -54,8 +54,8 @@ def adder_coro(initial=0):
         if term is None:
             break
         total += term
-        num_terms += 1
-    return Result(total, num_terms, total/num_terms)
+        count += 1
+    return Result(total, count, total/count)
 
 
 def prompt():

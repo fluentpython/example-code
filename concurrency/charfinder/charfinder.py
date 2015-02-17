@@ -186,7 +186,7 @@ class UnicodeNameIndex:
         return CharDescription(code_str, char, name)
 
     def find_descriptions(self, query, start=0, stop=None):
-        for char in self.find_chars(query, start, stop):
+        for char in self.find_chars(query, start, stop).items:
             yield self.describe(char)
 
     def get_descriptions(self, chars):
@@ -197,7 +197,7 @@ class UnicodeNameIndex:
         return '{:7}\t{}\t{}'.format(*self.describe(char))
 
     def find_description_strs(self, query, start=0, stop=None):
-        for char in self.find_chars(query, start, stop):
+        for char in self.find_chars(query, start, stop).items:
             yield self.describe_str(char)
 
     @staticmethod  # not an instance method due to concurrency

@@ -41,6 +41,10 @@ This exposes the context manager operation::
 # END MIRROR_GEN_DEMO_2
 
 The context manager can handle and "swallow" exceptions.
+The following test does not pass under doctest (a
+ZeroDivisionError is reported by doctest) but passes
+if executed by hand in the Python 3 console (the exception
+is handled by the context manager):
 
 # BEGIN MIRROR_GEN_DEMO_3
 
@@ -52,6 +56,9 @@ The context manager can handle and "swallow" exceptions.
     ...
     ytpmuD ytpmuH
     Please DO NOT divide by zero!
+
+# END MIRROR_GEN_DEMO_3
+
     >>> with looking_glass():
     ...      print('Humpty Dumpty')
     ...      x = no_such_name  # <1>
@@ -61,36 +68,34 @@ The context manager can handle and "swallow" exceptions.
       ...
     NameError: name 'no_such_name' is not defined
 
-# END MIRROR_GEN_DEMO_3
+
 
 """
 
 
-# BEGIN MIRROR_GEN_EX
+# BEGIN MIRROR_GEN_EXC
 
 import contextlib
 
 
-@contextlib.contextmanager  # <1>
+@contextlib.contextmanager
 def looking_glass():
     import sys
-    original_write = sys.stdout.write  # <2>
+    original_write = sys.stdout.write
 
-    def reverse_write(text):  # <3>
+    def reverse_write(text):
         original_write(text[::-1])
 
-    sys.stdout.write = reverse_write  # <4>
-    msg = ''
+    sys.stdout.write = reverse_write
+    msg = ''  # <1>
     try:
-        yield 'JABBERWOCKY'  # <5>
-    except ZeroDivisionError:  # <6>
-        msg = 'Please DO NOT divide by zero!'  # <7>
-    except:
-        raise  # <8>
+        yield 'JABBERWOCKY'
+    except ZeroDivisionError:  # <2>
+        msg = 'Please DO NOT divide by zero!'
     finally:
-        sys.stdout.write = original_write  # <9>
+        sys.stdout.write = original_write  # <3>
         if msg:
-            print(msg)  # <10>
+            print(msg)  # <4>
 
 
-# END MIRROR_GEN_EX
+# END MIRROR_GEN_EXC
