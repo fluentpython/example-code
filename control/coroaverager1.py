@@ -19,8 +19,9 @@ from coroutil import coroutine  # <4>
 
 @coroutine  # <5>
 def averager():  # <6>
-    total = average = 0.0
+    total = 0.0
     count = 0
+    average = None
     while True:
         term = yield average
         total += term

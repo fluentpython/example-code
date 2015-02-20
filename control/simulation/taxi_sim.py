@@ -57,7 +57,7 @@ def taxi_process(ident, trips, start_time=0):  # <1>
         time = yield Event(trip_ends, ident, 'drop off passenger')  # <7>
 
     yield Event(time + 1, ident, 'going home')  # <8>
-    # <9>
+    # end of taxi process # <9>
 # END TAXI_PROCESS
 
 # BEGIN TAXI_SIMULATOR
