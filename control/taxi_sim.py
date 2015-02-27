@@ -2,25 +2,25 @@
 """
 Taxi simulator
 
-Sample run with two cars, random seed = 4. This is a valid doctest.
+Sample run with two cars, random seed 10. This is a valid doctest.
 
     >>> main(num_taxis=2, seed=10)
     taxi: 0  Event(time=0, proc=0, action='leave garage')
     taxi: 0  Event(time=4, proc=0, action='pick up passenger')
+    taxi: 1     Event(time=5, proc=1, action='leave garage')
+    taxi: 1     Event(time=9, proc=1, action='pick up passenger')
     taxi: 0  Event(time=10, proc=0, action='drop off passenger')
-    taxi: 1     Event(time=10, proc=1, action='leave garage')
-    taxi: 1     Event(time=11, proc=1, action='pick up passenger')
-    taxi: 0  Event(time=14, proc=0, action='pick up passenger')
+    taxi: 1     Event(time=12, proc=1, action='drop off passenger')
+    taxi: 0  Event(time=17, proc=0, action='pick up passenger')
+    taxi: 1     Event(time=19, proc=1, action='pick up passenger')
+    taxi: 1     Event(time=21, proc=1, action='drop off passenger')
+    taxi: 1     Event(time=24, proc=1, action='pick up passenger')
+    taxi: 0  Event(time=28, proc=0, action='drop off passenger')
     taxi: 1     Event(time=28, proc=1, action='drop off passenger')
-    taxi: 0  Event(time=32, proc=0, action='drop off passenger')
-    taxi: 0  Event(time=33, proc=0, action='going home')
-    taxi: 1     Event(time=33, proc=1, action='pick up passenger')
-    taxi: 1     Event(time=35, proc=1, action='drop off passenger')
-    taxi: 1     Event(time=38, proc=1, action='pick up passenger')
-    taxi: 1     Event(time=42, proc=1, action='drop off passenger')
-    taxi: 1     Event(time=44, proc=1, action='pick up passenger')
-    taxi: 1     Event(time=75, proc=1, action='drop off passenger')
-    taxi: 1     Event(time=76, proc=1, action='going home')
+    taxi: 0  Event(time=29, proc=0, action='going home')
+    taxi: 1     Event(time=30, proc=1, action='pick up passenger')
+    taxi: 1     Event(time=61, proc=1, action='drop off passenger')
+    taxi: 1     Event(time=62, proc=1, action='going home')
     *** end of events ***
 
 See explanation and longer sample run at the end of this module.
@@ -35,8 +35,9 @@ import argparse
 
 DEFAULT_NUMBER_OF_TAXIS = 3
 DEFAULT_END_TIME = 80
-SEARCH_INTERVAL = 4
+SEARCH_DURATION = 4
 TRIP_DURATION = 10
+DEPARTURE_INTERVAL = 5
 
 Event = collections.namedtuple('Event', 'time proc action')
 
@@ -50,7 +51,7 @@ def taxi_process(ident, trips, start_time=0):  # <1>
     """Yield to simulator issuing event at each state change"""
     time = yield Event(start_time, ident, 'leave garage')  # <2>
     for i in range(trips):  # <3>
-        prowling_ends = time + compute_delay(SEARCH_INTERVAL)  # <4>
+        prowling_ends = time + compute_delay(SEARCH_DURATION)  # <4>
         time = yield Event(prowling_ends, ident, 'pick up passenger')  # <5>
 
         trip_ends = time + compute_delay(TRIP_DURATION)  # <6>
@@ -107,7 +108,7 @@ def main(end_time=DEFAULT_END_TIME, num_taxis=DEFAULT_NUMBER_OF_TAXIS,
     if seed is not None:
         random.seed(seed)  # get reproducible results
 
-    taxis = {i: taxi_process(i, (i+1)*2, i*10)
+    taxis = {i: taxi_process(i, (i+1)*2, i*DEPARTURE_INTERVAL)
              for i in range(num_taxis)}
     sim = Simulator(taxis)
     sim.run(end_time)
@@ -216,40 +217,40 @@ Notes for the ``Simulator.run`` method::
      sometimes).
 
 
-Sample run from the command line::
+Sample run from the command line, seed=24, total elapsed time=160::
 
 # BEGIN TAXI_SAMPLE_RUN
-$ clear; python3 taxi_sim.py -t 3 -s 19
+$ python3 taxi_sim.py -s 24 -e 160
 taxi: 0  Event(time=0, proc=0, action='leave garage')
 taxi: 0  Event(time=5, proc=0, action='pick up passenger')
-taxi: 1     Event(time=10, proc=1, action='leave garage')
-taxi: 1     Event(time=13, proc=1, action='pick up passenger')
-taxi: 2        Event(time=20, proc=2, action='leave garage')
-taxi: 0  Event(time=21, proc=0, action='drop off passenger')
-taxi: 1     Event(time=21, proc=1, action='drop off passenger')
-taxi: 1     Event(time=23, proc=1, action='pick up passenger')
-taxi: 2        Event(time=23, proc=2, action='pick up passenger')
-taxi: 1     Event(time=25, proc=1, action='drop off passenger')
-taxi: 1     Event(time=27, proc=1, action='pick up passenger')
-taxi: 2        Event(time=27, proc=2, action='drop off passenger')
-taxi: 2        Event(time=29, proc=2, action='pick up passenger')
-taxi: 1     Event(time=31, proc=1, action='drop off passenger')
-taxi: 2        Event(time=31, proc=2, action='drop off passenger')
-taxi: 1     Event(time=33, proc=1, action='pick up passenger')
-taxi: 2        Event(time=33, proc=2, action='pick up passenger')
-taxi: 2        Event(time=36, proc=2, action='drop off passenger')
-taxi: 2        Event(time=37, proc=2, action='pick up passenger')
-taxi: 2        Event(time=40, proc=2, action='drop off passenger')
-taxi: 1     Event(time=42, proc=1, action='drop off passenger')
-taxi: 1     Event(time=43, proc=1, action='going home')
-taxi: 0  Event(time=44, proc=0, action='pick up passenger')
-taxi: 2        Event(time=44, proc=2, action='pick up passenger')
-taxi: 0  Event(time=49, proc=0, action='drop off passenger')
-taxi: 0  Event(time=50, proc=0, action='going home')
-taxi: 2        Event(time=58, proc=2, action='drop off passenger')
-taxi: 2        Event(time=65, proc=2, action='pick up passenger')
-taxi: 2        Event(time=71, proc=2, action='drop off passenger')
-taxi: 2        Event(time=72, proc=2, action='going home')
+taxi: 1     Event(time=5, proc=1, action='leave garage')
+taxi: 1     Event(time=6, proc=1, action='pick up passenger')
+taxi: 2        Event(time=10, proc=2, action='leave garage')
+taxi: 2        Event(time=11, proc=2, action='pick up passenger')
+taxi: 2        Event(time=23, proc=2, action='drop off passenger')
+taxi: 0  Event(time=24, proc=0, action='drop off passenger')
+taxi: 2        Event(time=24, proc=2, action='pick up passenger')
+taxi: 2        Event(time=26, proc=2, action='drop off passenger')
+taxi: 0  Event(time=30, proc=0, action='pick up passenger')
+taxi: 2        Event(time=31, proc=2, action='pick up passenger')
+taxi: 0  Event(time=43, proc=0, action='drop off passenger')
+taxi: 0  Event(time=44, proc=0, action='going home')
+taxi: 2        Event(time=46, proc=2, action='drop off passenger')
+taxi: 2        Event(time=49, proc=2, action='pick up passenger')
+taxi: 1     Event(time=70, proc=1, action='drop off passenger')
+taxi: 2        Event(time=70, proc=2, action='drop off passenger')
+taxi: 2        Event(time=71, proc=2, action='pick up passenger')
+taxi: 2        Event(time=79, proc=2, action='drop off passenger')
+taxi: 1     Event(time=88, proc=1, action='pick up passenger')
+taxi: 2        Event(time=92, proc=2, action='pick up passenger')
+taxi: 2        Event(time=98, proc=2, action='drop off passenger')
+taxi: 2        Event(time=99, proc=2, action='going home')
+taxi: 1     Event(time=102, proc=1, action='drop off passenger')
+taxi: 1     Event(time=104, proc=1, action='pick up passenger')
+taxi: 1     Event(time=135, proc=1, action='drop off passenger')
+taxi: 1     Event(time=136, proc=1, action='pick up passenger')
+taxi: 1     Event(time=151, proc=1, action='drop off passenger')
+taxi: 1     Event(time=152, proc=1, action='going home')
 *** end of events ***
 # END TAXI_SAMPLE_RUN
 
