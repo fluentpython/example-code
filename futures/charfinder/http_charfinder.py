@@ -37,9 +37,10 @@ def home(request):  # <1>
         res = ''
         msg = 'Enter words describing characters.'
 
-    text = template.format(query=query, result=res, message=msg)
+    html = template.format(query=query, result=res,  # <5>
+                           message=msg)
     print('Sending {} results'.format(len(descriptions)))
-    return web.Response(content_type=CONTENT_TYPE, text=text)
+    return web.Response(content_type=CONTENT_TYPE, text=html)
 # END HTTP_CHARFINDER_HOME
 
 
