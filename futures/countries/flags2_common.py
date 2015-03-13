@@ -11,9 +11,8 @@ from enum import Enum
 
 
 Result = namedtuple('Result', 'status data')
-Counts = namedtuple('Counts', 'ok not_found error')
 
-Status = Enum('Status', 'ok not_found error')
+HTTPStatus = Enum('Status', 'ok not_found error')
 
 POP20_CC = ('CN IN US ID BR PK NG BD RU JP '
             'MX PH VN ET EG DE IR TR CD FR').split()
@@ -22,7 +21,7 @@ DEFAULT_CONCUR_REQ = 1
 MAX_CONCUR_REQ = 1
 
 SERVERS = {
-    'REMOTE': 'http://python.pro.br/fluent/data/flags',
+    'REMOTE': 'http://flupy.org/data/flags',
     'LOCAL':  'http://localhost:8001/flags',
     'DELAY':  'http://localhost:8002/flags',
     'ERROR':  'http://localhost:8003/flags',
@@ -53,17 +52,17 @@ def initial_report(cc_list, actual_req, server_label):
     print(msg.format(actual_req, plural))
 
 
-def final_report(cc_list, counts, start_time):
+def final_report(cc_list, counter, start_time):
     elapsed = time.time() - start_time
     print('-' * 20)
     msg = '{} flag{} downloaded.'
-    plural = 's' if counts.ok != 1 else ''
-    print(msg.format(counts.ok, plural))
-    if counts.not_found:
-        print(counts.not_found, 'not found.')
-    if counts.error:
-        plural = 's' if counts.error != 1 else ''
-        print('{} error{}.'.format(counts.error, plural))
+    plural = 's' if counter[HTTPStatus.ok] != 1 else ''
+    print(msg.format(counter[HTTPStatus.ok], plural))
+    if counter[HTTPStatus.not_found]:
+        print(counter[HTTPStatus.not_found], 'not found.')
+    if counter[HTTPStatus.error]:
+        plural = 's' if counter[HTTPStatus.error] != 1 else ''
+        print('{} error{}.'.format(counter[HTTPStatus.error], plural))
     print('Elapsed time: {:.2f}s'.format(elapsed))
 
 
@@ -144,5 +143,7 @@ def main(download_many, default_concur_req, max_concur_req):
     initial_report(cc_list, actual_req, args.server)
     base_url = SERVERS[args.server]
     t0 = time.time()
-    counts = download_many(cc_list, base_url, args.verbose, actual_req)
-    final_report(cc_list, counts, t0)
+    counter = download_many(cc_list, base_url, args.verbose, actual_req)
+    assert sum(counter.values()) == len(cc_list), \
+        'some downloads are unaccounted for'
+    final_report(cc_list, counter, t0)
