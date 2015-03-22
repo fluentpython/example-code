@@ -39,8 +39,8 @@ def home(request):  # <1>
 
     html = template.format(query=query, result=res,  # <5>
                            message=msg)
-    print('Sending {} results'.format(len(descriptions)))
-    return web.Response(content_type=CONTENT_TYPE, text=html)
+    print('Sending {} results'.format(len(descriptions)))  # <6>
+    return web.Response(content_type=CONTENT_TYPE, text=html) # <7>
 # END HTTP_CHARFINDER_HOME
 
 
