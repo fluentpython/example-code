@@ -31,24 +31,24 @@ Card(rank='Q', suit='hearts')
 2 Card(rank='3', suit='spades')
 3 Card(rank='4', suit='spades')
 ...
->>> def alt_color_rank(card):
+>>> suit_values = dict(spades=3, hearts=2, diamonds=1, clubs=0)
+>>> def spades_high(card):
 ...     rank_value = FrenchDeck.ranks.index(card.rank)
-...     suits = 'diamonds clubs hearts spades'.split()
-...     return rank_value * len(suits) + suits.index(card.suit)
+...     return rank_value * len(suit_values) + suit_values[card.suit]
 
 Rank test:
 
->>> alt_color_rank(Card('2', 'diamonds'))
+>>> spades_high(Card('2', 'clubs'))
 0
->>> alt_color_rank(Card('A', 'spades'))
+>>> spades_high(Card('A', 'spades'))
 51
 
->>> for card in sorted(deck, key=alt_color_rank):  # doctest: +ELLIPSIS
+>>> for card in sorted(deck, key=spades_high):  # doctest: +ELLIPSIS
 ...      print(card)
-Card(rank='2', suit='diamonds')
 Card(rank='2', suit='clubs')
+Card(rank='2', suit='diamonds')
 Card(rank='2', suit='hearts')
 ...
-Card(rank='A', suit='clubs')
+Card(rank='A', suit='diamonds')
 Card(rank='A', suit='hearts')
 Card(rank='A', suit='spades')

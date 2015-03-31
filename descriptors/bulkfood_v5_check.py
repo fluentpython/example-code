@@ -16,7 +16,7 @@ The weight of a ``LineItem`` must be greater than 0::
     >>> raisins.weight = -20
     Traceback (most recent call last):
         ...
-    ValueError: value must be > 0
+    ValueError: value must be > 0; -20 is not valid.
 
 No change was made::
 
@@ -29,20 +29,18 @@ instance::
 
     >>> raisins = LineItem('Golden raisins', 10, 6.95)
     >>> dir(raisins)  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-    ['_NonBlank#0', '_Quantity#0', '_Quantity#1', '__class__', ...
+    ['_Check#0', '_Check#1', '_Check#2', '__class__', ...
      'description', 'price', 'subtotal', 'weight']
-    >>> getattr(raisins, '_Quantity#0')
-    10
-    >>> getattr(raisins, '_NonBlank#0')
-    'Golden raisins'
+    >>> [getattr(raisins, name) for name in dir(raisins) if name.startswith('_Check#')]
+    ['Golden raisins', 10, 6.95]
 
 If the descriptor is accessed in the class, the descriptor object is
 returned:
 
     >>> LineItem.weight  # doctest: +ELLIPSIS
-    <model_v5.Quantity object at 0x...>
+    <model_v5_check.Check object at 0x...>
     >>> LineItem.weight.storage_name
-    '_Quantity#0'
+    '_Check#1'
 
 The `NonBlank` descriptor prevents empty or blank strings to be used
 for the description:
@@ -51,23 +49,31 @@ for the description:
     >>> br_nuts.description = ' '
     Traceback (most recent call last):
         ...
-    ValueError: value cannot be empty or blank
+    ValueError: ' ' is not valid.
     >>> void = LineItem('', 1, 1)
     Traceback (most recent call last):
         ...
-    ValueError: value cannot be empty or blank
+    ValueError: '' is not valid.
+
 
 
 """
 
-# BEGIN LINEITEM_V5
-import model_v5 as model  # <1>
+import model_v5_check as model
+
+def gt_zero(x):
+    '''value must be > 0'''
+    return x if x > 0 else model.INVALID
+
+def non_blank(txt):
+    txt = txt.strip()
+    return txt if txt else model.INVALID
 
 
 class LineItem:
-    description = model.NonBlank()  # <2>
-    weight = model.Quantity()
-    price = model.Quantity()
+    description = model.Check(non_blank)
+    weight = model.Check(gt_zero)
+    price = model.Check(gt_zero)
 
     def __init__(self, description, weight, price):
         self.description = description
@@ -76,4 +82,4 @@ class LineItem:
 
     def subtotal(self):
         return self.weight * self.price
-# END LINEITEM_V5
+

@@ -1,92 +1,49 @@
-import atexit
+from evalsupport import deco_alpha
 
-from evaldecos import deco_alpha
-from evaldecos import deco_beta
-
-
-print('<<1>> start')
+print('<[1]> evaltime module start')
 
 
-func_A = lambda: print('<<2>> func_A')
+class ClassOne():
+    print('<[2]> ClassOne body')
 
+    def __init__(self):
+        print('<[3]> ClassOne.__init__')
 
-def func_B():
-    print('<<3>> func_B')
+    def __del__(self):
+        print('<[4]> ClassOne.__del__')
 
-    def func_C():
-        print('<<4>> func_C')
+    def method_x(self):
+        print('<[5]> ClassOne.method_x')
 
-    return func_C
+    class ClassTwo(object):
+        print('<[6]> ClassTwo body')
 
 
 @deco_alpha
-def func_D():
-    print('<<6>> func_D')
+class ClassThree():
+    print('<[7]> ClassThree body')
+
+    def method_y(self):
+        print('<[8]> ClassThree.method_y')
 
 
-def func_E():
-    print('<<7>> func_E')
+class ClassFour(ClassThree):
+    print('<[9]> ClassFour body')
 
-
-class ClassOne(object):
-    print('<<7>> ClassOne body')
-
-    def __init__(self):
-        print('<<8>> ClassOne.__init__')
-
-    def __del__(self):
-        print('<<9>> ClassOne.__del__')
-
-    def method1(self):
-        print('<<10>> ClassOne.method')
-        return "result from 'ClassOne.method1'"
-
-    class ClassTwo(object):
-        print('<<11>> ClassTwo body')
-
-
-@deco_beta
-class ClassThree(ClassOne):
-    print('<<12>> ClassThree body')
-
-    def method3(self):
-        print('<<13>> ClassOne.method')
-        return "result from 'ClassThree.method3'"
-
-
-if True:
-    print("<<14>> 'if True'")
-
-
-if False:
-    print("<<15>> 'if False'")
-
-
-atexit.register(func_E)
-
-print("<<16>> right before 'if ... __main__'")
+    def method_y(self):
+        print('<[10]> ClassFour.method_y')
 
 
 if __name__ == '__main__':
-    print('<<17>> start __main__ block')
-    print(func_A)
-    print(func_A())
-    print('<<18>> continue __main__ block')
-    print(func_B)
-    b_result = func_B()
-    print(b_result)
+    print('<[11]> ClassOne tests', 30 * '.')
     one = ClassOne()
-    one.method1()
-    b_result()
-    print(func_D)
-    func_D()
+    one.method_x()
+    print('<[12]> ClassThree tests', 30 * '.')
     three = ClassThree()
-    three.method3()
-
-    class ClassFour(object):
-        print('<<19>> ClasFour body')
-
-    print('<<20>> end __main__ block')
+    three.method_y()
+    print('<[13]> ClassFour tests', 30 * '.')
+    four = ClassFour()
+    four.method_y()
 
 
-print('<<21>> The End')
+print('<[14]> evaltime module end')

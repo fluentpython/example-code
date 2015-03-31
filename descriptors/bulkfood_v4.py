@@ -29,11 +29,11 @@ instance::
 
     >>> raisins = LineItem('Golden raisins', 10, 6.95)
     >>> dir(raisins)  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-    ['_Quantity:0', '_Quantity:1', '__class__', ...
+    ['_Quantity#0', '_Quantity#1', '__class__', ...
      'description', 'price', 'subtotal', 'weight']
-    >>> getattr(raisins, '_Quantity:0')
+    >>> getattr(raisins, '_Quantity#0')
     10
-    >>> getattr(raisins, '_Quantity:1')
+    >>> getattr(raisins, '_Quantity#1')
     6.95
 
 """
@@ -47,7 +47,7 @@ class Quantity:
         cls = self.__class__  # <2>
         prefix = cls.__name__
         index = cls.__counter
-        self.storage_name = '_{}:{}'.format(prefix, index)  # <3>
+        self.storage_name = '_{}#{}'.format(prefix, index)  # <3>
         cls.__counter += 1  # <4>
 
     def __get__(self, instance, owner):  # <5>

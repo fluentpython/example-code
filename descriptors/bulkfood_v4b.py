@@ -29,21 +29,20 @@ instance::
 
     >>> raisins = LineItem('Golden raisins', 10, 6.95)
     >>> dir(raisins)  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-    ['_Quantity:0', '_Quantity:1', '__class__', ...
+    ['_Quantity#0', '_Quantity#1', '__class__', ...
      'description', 'price', 'subtotal', 'weight']
-    >>> getattr(raisins, '_Quantity:0')
+    >>> getattr(raisins, '_Quantity#0')
     10
-    >>> getattr(raisins, '_Quantity:1')
+    >>> getattr(raisins, '_Quantity#1')
     6.95
 
 If the descriptor is accessed in the class, the descriptor object is
 returned:
 
-    >>> LineItem.price  # doctest: +ELLIPSIS
+    >>> LineItem.weight  # doctest: +ELLIPSIS
     <bulkfood_v4b.Quantity object at 0x...>
-    >>> br_nuts = LineItem('Brazil nuts', 10, 34.95)
-    >>> br_nuts.price
-    34.95
+    >>> LineItem.weight.storage_name
+    '_Quantity#0'
 
 """
 
@@ -56,7 +55,7 @@ class Quantity:
         cls = self.__class__
         prefix = cls.__name__
         index = cls.__counter
-        self.storage_name = '_{}:{}'.format(prefix, index)
+        self.storage_name = '_{}#{}'.format(prefix, index)
         cls.__counter += 1
 
     def __get__(self, instance, owner):

@@ -50,11 +50,17 @@ class NonBlank(Validated):
             raise ValueError('value cannot be empty or blank')
         return value
 
-# BEGIN MODEL_V6
-def entity(cls):  # <1>
-    for key, attr in cls.__dict__.items():  # <2>
-        if isinstance(attr, Validated):  # <3>
-            type_name = type(attr).__name__
-            attr.storage_name = '_{}#{}'.format(type_name, key)  # <4>
-    return cls  # <5>
-# END MODEL_V6
+# BEGIN MODEL_V7
+class EntityMeta(type):
+    """Metaclass for business entities with validated fields"""
+
+    def __init__(self, name, bases, attr_dict):
+        super().__init__(name, bases, attr_dict)  # <1>
+        for key, attr in attr_dict.items():  # <2>
+            if isinstance(attr, Validated):
+                type_name = type(attr).__name__
+                attr.storage_name = '_{}#{}'.format(type_name, key)
+
+class Entity(metaclass=EntityMeta):  # <3>
+    """Business entity with validated fields"""
+# END MODEL_V7

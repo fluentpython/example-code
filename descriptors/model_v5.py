@@ -9,7 +9,7 @@ class AutoStorage:  # <1>
         cls = self.__class__
         prefix = cls.__name__
         index = cls.__counter
-        self.storage_name = '_{}:{}'.format(prefix, index)
+        self.storage_name = '_{}#{}'.format(prefix, index)
         cls.__counter += 1
 
     def __get__(self, instance, owner):

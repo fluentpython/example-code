@@ -31,30 +31,22 @@ class Validated(abc.ABC, AutoStorage):
     def validate(self, instance, value):
         """return validated value or raise ValueError"""
 
+INVALID = object()
 
-class Quantity(Validated):
-    """a number greater than zero"""
+class Check(Validated):
+
+    def __init__(self, checker):
+        super().__init__()
+        self.checker = checker
+        if checker.__doc__ is None:
+            doc = ''
+        else:
+            doc = checker.__doc__ + '; '
+        self.message = doc + '{!r} is not valid.'
+
 
     def validate(self, instance, value):
-        if value <= 0:
-            raise ValueError('value must be > 0')
-        return value
-
-
-class NonBlank(Validated):
-    """a string with at least one non-space character"""
-
-    def validate(self, instance, value):
-        value = value.strip()
-        if len(value) == 0:
-            raise ValueError('value cannot be empty or blank')
-        return value
-
-# BEGIN MODEL_V6
-def entity(cls):  # <1>
-    for key, attr in cls.__dict__.items():  # <2>
-        if isinstance(attr, Validated):  # <3>
-            type_name = type(attr).__name__
-            attr.storage_name = '_{}#{}'.format(type_name, key)  # <4>
-    return cls  # <5>
-# END MODEL_V6
+        result = self.checker(value)
+        if result is INVALID:
+            raise ValueError(self.message.format(value))
+        return result
