@@ -8,9 +8,8 @@ def register(active=True):  # <2>
               % (active, func))
         if active:   # <4>
             registry.add(func)
-        else:  # <5>
-            if func in registry:
-                registry.remove(func)
+        else:
+            registry.discard(func)  # <5>
 
         return func  # <6>
     return decorate  # <7>

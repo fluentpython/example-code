@@ -73,7 +73,7 @@ class Promotion(ABC):  # the Strategy: an Abstract Base Class
 
     @abstractmethod
     def discount(self, order):
-        """Return discount as an positive dollar amount"""
+        """Return discount as a positive dollar amount"""
 
 
 class FidelityPromo(Promotion):  # first Concrete Strategy
