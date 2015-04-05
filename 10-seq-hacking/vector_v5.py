@@ -1,5 +1,6 @@
+# BEGIN VECTOR_V5
 """
-A multi-dimensional ``Vector`` class, take 7: operator ``*``
+A multi-dimensional ``Vector`` class, take 5
 
 A ``Vector`` is built from an iterable of numbers::
 
@@ -135,10 +136,15 @@ Tests of hashing::
     >>> v2 = Vector([3.1, 4.2])
     >>> v3 = Vector([3, 4, 5])
     >>> v6 = Vector(range(6))
-    >>> hash(v1), hash(v2), hash(v3), hash(v6)
-    (7, 384307168202284039, 2, 1)
-    >>> len(set([v1, v2, v3, v6]))
-    4
+    >>> hash(v1), hash(v3), hash(v6)
+    (7, 2, 1)
+
+
+Most hash values of non-integers vary from a 32-bit to 64-bit CPython build::
+
+    >>> import sys
+    >>> hash(v2) == (384307168202284039 if sys.maxsize > 2**32 else 357915986)
+    True
 
 
 Tests of ``format()`` with Cartesian coordinates in 2D::
@@ -181,87 +187,15 @@ Tests of ``format()`` with spherical coordinates in 2D, 3D and 4D::
     '<4.000e+00, 1.047e+00, 9.553e-01, 7.854e-01>'
     >>> format(Vector([0, 1, 0, 0]), '0.5fh')
     '<1.00000, 1.57080, 0.00000, 0.00000>'
-
-
-Basic tests of operator ``+``::
-
-    >>> v1 = Vector([3, 4, 5])
-    >>> v2 = Vector([6, 7, 8])
-    >>> v1 + v2
-    Vector([9.0, 11.0, 13.0])
-    >>> v1 + v2 == Vector([3+6, 4+7, 5+8])
-    True
-    >>> v3 = Vector([1, 2])
-    >>> v1 + v3  # short vectors are filled with 0.0 on addition
-    Vector([4.0, 6.0, 5.0])
-
-
-Tests of ``+`` with mixed types::
-
-    >>> v1 + (10, 20, 30)
-    Vector([13.0, 24.0, 35.0])
-    >>> from vector2d_v3 import Vector2d
-    >>> v2d = Vector2d(1, 2)
-    >>> v1 + v2d
-    Vector([4.0, 6.0, 5.0])
-
-
-Tests of ``+`` with mixed types, swapped operands::
-
-    >>> (10, 20, 30) + v1
-    Vector([13.0, 24.0, 35.0])
-    >>> from vector2d_v3 import Vector2d
-    >>> v2d = Vector2d(1, 2)
-    >>> v2d + v1
-    Vector([4.0, 6.0, 5.0])
-
-
-Tests of ``+`` with an unsuitable operand:
-
-    >>> v1 + 1
-    Traceback (most recent call last):
-      ...
-    TypeError: unsupported operand type(s) for +: 'Vector' and 'int'
-    >>> v1 + 'ABC'
-    Traceback (most recent call last):
-      ...
-    TypeError: unsupported operand type(s) for +: 'Vector' and 'str'
-
-
-Basic tests of operator ``*``::
-
-    >>> v1 = Vector([1, 2, 3])
-    >>> v1 * 10
-    Vector([10.0, 20.0, 30.0])
-    >>> 10 * v1
-    Vector([10.0, 20.0, 30.0])
-
-
-Tests of ``*`` with unusual but valid operands::
-
-    >>> v1 * True
-    Vector([1.0, 2.0, 3.0])
-    >>> from fractions import Fraction
-    >>> v1 * Fraction(1, 3)  # doctest:+ELLIPSIS
-    Vector([0.3333..., 0.6666..., 1.0])
-
-
-Tests of ``*`` with unsuitable operands::
-
-    >>> v1 * (1, 2)
-    Traceback (most recent call last):
-      ...
-    TypeError: can't multiply sequence by non-int of type 'Vector'
-
 """
 
 from array import array
 import reprlib
 import math
+import numbers
 import functools
 import operator
-import itertools
-import numbers
+import itertools  # <1>
 
 
 class Vector:
@@ -306,7 +240,7 @@ class Vector:
         cls = type(self)
         if isinstance(index, slice):
             return cls(self._components[index])
-        elif isinstance(index, int):
+        elif isinstance(index, numbers.Integral):
             return self._components[index]
         else:
             msg = '{.__name__} indices must be integers'
@@ -323,7 +257,7 @@ class Vector:
         msg = '{.__name__!r} object has no attribute {!r}'
         raise AttributeError(msg.format(cls, name))
 
-    def angle(self, n):
+    def angle(self, n):  # <2>
         r = math.sqrt(sum(x * x for x in self[n:]))
         a = math.atan2(r, self[n-1])
         if (n == len(self) - 1) and (self[-1] < 0):
@@ -331,42 +265,24 @@ class Vector:
         else:
             return a
 
-    def angles(self):
+    def angles(self):  # <3>
         return (self.angle(n) for n in range(1, len(self)))
 
     def __format__(self, fmt_spec=''):
         if fmt_spec.endswith('h'):  # hyperspherical coordinates
             fmt_spec = fmt_spec[:-1]
             coords = itertools.chain([abs(self)],
-                                     self.angles())
-            outer_fmt = '<{}>'
+                                     self.angles())  # <4>
+            outer_fmt = '<{}>'  # <5>
         else:
             coords = self
-            outer_fmt = '({})'
-        components = (format(c, fmt_spec) for c in coords)
-        return outer_fmt.format(', '.join(components))
+            outer_fmt = '({})'  # <6>
+        components = (format(c, fmt_spec) for c in coords)  # <7>
+        return outer_fmt.format(', '.join(components))  # <8>
 
     @classmethod
     def frombytes(cls, octets):
         typecode = chr(octets[0])
         memv = memoryview(octets[1:]).cast(typecode)
         return cls(memv)
-
-    def __add__(self, other):
-        try:
-            pairs = itertools.zip_longest(self, other, fillvalue=0.0)
-            return Vector(a + b for a, b in pairs)
-        except TypeError:
-            return NotImplemented
-
-    def __radd__(self, other):
-        return self + other
-
-    def __mul__(self, scalar):
-        if isinstance(scalar, numbers.Real):
-            return Vector(n * scalar for n in self)
-        else:
-            return NotImplemented
-
-    def __rmul__(self, scalar):
-        return self * scalar
+# END VECTOR_V5

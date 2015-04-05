@@ -1,7 +1,5 @@
 """
-A multi-dimensional ``Vector`` class, take 9: operator ``@``
-
-WARNING: This example requires Python 3.5 or later.
+A multi-dimensional ``Vector`` class, take 8: operator ``==``
 
 A ``Vector`` is built from an iterable of numbers::
 
@@ -137,10 +135,15 @@ Tests of hashing::
     >>> v2 = Vector([3.1, 4.2])
     >>> v3 = Vector([3, 4, 5])
     >>> v6 = Vector(range(6))
-    >>> hash(v1), hash(v2), hash(v3), hash(v6)
-    (7, 384307168202284039, 2, 1)
-    >>> len(set([v1, v2, v3, v6]))
-    4
+    >>> hash(v1), hash(v3), hash(v6)
+    (7, 2, 1)
+
+
+Most hash values of non-integers vary from a 32-bit to 64-bit Python build::
+
+    >>> import sys
+    >>> hash(v2) == (384307168202284039 if sys.maxsize > 2**32 else 357915986)
+    True
 
 
 Tests of ``format()`` with Cartesian coordinates in 2D::
@@ -183,6 +186,17 @@ Tests of ``format()`` with spherical coordinates in 2D, 3D and 4D::
     '<4.000e+00, 1.047e+00, 9.553e-01, 7.854e-01>'
     >>> format(Vector([0, 1, 0, 0]), '0.5fh')
     '<1.00000, 1.57080, 0.00000, 0.00000>'
+
+
+Unary operator tests::
+
+    >>> v1 = Vector([3, 4])
+    >>> abs(v1)
+    5.0
+    >>> -v1
+    Vector([-3.0, -4.0])
+    >>> +v1
+    Vector([3.0, 4.0])
 
 
 Basic tests of operator ``+``::
@@ -280,30 +294,15 @@ Tests of operator `!=`::
     >>> va != (1, 2, 3)
     True
 
-
-Tests for operator `@` (Python >= 3.5), computing the dot product::
-
-    >>> va = Vector([1, 2, 3])
-    >>> vz = Vector([5, 6, 7])
-    >>> va @ vz == 38.0  # 1*5 + 2*6 + 3*7
-    True
-    >>> [10, 20, 30] @ vz
-    380.0
-    >>> va @ 3
-    Traceback (most recent call last):
-      ...
-    TypeError: unsupported operand type(s) for @: 'Vector' and 'int'
-
-
 """
 
 from array import array
 import reprlib
 import math
+import numbers
 import functools
 import operator
 import itertools
-import numbers
 
 
 class Vector:
@@ -327,12 +326,14 @@ class Vector:
         return (bytes([ord(self.typecode)]) +
                 bytes(self._components))
 
+# BEGIN VECTOR_V8_EQ
     def __eq__(self, other):
-        if isinstance(other, Vector):
+        if isinstance(other, Vector):  # <1>
             return (len(self) == len(other) and
                     all(a == b for a, b in zip(self, other)))
         else:
-            return NotImplemented
+            return NotImplemented  # <2>
+# END VECTOR_V8_EQ
 
     def __hash__(self):
         hashes = (hash(x) for x in self)
@@ -340,6 +341,12 @@ class Vector:
 
     def __abs__(self):
         return math.sqrt(sum(x * x for x in self))
+
+    def __neg__(self):
+        return Vector(-x for x in self)
+
+    def __pos__(self):
+        return Vector(self)
 
     def __bool__(self):
         return bool(abs(self))
@@ -351,7 +358,7 @@ class Vector:
         cls = type(self)
         if isinstance(index, slice):
             return cls(self._components[index])
-        elif isinstance(index, int):
+        elif isinstance(index, numbers.Integral):
             return self._components[index]
         else:
             msg = '{.__name__} indices must be integers'
@@ -415,12 +422,3 @@ class Vector:
 
     def __rmul__(self, scalar):
         return self * scalar
-
-    def __matmul__(self, other):
-        try:
-            return sum(a * b for a, b in zip(self, other))
-        except TypeError:
-            return NotImplemented
-
-    def __rmatmul__(self, other):
-        return self @ other  # this only works in Python 3.5

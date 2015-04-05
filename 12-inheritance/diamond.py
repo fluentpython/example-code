@@ -14,6 +14,14 @@ class C(A):
 
 
 class D(B, C):
-    def pingpong(self):
+
+    def ping(self):
         super().ping()
+        print('post-ping:', self)
+
+    def pingpong(self):
+        self.ping()
+        super().ping()
+        self.pong()
         super().pong()
+        C.pong(self)

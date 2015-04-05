@@ -1,5 +1,5 @@
 """
-A multi-dimensional ``Vector`` class, take 6: operator ``+``
+A multi-dimensional ``Vector`` class, take 7: operator ``*``
 
 A ``Vector`` is built from an iterable of numbers::
 
@@ -135,10 +135,15 @@ Tests of hashing::
     >>> v2 = Vector([3.1, 4.2])
     >>> v3 = Vector([3, 4, 5])
     >>> v6 = Vector(range(6))
-    >>> hash(v1), hash(v2), hash(v3), hash(v6)
-    (7, 384307168202284039, 2, 1)
-    >>> len(set([v1, v2, v3, v6]))
-    4
+    >>> hash(v1), hash(v3), hash(v6)
+    (7, 2, 1)
+
+
+Most hash values of non-integers vary from a 32-bit to 64-bit Python build::
+
+    >>> import sys
+    >>> hash(v2) == (384307168202284039 if sys.maxsize > 2**32 else 357915986)
+    True
 
 
 Tests of ``format()`` with Cartesian coordinates in 2D::
@@ -181,6 +186,17 @@ Tests of ``format()`` with spherical coordinates in 2D, 3D and 4D::
     '<4.000e+00, 1.047e+00, 9.553e-01, 7.854e-01>'
     >>> format(Vector([0, 1, 0, 0]), '0.5fh')
     '<1.00000, 1.57080, 0.00000, 0.00000>'
+
+
+Unary operator tests::
+
+    >>> v1 = Vector([3, 4])
+    >>> abs(v1)
+    5.0
+    >>> -v1
+    Vector([-3.0, -4.0])
+    >>> +v1
+    Vector([3.0, 4.0])
 
 
 Basic tests of operator ``+``::
@@ -226,11 +242,39 @@ Tests of ``+`` with an unsuitable operand:
     Traceback (most recent call last):
       ...
     TypeError: unsupported operand type(s) for +: 'Vector' and 'str'
+
+
+Basic tests of operator ``*``::
+
+    >>> v1 = Vector([1, 2, 3])
+    >>> v1 * 10
+    Vector([10.0, 20.0, 30.0])
+    >>> 10 * v1
+    Vector([10.0, 20.0, 30.0])
+
+
+Tests of ``*`` with unusual but valid operands::
+
+    >>> v1 * True
+    Vector([1.0, 2.0, 3.0])
+    >>> from fractions import Fraction
+    >>> v1 * Fraction(1, 3)  # doctest:+ELLIPSIS
+    Vector([0.3333..., 0.6666..., 1.0])
+
+
+Tests of ``*`` with unsuitable operands::
+
+    >>> v1 * (1, 2)
+    Traceback (most recent call last):
+      ...
+    TypeError: can't multiply sequence by non-int of type 'Vector'
+
 """
 
 from array import array
 import reprlib
 import math
+import numbers
 import functools
 import operator
 import itertools
@@ -268,6 +312,12 @@ class Vector:
     def __abs__(self):
         return math.sqrt(sum(x * x for x in self))
 
+    def __neg__(self):
+        return Vector(-x for x in self)
+
+    def __pos__(self):
+        return Vector(self)
+
     def __bool__(self):
         return bool(abs(self))
 
@@ -278,7 +328,7 @@ class Vector:
         cls = type(self)
         if isinstance(index, slice):
             return cls(self._components[index])
-        elif isinstance(index, int):
+        elif isinstance(index, numbers.Integral):
             return self._components[index]
         else:
             msg = '{.__name__} indices must be integers'
@@ -324,7 +374,6 @@ class Vector:
         memv = memoryview(octets[1:]).cast(typecode)
         return cls(memv)
 
-# BEGIN VECTOR_V6
     def __add__(self, other):
         try:
             pairs = itertools.zip_longest(self, other, fillvalue=0.0)
@@ -334,4 +383,12 @@ class Vector:
 
     def __radd__(self, other):
         return self + other
-# END VECTOR_V6
+
+    def __mul__(self, scalar):
+        if isinstance(scalar, numbers.Real):
+            return Vector(n * scalar for n in self)
+        else:
+            return NotImplemented
+
+    def __rmul__(self, scalar):
+        return self * scalar

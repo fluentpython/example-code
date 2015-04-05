@@ -112,6 +112,7 @@ Test of slicing::
 from array import array
 import reprlib
 import math
+import numbers
 
 
 class Vector:
@@ -150,13 +151,13 @@ class Vector:
 
     def __getitem__(self, index):
         cls = type(self)  # <1>
-        if isinstance(index, slice):
-            return cls(self._components[index])  # <2>
-        elif isinstance(index, int):
-            return self._components[index]  # <3>
+        if isinstance(index, slice):  # <2>
+            return cls(self._components[index])  # <3>
+        elif isinstance(index, numbers.Integral):  # <4>
+            return self._components[index]  # <5>
         else:
             msg = '{cls.__name__} indices must be integers'
-            raise TypeError(msg.format(cls=cls))  # <4>
+            raise TypeError(msg.format(cls=cls))  # <6>
 # END VECTOR_V2
 
     @classmethod

@@ -8,7 +8,7 @@ class TomboList(list):  # <2>
     def pick(self):
         if self:  # <3>
             position = randrange(len(self))
-            return super().pop(position)  # <4>
+            return self.pop(position)  # <4>
         else:
             raise LookupError('pop from empty TomboList')
 

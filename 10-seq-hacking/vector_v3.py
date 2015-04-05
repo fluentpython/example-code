@@ -1,5 +1,5 @@
 """
-A multi-dimensional ``Vector`` class, take 4
+A multi-dimensional ``Vector`` class, take 3
 
 A ``Vector`` is built from an iterable of numbers::
 
@@ -112,6 +112,7 @@ Tests of dynamic attribute access::
     >>> v7.y, v7.z, v7.t
     (1.0, 2.0, 3.0)
 
+
 Dynamic attribute lookup failures::
 
     >>> v7.k
@@ -129,25 +130,32 @@ Dynamic attribute lookup failures::
     AttributeError: 'Vector' object has no attribute 'spam'
 
 
-Tests of hashing::
+Tests of preventing attributes from 'a' to 'z'::
 
-    >>> v1 = Vector([3, 4])
-    >>> v2 = Vector([3.1, 4.2])
-    >>> v3 = Vector([3, 4, 5])
-    >>> v6 = Vector(range(6))
-    >>> hash(v1), hash(v2), hash(v3), hash(v6)
-    (7, 384307168202284039, 2, 1)
-    >>> len(set([v1, v2, v3, v6]))
-    4
+    >>> v1.x = 7
+    Traceback (most recent call last):
+      ...
+    AttributeError: readonly attribute 'x'
+    >>> v1.w = 7
+    Traceback (most recent call last):
+      ...
+    AttributeError: can't set attributes 'a' to 'z' in 'Vector'
 
+Other attributes can be set::
+
+    >>> v1.X = 'albatross'
+    >>> v1.X
+    'albatross'
+    >>> v1.ni = 'Ni!'
+    >>> v1.ni
+    'Ni!'
 
 """
 
 from array import array
 import reprlib
 import math
-import functools
-import operator
+import numbers
 
 
 class Vector:
@@ -172,12 +180,7 @@ class Vector:
                 bytes(self._components))
 
     def __eq__(self, other):
-        return (len(self) == len(other) and
-                all(a == b for a, b in zip(self, other)))
-
-    def __hash__(self):
-        hashes = (hash(x) for x in self)
-        return functools.reduce(operator.xor, hashes, 0)
+        return tuple(self) == tuple(other)
 
     def __abs__(self):
         return math.sqrt(sum(x * x for x in self))
@@ -192,22 +195,41 @@ class Vector:
         cls = type(self)
         if isinstance(index, slice):
             return cls(self._components[index])
-        elif isinstance(index, int):
+        elif isinstance(index, numbers.Integral):
             return self._components[index]
         else:
             msg = '{.__name__} indices must be integers'
             raise TypeError(msg.format(cls))
 
+# BEGIN VECTOR_V3_GETATTR
     shortcut_names = 'xyzt'
 
     def __getattr__(self, name):
-        cls = type(self)
-        if len(name) == 1:
-            pos = cls.shortcut_names.find(name)
-            if 0 <= pos < len(self._components):
+        cls = type(self)  # <1>
+        if len(name) == 1:  # <2>
+            pos = cls.shortcut_names.find(name)  # <3>
+            if 0 <= pos < len(self._components):  # <4>
                 return self._components[pos]
-        msg = '{.__name__!r} object has no attribute {!r}'
+        msg = '{.__name__!r} object has no attribute {!r}'  # <5>
         raise AttributeError(msg.format(cls, name))
+# END VECTOR_V3_GETATTR
+
+# BEGIN VECTOR_V3_SETATTR
+    def __setattr__(self, name, value):
+        cls = type(self)
+        if len(name) == 1:  # <1>
+            if name in cls.shortcut_names:  # <2>
+                error = 'readonly attribute {attr_name!r}'
+            elif name.islower():  # <3>
+                error = "can't set attributes 'a' to 'z' in {cls_name!r}"
+            else:
+                error = ''  # <4>
+            if error:  # <5>
+                msg = error.format(cls_name=cls.__name__, attr_name=name)
+                raise AttributeError(msg)
+        super().__setattr__(name, value)  # <6>
+
+# END VECTOR_V3_SETATTR
 
     @classmethod
     def frombytes(cls, octets):
