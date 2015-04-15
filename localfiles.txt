@@ -6,5 +6,5 @@ __pycache__
 .gitignore
 .DS_Store
 *.arr
-README.rst
+/README.rst
 LICENSE
