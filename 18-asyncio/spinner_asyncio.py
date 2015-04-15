@@ -10,8 +10,8 @@ import itertools
 import sys
 
 
-@asyncio.coroutine
-def spin(msg):  # <1>
+@asyncio.coroutine  # <1>
+def spin(msg):  # <2>
     write, flush = sys.stdout.write, sys.stdout.flush
     for char in itertools.cycle('|/-\\'):
         status = char + ' ' + msg
@@ -19,31 +19,31 @@ def spin(msg):  # <1>
         flush()
         write('\x08' * len(status))
         try:
-            yield from asyncio.sleep(.1)  # <2>
-        except asyncio.CancelledError:  # <3>
+            yield from asyncio.sleep(.1)  # <3>
+        except asyncio.CancelledError:  # <4>
             break
     write(' ' * len(status) + '\x08' * len(status))
 
 
 @asyncio.coroutine
-def slow_computation():  # <4>
-    # fake computation waiting a long time for I/O
-    yield from asyncio.sleep(3)  # <5>
+def slow_function():  # <5>
+    # pretend waiting a long time for I/O
+    yield from asyncio.sleep(3)  # <6>
     return 42
 
 
 @asyncio.coroutine
-def supervisor():  # <6>
-    spinner = asyncio.async(spin('thinking!'))  # <7>
-    print('spinner object:', spinner)  # <8>
-    result = yield from slow_computation()  # <9>
-    spinner.cancel()  # <10>
+def supervisor():  # <7>
+    spinner = asyncio.async(spin('thinking!'))  # <8>
+    print('spinner object:', spinner)  # <9>
+    result = yield from slow_function()  # <10>
+    spinner.cancel()  # <11>
     return result
 
 
 def main():
-    loop = asyncio.get_event_loop()  # <11>
-    result = loop.run_until_complete(supervisor())  # <12>
+    loop = asyncio.get_event_loop()  # <12>
+    result = loop.run_until_complete(supervisor())  # <13>
     loop.close()
     print('Answer:', result)
 

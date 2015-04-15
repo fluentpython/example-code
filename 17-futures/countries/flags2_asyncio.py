@@ -92,25 +92,23 @@ def downloader_coro(cc_list, base_url, verbose, concur_req):  # <1>
                 error_msg = exc.__cause__.args[0]  # <10>
             except IndexError:
                 error_msg = exc.__cause__.__class__.__name__  # <11>
+            if verbose and error_msg:
+                msg = '*** Error for {}: {}'
+                print(msg.format(country_code, error_msg))
+            status = HTTPStatus.error
         else:
-            error_msg = ''
             status = res.status
 
-        if error_msg:  # <12>
-            status = HTTPStatus.error
-        counter[status] += 1
-        if verbose and error_msg:
-            msg = '*** Error for {}: {}'
-            print(msg.format(country_code, error_msg))
+        counter[status] += 1  # <12>
 
-    return counter
+    return counter  # <13>
 
 
 def download_many(cc_list, base_url, verbose, concur_req):
     loop = asyncio.get_event_loop()
     coro = downloader_coro(cc_list, base_url, verbose, concur_req)
-    counts = loop.run_until_complete(coro)  # <13>
-    loop.close()  # <14>
+    counts = loop.run_until_complete(coro)  # <14>
+    loop.close()  # <15>
 
     return counts
 

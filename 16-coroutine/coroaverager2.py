@@ -6,8 +6,8 @@ Testing ``averager`` by itself::
 # BEGIN RETURNING_AVERAGER_DEMO1
 
     >>> coro_avg = averager()
-    >>> next(coro_avg)  # <1>
-    >>> coro_avg.send(10)
+    >>> next(coro_avg)
+    >>> coro_avg.send(10)  # <1>
     >>> coro_avg.send(30)
     >>> coro_avg.send(6.5)
     >>> coro_avg.send(None)  # <2>

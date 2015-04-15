@@ -38,10 +38,10 @@ def download_many(cc_list, base_url, verbose, concur_req):
             future = executor.submit(download_one,
                             cc, base_url, verbose)  # <9>
             to_do_map[future] = cc  # <10>
-        to_do_iter = futures.as_completed(to_do_map)  # <11>
+        done_iter = futures.as_completed(to_do_map)  # <11>
         if not verbose:
-            to_do_iter = tqdm.tqdm(to_do_iter, total=len(cc_list))  # <12>
-        for future in to_do_iter:  # <13>
+            done_iter = tqdm.tqdm(done_iter, total=len(cc_list))  # <12>
+        for future in done_iter:  # <13>
             try:
                 res = future.result()  # <14>
             except requests.exceptions.HTTPError as exc:  # <15>

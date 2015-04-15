@@ -75,7 +75,7 @@ def main(data):  # <8>
         next(group)  # <10>
         for value in values:
             group.send(value)  # <11>
-        group.send(None)  # <12>
+        group.send(None)  # important! <12>
 
     # print(results)  # uncomment to debug
     report(results)

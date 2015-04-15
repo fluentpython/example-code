@@ -1,7 +1,7 @@
 """
-explore1.py: Script to explore the OSCON schedule feed
+explore0.py: Script to explore the OSCON schedule feed
 
-# BEGIN EXPLORE1_DEMO
+# BEGIN EXPLORE0_DEMO
     >>> from osconfeed import load
     >>> raw_feed = load()
     >>> feed = FrozenJSON(raw_feed)  # <1>
@@ -18,7 +18,9 @@ explore1.py: Script to explore the OSCON schedule feed
      53 venues
     >>> feed.Schedule.speakers[-1].name  # <5>
     'Carina C. Zona'
-    >>> talk = feed.Schedule.events[40]  # <6>
+    >>> talk = feed.Schedule.events[40]
+    >>> type(talk)  # <6>
+    <class 'explore0.FrozenJSON'>
     >>> talk.name
     'There *Will* Be Bugs'
     >>> talk.speakers  # <7>
@@ -28,10 +30,11 @@ explore1.py: Script to explore the OSCON schedule feed
       ...
     KeyError: 'flavor'
 
-# END EXPLORE1_DEMO
+# END EXPLORE0_DEMO
+
 """
 
-# BEGIN EXPLORE1
+# BEGIN EXPLORE0
 from collections import abc
 
 
@@ -57,4 +60,4 @@ class FrozenJSON:
             return [cls.build(item) for item in obj]
         else:  # <8>
             return obj
-# END EXPLORE1
+# END EXPLORE0

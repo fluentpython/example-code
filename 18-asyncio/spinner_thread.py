@@ -28,19 +28,19 @@ def spin(msg, signal):  # <2>
     write(' ' * len(status) + '\x08' * len(status))  # <6>
 
 
-def slow_computation():  # <7>
-    # fake computation waiting a long time for I/O
+def slow_function():  # <7>
+    # pretend waiting a long time for I/O
     time.sleep(3)  # <8>
     return 42
 
 
 def supervisor():  # <9>
     signal = Signal()
-    spinner = threading.Thread(None, spin,
+    spinner = threading.Thread(target=spin,
                                args=('thinking!', signal))
     print('spinner object:', spinner)  # <10>
     spinner.start()  # <11>
-    result = slow_computation()  # <12>
+    result = slow_function()  # <12>
     signal.go = False  # <13>
     spinner.join()  # <14>
     return result
