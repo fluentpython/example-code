@@ -1,6 +1,6 @@
-=====================================================
-Setting up Nginx and Vaurien for testing HTTP clients
-=====================================================
+============================
+Setting up Nginx and Vaurien
+============================
 
 This text explains how to configure Nginx and Vaurien to test HTTP client code while avoiding network traffic and introducing simulated delays and errors. This setup is necessary if you want to experiment with the image download examples in chapters 17 and 18 of Fluent Python.
 
@@ -14,7 +14,7 @@ For this setup I chose Nginx as the HTTP server because it is very fast and easy
 
 The archive ``countries/flags.zip``, contains a directory ``flags/`` with 194 subdirectories, each containing a ``.gif`` image and a ``metadata.json`` file. These are public-domain images copied from the `CIA World Fact Book <https://www.cia.gov/library/publications/the-world-factbook/>`_.
 
-Once these files are unpacked to the ``flags/`` directory and Nginx is configured, you can experiment with the ``flags*.py``examples without hitting the network.
+Once these files are unpacked to the ``flags/`` directory and Nginx is configured, you can experiment with the ``flags*.py`` examples without hitting the network.
 
 
 Procedure
@@ -88,7 +88,7 @@ Most of the content in ``nginx.conf`` is within a block labeled ``http`` and enc
   }
 
 
-After editing ``nginx.conf`` the server must be started (if it's not running) or told to reload the configuration file:
+After editing ``nginx.conf`` the server must be started (if it's not running) or told to reload the configuration file::
 
 
   $ nginx  # to start, if necessary
@@ -161,7 +161,7 @@ Platform-specific instructions
 Nginx setup on Mac OS X
 ------------------------
 
-Homebrew (copy & paste code at the bottom of http://brew.sh/):
+Homebrew (copy & paste code at the bottom of http://brew.sh/)::
 
 
   $ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
