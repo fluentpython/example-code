@@ -4,6 +4,7 @@ concurrency/charfinder/charfinder_index.pickle
 metaprog/oscon-schedule/data/schedule?_db
 concurrency/wikipedia/fixture/docroot/
 17-futures/countries/flags/
+attic/futures/countries/flags/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

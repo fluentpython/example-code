@@ -32,7 +32,7 @@ MAX_CONCUR_REQ = 1000  # <5>
 
 def download_many(cc_list, base_url, verbose, concur_req):
     counter = collections.Counter()
-    with futures.ThreadPoolExecutor(concur_req) as executor:  # <6>
+    with futures.ThreadPoolExecutor(max_workers=concur_req) as executor:  # <6>
         to_do_map = {}  # <7>
         for cc in sorted(cc_list):  # <8>
             future = executor.submit(download_one,

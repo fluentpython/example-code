@@ -11,6 +11,8 @@ Create and load instance from iterable::
     >>> globe = ConcreteTombola(balls)
     >>> globe.loaded()
     True
+    >>> globe.inspect()
+    (0, 1, 2)
 
 
 Pick and collect balls::
@@ -55,7 +57,7 @@ Load and pick 100 balls to verify that they all come out::
     >>> balls = list(range(100))
     >>> globe = ConcreteTombola(balls)
     >>> picks = []
-    >>> while globe.loaded():
+    >>> while globe.inspect():
     ...     picks.append(globe.pick())
     >>> len(picks) == len(balls)
     True
@@ -72,7 +74,7 @@ Check that the order has changed and is not simply reversed::
 
 Note: the previous 2 tests have a *very* small chance of failing
 even if the implementation is OK. The probability of the 100
-balls coming out, by chance, in the order they were loaded is
+balls coming out, by chance, in the order they were inspect is
 1/100!, or approximately 1.07e-158. It's much easier to win the
 Lotto or to become a billionaire working as a programmer.
 

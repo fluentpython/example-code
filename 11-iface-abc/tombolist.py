@@ -12,8 +12,12 @@ class TomboList(list):  # <2>
         else:
             raise LookupError('pop from empty TomboList')
 
-    def load(self, iterable): self.extend(iterable)  # <5>
+    load = list.extend  # <5>
 
-    def loaded(self): return bool(self)  # <6>
+    def loaded(self):
+        return bool(self)  # <6>
 
-# Tombola.register(TomboList)  # <- Python 3.2 or earlier
+    def inspect(self):
+        return tuple(sorted(self))
+
+# Tombola.register(TomboList)  # <7>

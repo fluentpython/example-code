@@ -1,5 +1,4 @@
 import abc
-import collections
 
 
 class AutoStorage:
@@ -51,30 +50,17 @@ class NonBlank(Validated):
             raise ValueError('value cannot be empty or blank')
         return value
 
-# BEGIN MODEL_V8
+# BEGIN MODEL_V7
 class EntityMeta(type):
     """Metaclass for business entities with validated fields"""
 
-    @classmethod
-    def __prepare__(cls, name, bases):
-        return collections.OrderedDict()  # <1>
-
-    def __init__(self, name, bases, attr_dict):
-        super().__init__(name, bases, attr_dict)
-        self._field_names = []  # <2>
-        for key, attr in attr_dict.items():  # <3>
+    def __init__(cls, name, bases, attr_dict):
+        super().__init__(name, bases, attr_dict)  # <1>
+        for key, attr in attr_dict.items():  # <2>
             if isinstance(attr, Validated):
                 type_name = type(attr).__name__
                 attr.storage_name = '_{}#{}'.format(type_name, key)
-                self._field_names.append(key)  # <4>
 
-
-class Entity(metaclass=EntityMeta):
+class Entity(metaclass=EntityMeta):  # <3>
     """Business entity with validated fields"""
-
-    @classmethod
-    def field_names(cls):  # <5>
-        for name in cls._field_names:
-            yield name
-
-# END MODEL_V8
+# END MODEL_V7

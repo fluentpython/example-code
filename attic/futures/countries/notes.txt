@@ -1,0 +1,103 @@
+Prefixes with most flags:
+
+M 18
+S 18
+B 17
+C 15
+T 13
+G 12
+A 11
+L 11
+K 10
+
+There are no flags with prefix X
+
+Errors with threadpool:
+
+$ python3 flags_threadpool2.py _
+
+ZT failed: 503 - Service Temporarily Unavailable
+ZU failed: 503 - Service Temporarily Unavailable
+ZV failed: 503 - Service Temporarily Unavailable
+ZY failed: 503 - Service Temporarily Unavailable
+--------------------
+24 flags downloaded.
+37 not found.
+615 errors.
+Elapsed time: 3.86s
+
+
+$ python3 flags_sequential2.py
+Searching for 10 flags: BD, BR, CN, ID, IN, JP, NG, PK, RU, US
+BD failed: (ProtocolError('Connection aborted.', gaierror(8, 'nodename nor servname provided, or not known')),)
+--------------------
+0 flag downloaded.
+1 error.
+Elapsed time: 0.02s
+*** WARNING: 9 downloads never started! ***
+
+
+194 flags downloaded.
+482 not found.
+Elapsed time: 683.71s
+
+real	11m23.870s
+user	0m3.214s
+sys	0m0.603s
+
+
+$ python3 flags2.py -a
+LOCAL site: http://localhost:8001/flags
+Searching for 194 flags: from AD to ZW
+1 concurrent conection will be used.
+--------------------
+194 flags downloaded.
+Elapsed time: 0.90s
+(.env34) 192:countries luciano$ python3 flags2.py -e
+LOCAL site: http://localhost:8001/flags
+Searching for 676 flags: from AA to ZZ
+1 concurrent conection will be used.
+--------------------
+194 flags downloaded.
+482 not found.
+Elapsed time: 4.71s
+(.env34) 192:countries luciano$ python3 flags2.py -s remote
+(.env34) 192:countries luciano$ python3 flags2.py -s remote -a -l 100
+REMOTE site: http://python.pro.br/fluent/data/flags
+Searching for 100 flags: from AD to LK
+1 concurrent conection will be used.
+--------------------
+100 flags downloaded.
+Elapsed time: 72.58s
+(.env34) 192:countries luciano$ python3 flags2.py -s remote -e
+REMOTE site: http://python.pro.br/fluent/data/flags
+Searching for 676 flags: from AA to ZZ
+1 concurrent conection will be used.
+--------------------
+194 flags downloaded.
+482 not found.
+Elapsed time: 436.09s
+(.env34) 192:countries luciano$ python3 flags2_threadpool.py -s remote -e
+REMOTE site: http://python.pro.br/fluent/data/flags
+Searching for 676 flags: from AA to ZZ
+30 concurrent conections will be used.
+--------------------
+194 flags downloaded.
+482 not found.
+Elapsed time: 12.32s
+(.env34) 192:countries luciano$ python3 flags2_threadpool.py -s remote -e -m 100
+REMOTE site: http://python.pro.br/fluent/data/flags
+Searching for 676 flags: from AA to ZZ
+100 concurrent conections will be used.
+--------------------
+89 flags downloaded.
+184 not found.
+403 errors.
+Elapsed time: 7.62s
+(.env34) 192:countries luciano$
+
+wait_with_progress
+http://compiletoi.net/fast-scraping-in-python-with-asyncio.html
+
+http://blog.condi.me/asynchronous-part-1/
+
