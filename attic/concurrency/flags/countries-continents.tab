@@ -1,0 +1,195 @@
+# ISO-3166-1	US-GEC	continent	name
+AF	AF	AS	Afghanistan
+AL	AL	EU	Albania
+DZ	AG	AF	Algeria
+AD	AN	EU	Andorra
+AO	AO	AF	Angola
+AG	AC	NA	Antigua and Barbuda
+AR	AR	SA	Argentina
+AM	AM	AS	Armenia
+AU	AS	OC	Australia
+AT	AU	EU	Austria
+AZ	AJ	AS	Azerbaijan
+BS	BF	NA	Bahamas
+BH	BA	AS	Bahrain
+BD	BG	AS	Bangladesh
+BB	BB	NA	Barbados
+BY	BO	EU	Belarus
+BE	BE	EU	Belgium
+BZ	BH	NA	Belize
+BJ	BN	AF	Benin
+BT	BT	AS	Bhutan
+BO	BL	SA	Bolivia
+BA	BK	EU	Bosnia and Herzegovina
+BW	BC	AF	Botswana
+BR	BR	SA	Brazil
+BN	BX	AS	Brunei Darussalam
+BG	BU	EU	Bulgaria
+BF	UV	AF	Burkina Faso
+BI	BY	AF	Burundi
+KH	CB	AS	Cambodia
+CM	CM	AF	Cameroon
+CA	CA	NA	Canada
+CV	CV	AF	Cape Verde
+CF	CT	AF	Central African Republic
+TD	CD	AF	Chad
+CL	CI	SA	Chile
+CN	CH	AS	China
+CO	CO	SA	Colombia
+KM	CN	AF	Comoros
+CG	CF	AF	Congo (Brazzaville)
+CD	CG	AF	Congo (Kinshasa)
+CR	CS	NA	Costa Rica
+CI	IV	AF	Côte d'Ivoire
+HR	HR	EU	Croatia
+CU	CU	NA	Cuba
+CY	CY	AS	Cyprus
+CZ	EZ	EU	Czech Republic
+DK	DA	EU	Denmark
+DJ	DJ	AF	Djibouti
+DM	DO	NA	Dominica
+EC	EC	SA	Ecuador
+EG	EG	AF	Egypt
+SV	ES	NA	El Salvador
+GQ	EK	AF	Equatorial Guinea
+ER	ER	AF	Eritrea
+EE	EN	EU	Estonia
+ET	ET	AF	Ethiopia
+FJ	FJ	OC	Fiji
+FI	FI	EU	Finland
+FR	FR	EU	France
+GA	GB	AF	Gabon
+GM	GA	AF	Gambia
+GE	GG	AS	Georgia
+DE	GM	EU	Germany
+GH	GH	AF	Ghana
+GR	GR	EU	Greece
+GD	GJ	NA	Grenada
+GT	GT	NA	Guatemala
+GN	GV	AF	Guinea
+GW	PU	AF	Guinea-Bissau
+GY	GY	SA	Guyana
+HT	HA	NA	Haiti
+HN	HO	NA	Honduras
+HU	HU	EU	Hungary
+IS	IC	EU	Iceland
+IN	IN	AS	India
+ID	ID	AS	Indonesia
+IR	IR	AS	Iran
+IQ	IZ	AS	Iraq
+IE	EI	EU	Ireland
+IL	IS	AS	Israel
+IT	IT	EU	Italy
+JM	JM	NA	Jamaica
+JP	JA	AS	Japan
+JO	JO	AS	Jordan
+KZ	KZ	AS	Kazakhstan
+KE	KE	AF	Kenya
+KI	KR	OC	Kiribati
+KP	KN	AS	Korea, North
+KR	KS	AS	Korea, South
+KW	KU	AS	Kuwait
+KG	KG	AS	Kyrgyzstan
+LA	LA	AS	Laos
+LV	LG	EU	Latvia
+LB	LE	AS	Lebanon
+LS	LT	AF	Lesotho
+LR	LI	AF	Liberia
+LY	LY	AF	Libya
+LI	LS	EU	Liechtenstein
+LT	LH	EU	Lithuania
+LU	LU	EU	Luxembourg
+MK	MK	EU	Macedonia
+MG	MA	AF	Madagascar
+MW	MI	AF	Malawi
+MY	MY	AS	Malaysia
+MV	MV	AF	Maldives
+ML	ML	AF	Mali
+MT	MT	EU	Malta
+MH	RM	OC	Marshall Islands
+MR	MR	AF	Mauritania
+MU	MP	AF	Mauritius
+MX	MX	NA	Mexico
+FM	FM	OC	Micronesia
+MD	MD	EU	Moldova
+MC	MN	EU	Monaco
+MN	MG	AS	Mongolia
+ME	MJ	EU	Montenegro
+MA	MO	AF	Morocco
+MZ	MZ	AF	Mozambique
+MM	BM	AS	Myanmar
+NA	WA	AF	Namibia
+NR	NR	OC	Nauru
+NP	NP	AS	Nepal
+NL	NL	EU	Netherlands
+NZ	NZ	OC	New Zealand
+NI	NU	NA	Nicaragua
+NE	NG	AF	Niger
+NG	NI	AF	Nigeria
+NO	NO	EU	Norway
+OM	MU	AS	Oman
+PK	PK	AS	Pakistan
+PW	PS	OC	Palau
+PA	PM	NA	Panama
+PG	PP	OC	Papua New Guinea
+PY	PA	SA	Paraguay
+PE	PE	SA	Peru
+PH	RP	AS	Philippines
+PL	PL	EU	Poland
+PT	PO	EU	Portugal
+QA	QA	AS	Qatar
+RO	RO	EU	Romania
+RU	RS	EU	Russian Federation
+RW	RW	AF	Rwanda
+KN	SC	NA	Saint Kitts and Nevis
+LC	ST	NA	Saint Lucia
+VC	VC	NA	Grenadines
+WS	WS	OC	Samoa
+SM	SM	EU	San Marino
+ST	TP	AF	Sao Tome and Principe
+SA	SA	AS	Saudi Arabia
+SN	SG	AF	Senegal
+RS	RI	EU	Serbia
+SC	SE	AF	Seychelles
+SL	SL	AF	Sierra Leone
+SG	SN	AS	Singapore
+SK	LO	EU	Slovakia
+SI	SI	EU	Slovenia
+SB	BP	OC	Solomon Islands
+SO	SO	AF	Somalia
+ZA	SF	AF	South Africa
+SS	OD	AF	South Sudan
+ES	SP	EU	Spain
+LK	CE	AS	Sri Lanka
+SD	SU	AF	Sudan
+SR	NS	SA	Suriname
+SZ	WZ	AF	Swaziland
+SE	SW	EU	Sweden
+CH	SZ	EU	Switzerland
+SY	SY	AS	Syria
+TW	TW	AS	Taiwan
+TJ	TI	AS	Tajikistan
+TZ	TZ	AF	Tanzania
+TH	TH	AS	Thailand
+TL	TT	OC	Timor-Leste
+TG	TO	AF	Togo
+TO	TN	OC	Tonga
+TT	TD	NA	Trinidad and Tobago
+TN	TS	AF	Tunisia
+TR	TU	AS	Turkey
+TM	TX	AS	Turkmenistan
+TV	TV	OC	Tuvalu
+UG	UG	AF	Uganda
+UA	UP	EU	Ukraine
+AE	AE	AS	United Arab Emirates
+GB	UK	EU	United Kingdom
+US	US	NA	United States of America
+UY	UY	SA	Uruguay
+UZ	UZ	AS	Uzbekistan
+VU	NH	OC	Vanuatu
+VA	VT	EU	Vatican City
+VE	VE	SA	Venezuela
+VN	VM	AS	Vietnam
+YE	YM	AS	Yemen
+ZM	ZA	AF	Zambia
+ZW	ZI	AF	Zimbabwe
