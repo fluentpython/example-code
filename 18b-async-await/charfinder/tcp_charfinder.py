@@ -11,12 +11,11 @@ PROMPT = b'?> '
 
 index = UnicodeNameIndex()  # <2>
 
-@asyncio.coroutine
-def handle_queries(reader, writer):  # <3>
+async def handle_queries(reader, writer):  # <3>
     while True:  # <4>
-        writer.write(PROMPT)  # can't yield from!  # <5>
-        yield from writer.drain()  # must yield from!  # <6>
-        data = yield from reader.readline()  # <7>
+        writer.write(PROMPT)  # can't await!  # <5>
+        await writer.drain()  # must await!  # <6>
+        data = await reader.readline()  # <7>
         try:
             query = data.decode().strip()
         except UnicodeDecodeError:  # <8>
@@ -31,7 +30,7 @@ def handle_queries(reader, writer):  # <3>
                 writer.writelines(line.encode() + CRLF for line in lines) # <13>
             writer.write(index.status(query, len(lines)).encode() + CRLF) # <14>
 
-            yield from writer.drain()  # <15>
+            await writer.drain()  # <15>
             print('Sent {} results'.format(len(lines)))  # <16>
 
     print('Close the client socket')  # <17>
