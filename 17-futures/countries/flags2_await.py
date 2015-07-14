@@ -18,6 +18,7 @@ Sample run::
 # BEGIN FLAGS2_ASYNCIO_TOP
 import asyncio
 import collections
+from contextlib import closing
 
 import aiohttp
 from aiohttp import web
@@ -36,26 +37,24 @@ class FetchError(Exception):  # <1>
         self.country_code = country_code
 
 
-@asyncio.coroutine
-def get_flag(base_url, cc): # <2>
+async def get_flag(base_url, cc): # <2>
     url = '{}/{cc}/{cc}.gif'.format(base_url, cc=cc.lower())
-    resp = yield from aiohttp.request('GET', url)
-    if resp.status == 200:
-        image = yield from resp.read()
-        return image
-    elif resp.status == 404:
-        raise web.HTTPNotFound()
-    else:
-        raise aiohttp.HttpProcessingError(
-            code=resp.status, message=resp.reason,
-            headers=resp.headers)
+    with closing(await aiohttp.request('GET', url)) as resp:
+        if resp.status == 200:
+            image = await resp.read()
+            return image
+        elif resp.status == 404:
+            raise web.HTTPNotFound()
+        else:
+            raise aiohttp.HttpProcessingError(
+                code=resp.status, message=resp.reason,
+                headers=resp.headers)
 
 
-@asyncio.coroutine
-def download_one(cc, base_url, semaphore, verbose):  # <3>
+async def download_one(cc, base_url, semaphore, verbose):  # <3>
     try:
-        with (yield from semaphore):  # <4>
-            image = yield from get_flag(base_url, cc)  # <5>
+        with (await semaphore):  # <4>
+            image = await get_flag(base_url, cc)  # <5>
     except web.HTTPNotFound:  # <6>
         status = HTTPStatus.not_found
         msg = 'not found'
@@ -73,8 +72,7 @@ def download_one(cc, base_url, semaphore, verbose):  # <3>
 # END FLAGS2_ASYNCIO_TOP
 
 # BEGIN FLAGS2_ASYNCIO_DOWNLOAD_MANY
-@asyncio.coroutine
-def downloader_coro(cc_list, base_url, verbose, concur_req):  # <1>
+async def downloader_coro(cc_list, base_url, verbose, concur_req):  # <1>
     counter = collections.Counter()
     semaphore = asyncio.Semaphore(concur_req)  # <2>
     to_do = [download_one(cc, base_url, semaphore, verbose)
@@ -85,7 +83,7 @@ def downloader_coro(cc_list, base_url, verbose, concur_req):  # <1>
         to_do_iter = tqdm.tqdm(to_do_iter, total=len(cc_list))  # <5>
     for future in to_do_iter:  # <6>
         try:
-            res = yield from future  # <7>
+            res = await future  # <7>
         except FetchError as exc:  # <8>
             country_code = exc.country_code  # <9>
             try:
