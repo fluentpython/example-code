@@ -18,7 +18,7 @@ Sample run::
 # BEGIN FLAGS2_ASYNCIO_TOP
 import asyncio
 import collections
-from contextlib import closing
+import contextlib
 
 import aiohttp
 from aiohttp import web
@@ -41,7 +41,7 @@ class FetchError(Exception):  # <1>
 def get_flag(base_url, cc): # <2>
     url = '{}/{cc}/{cc}.gif'.format(base_url, cc=cc.lower())
     resp = yield from aiohttp.request('GET', url)
-    with closing(resp):
+    with contextlib.closing(resp):
         if resp.status == 200:
             image = yield from resp.read()
             return image

@@ -81,16 +81,14 @@ def downloader_coro(cc_list, base_url, verbose, concur_req):
                 error_msg = exc.__cause__.args[0]
             except IndexError:
                 error_msg = exc.__cause__.__class__.__name__
+            if verbose and error_msg:
+                msg = '*** Error for {}: {}'
+                print(msg.format(country_code, error_msg))
+            status = HTTPStatus.error
         else:
-            error_msg = ''
             status = res.status
 
-        if error_msg:
-            status = HTTPStatus.error
         counter[status] += 1
-        if verbose and error_msg:
-            msg = '*** Error for {}: {}'
-            print(msg.format(country_code, error_msg))
 
     return counter
 
