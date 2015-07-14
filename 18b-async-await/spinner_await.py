@@ -1,10 +1,10 @@
-# spinner_asyncio.py
+# spinner_await.py
 
 # credits: Example by Luciano Ramalho inspired by
 # Michele Simionato's multiprocessing example in the python-list:
 # https://mail.python.org/pipermail/python-list/2009-February/538048.html
 
-# BEGIN SPINNER_ASYNCIO
+# BEGIN SPINNER_AWAIT
 import asyncio
 import itertools
 import sys
@@ -47,4 +47,4 @@ def main():
 
 if __name__ == '__main__':
     main()
-# END SPINNER_ASYNCIO
+# END SPINNER_AWAIT
