@@ -2,10 +2,6 @@
 
 asyncio version using thread pool to save files
 
-Sample run::
-
-    $
-
 """
 
 import asyncio

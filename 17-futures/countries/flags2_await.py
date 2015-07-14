@@ -1,18 +1,6 @@
 """Download flags of countries (with error handling).
 
-asyncio version
-
-Sample run::
-
-    $ python3 flags2_asyncio.py -s ERROR -e -m 200
-    ERROR site: http://localhost:8003/flags
-    Searching for 676 flags: from AA to ZZ
-    200 concurrent connections will be used.
-    --------------------
-    146 flags downloaded.
-    363 not found.
-    167 errors.
-    Elapsed time: 2.59s
+asyncio async/await version
 
 """
 # BEGIN FLAGS2_ASYNCIO_TOP

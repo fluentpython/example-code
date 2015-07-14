@@ -1,6 +1,6 @@
 """Download flags of countries (with error handling).
 
-asyncio version
+asyncio yield-from version
 
 Sample run::
 
@@ -18,6 +18,7 @@ Sample run::
 # BEGIN FLAGS2_ASYNCIO_TOP
 import asyncio
 import collections
+from contextlib import closing
 
 import aiohttp
 from aiohttp import web
@@ -40,15 +41,16 @@ class FetchError(Exception):  # <1>
 def get_flag(base_url, cc): # <2>
     url = '{}/{cc}/{cc}.gif'.format(base_url, cc=cc.lower())
     resp = yield from aiohttp.request('GET', url)
-    if resp.status == 200:
-        image = yield from resp.read()
-        return image
-    elif resp.status == 404:
-        raise web.HTTPNotFound()
-    else:
-        raise aiohttp.HttpProcessingError(
-            code=resp.status, message=resp.reason,
-            headers=resp.headers)
+    with closing(resp):
+        if resp.status == 200:
+            image = yield from resp.read()
+            return image
+        elif resp.status == 404:
+            raise web.HTTPNotFound()
+        else:
+            raise aiohttp.HttpProcessingError(
+                code=resp.status, message=resp.reason,
+                headers=resp.headers)
 
 
 @asyncio.coroutine
