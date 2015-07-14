@@ -45,12 +45,11 @@ def home(request):  # <1>
 
 
 # BEGIN HTTP_CHARFINDER_SETUP
-@asyncio.coroutine
-def init(loop, address, port):  # <1>
+async def init(loop, address, port):  # <1>
     app = web.Application(loop=loop)  # <2>
     app.router.add_route('GET', '/', home)  # <3>
     handler = app.make_handler()  # <4>
-    server = yield from loop.create_server(handler,
+    server = await loop.create_server(handler,
                                            address, port)  # <5>
     return server.sockets[0].getsockname()  # <6>
 
