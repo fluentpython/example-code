@@ -1,10 +1,6 @@
 """Download flags and names of countries.
 
 ThreadPool version
-
-Sample run::
-
-
 """
 
 import collections

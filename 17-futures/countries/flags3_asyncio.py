@@ -1,11 +1,6 @@
-"""Download flags of countries (with error handling).
+"""Download flags and names of countries.
 
-asyncio version using thread pool to save files
-
-Sample run::
-
-    $
-
+asyncio version
 """
 
 import asyncio
