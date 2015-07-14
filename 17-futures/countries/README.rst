@@ -151,7 +151,7 @@ Using that same shell with the ``.env27`` environment active, run the ``vaurien_
 
 The ``vaurien_delay.sh`` creates an HTTP proxy on port 8002 which adds a 1s delay to every response. You can test it with a browser on port 8002: http://localhost:8002/flags/ad/ad.gif -- the flag of Andorra should appear after 1 second.
 
-There is also the ``vaurien_error_delay.sh`` script which runs a proxy on port 8003 producing errors in 25% of the responses and a .5 se delay to 50% of the responses. You can also test it with the browser on port 8003, but rememeber that errors are expected.
+There is also the ``vaurien_error_delay.sh`` script which runs a proxy on port 8003 producing errors in 25% of the responses and a .5 s delay to 50% of the responses. You can also test it with the browser on port 8003, but rememeber that errors are expected.
 
 
 Platform-specific instructions
