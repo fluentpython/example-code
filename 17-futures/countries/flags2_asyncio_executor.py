@@ -6,6 +6,7 @@ asyncio version using thread pool to save files
 
 import asyncio
 import collections
+import contextlib
 
 import aiohttp
 from aiohttp import web
@@ -28,15 +29,17 @@ class FetchError(Exception):
 def get_flag(base_url, cc):
     url = '{}/{cc}/{cc}.gif'.format(base_url, cc=cc.lower())
     resp = yield from aiohttp.request('GET', url)
-    if resp.status == 200:
-        image = yield from resp.read()
-        return image
-    elif resp.status == 404:
-        raise web.HTTPNotFound()
-    else:
-        raise aiohttp.HttpProcessingError(
-            code=resp.status, message=resp.reason,
-            headers=resp.headers)
+    with contextlib.closing(resp):
+        if resp.status == 200:
+            image = yield from resp.read()
+            return image
+        elif resp.status == 404:
+            raise web.HTTPNotFound()
+        else:
+            raise aiohttp.HttpProcessingError(
+                code=resp.status, message=resp.reason,
+                headers=resp.headers)
+
 
 # BEGIN FLAGS2_ASYNCIO_EXECUTOR
 @asyncio.coroutine
