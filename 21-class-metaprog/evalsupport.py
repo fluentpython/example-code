@@ -9,7 +9,7 @@ def deco_alpha(cls):
     cls.method_y = inner_1
     return cls
 
-# BEGIN META_ALEPH
+
 class MetaAleph(type):
     print('<[400]> MetaAleph body')
 
@@ -20,6 +20,6 @@ class MetaAleph(type):
             print('<[600]> MetaAleph.__init__:inner_2')
 
         cls.method_z = inner_2
-# END META_ALEPH
+
 
 print('<[700]> evalsupport module end')
