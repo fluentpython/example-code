@@ -29,7 +29,7 @@ def home(request):  # <1>
     print('Query: {!r}'.format(query))  # <3>
     if query:  # <4>
         descriptions = list(index.find_descriptions(query))
-        res = '\n'.join(ROW_TPL.format(**vars(descr))
+        res = '\n'.join(ROW_TPL.format(**descr._asdict())
                         for descr in descriptions)
         msg = index.status(query, len(descriptions))
     else:
