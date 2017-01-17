@@ -269,16 +269,20 @@ class Vector:
         return (self.angle(n) for n in range(1, len(self)))
 
     def __format__(self, fmt_spec=''):
+        limit = len(self) if fmt_spec.endswith('*') else min(len(self), 30)
+        if fmt_spec.endswith('*'):
+            fmt_spec = fmt_spec[:-1]
         if fmt_spec.endswith('h'):  # hyperspherical coordinates
             fmt_spec = fmt_spec[:-1]
             coords = itertools.chain([abs(self)],
                                      self.angles())  # <4>
-            outer_fmt = '<{}>'  # <5>
+            outer_fmt = '<{}{}>'  # <5>
         else:
             coords = self
-            outer_fmt = '({})'  # <6>
+            outer_fmt = '({}{})'  # <6>
+        ellipsis = ', ...' if limit < len(self) else ''
         components = (format(c, fmt_spec) for c in coords)  # <7>
-        return outer_fmt.format(', '.join(components))  # <8>
+        return outer_fmt.format(', '.join(itertools.islice(components, limit)), ellipsis)  # <8>
 
     @classmethod
     def frombytes(cls, octets):
