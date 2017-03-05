@@ -11,19 +11,14 @@ import time
 import sys
 
 
-class Signal:  # <1>
-    go = True
-
-
-def spin(msg, signal):  # <2>
+def spin(msg, done):  # <2>
     write, flush = sys.stdout.write, sys.stdout.flush
     for char in itertools.cycle('|/-\\'):  # <3>
         status = char + ' ' + msg
         write(status)
         flush()
         write('\x08' * len(status))  # <4>
-        time.sleep(.1)
-        if not signal.go:  # <5>
+        if done.wait(.1):  # <5>
             break
     write(' ' * len(status) + '\x08' * len(status))  # <6>
 
@@ -35,13 +30,13 @@ def slow_function():  # <7>
 
 
 def supervisor():  # <9>
-    signal = Signal()
+    done = threading.Event()
     spinner = threading.Thread(target=spin,
-                               args=('thinking!', signal))
+                               args=('thinking!', done))
     print('spinner object:', spinner)  # <10>
     spinner.start()  # <11>
     result = slow_function()  # <12>
-    signal.go = False  # <13>
+    done.set()  # <13>
     spinner.join()  # <14>
     return result
 
