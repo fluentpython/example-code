@@ -13,11 +13,14 @@ Sample run::
 import os
 import time
 import sys
+from itertools import product
 
 import requests  # <1>
 
-POP20_CC = ('CN IN US ID BR PK NG BD RU JP '
-            'MX PH VN ET EG DE IR TR CD FR').split()  # <2>
+import string
+
+
+POP20_CC = tuple(''.join(t) for t in product(string.ascii_uppercase,string.ascii_uppercase))  # <2>
 
 BASE_URL = 'http://flupy.org/data/flags'  # <3>
 
