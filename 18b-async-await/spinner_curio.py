@@ -2,12 +2,14 @@
 
 # spinner_curio.py
 
-# credits: Example by Luciano Ramalho inspired by
+# credits:
+# Example from the book Fluent Python by Luciano Ramalho inspired by
 # Michele Simionato's multiprocessing example in the python-list:
 # https://mail.python.org/pipermail/python-list/2009-February/538048.html
+# using David Beazley's `curio` library:
+# https://github.com/dabeaz/curio
 
 import curio
-
 import itertools
 import sys
 
