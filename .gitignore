@@ -1,5 +1,6 @@
 *.sublime-project
 *.sublime-workspace
+.env*
 concurrency/flags/img/*.gif
 concurrency/charfinder/charfinder_index.pickle
 18-asyncio/charfinder/charfinder_index.pickle

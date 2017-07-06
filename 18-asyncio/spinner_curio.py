@@ -1,19 +1,18 @@
 #!/usr/bin/env python3
 
-# spinner_asyncio.py
+# spinner_curio.py
 
 # credits: Example by Luciano Ramalho inspired by
 # Michele Simionato's multiprocessing example in the python-list:
 # https://mail.python.org/pipermail/python-list/2009-February/538048.html
 
-# BEGIN SPINNER_ASYNCIO
-import asyncio
+import curio
+
 import itertools
 import sys
 
 
-@asyncio.coroutine  # <1>
-def spin(msg):  # <2>
+async def spin(msg):  # <1>
     write, flush = sys.stdout.write, sys.stdout.flush
     for char in itertools.cycle('|/-\\'):
         status = char + ' ' + msg
@@ -21,35 +20,30 @@ def spin(msg):  # <2>
         flush()
         write('\x08' * len(status))
         try:
-            yield from asyncio.sleep(.1)  # <3>
-        except asyncio.CancelledError:  # <4>
+            await curio.sleep(.1)  # <2>
+        except curio.CancelledError:  # <3>
             break
     write(' ' * len(status) + '\x08' * len(status))
 
 
-@asyncio.coroutine
-def slow_function():  # <5>
+async def slow_function():  # <4>
     # pretend waiting a long time for I/O
-    yield from asyncio.sleep(3)  # <6>
+    await curio.sleep(3)  # <5>
     return 42
 
 
-@asyncio.coroutine
-def supervisor():  # <7>
-    spinner = asyncio.async(spin('thinking!'))  # <8>
-    print('spinner object:', spinner)  # <9>
-    result = yield from slow_function()  # <10>
-    spinner.cancel()  # <11>
+async def supervisor():  # <6>
+    spinner = await curio.spawn(spin('thinking!'))  # <7>
+    print('spinner object:\n ', repr(spinner))  # <8>
+    result = await slow_function()  # <9>
+    await spinner.cancel()  # <10>
     return result
 
 
 def main():
-    loop = asyncio.get_event_loop()  # <12>
-    result = loop.run_until_complete(supervisor())  # <13>
-    loop.close()
+    result = curio.run(supervisor)  # <12>
     print('Answer:', result)
 
 
 if __name__ == '__main__':
     main()
-# END SPINNER_ASYNCIO
