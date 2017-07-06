@@ -43,7 +43,7 @@ async def supervisor():  # <6>
 
 
 def main():
-    result = curio.run(supervisor)  # <12>
+    result = curio.run(supervisor)  # <11>
     print('Answer:', result)
 
 
