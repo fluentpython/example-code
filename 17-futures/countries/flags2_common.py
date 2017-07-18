@@ -33,6 +33,8 @@ COUNTRY_CODES_FILE = 'country_codes.txt'
 
 
 def save_flag(img, filename):
+    if not os.path.exists(DEST_DIR):
+        os.makedirs(DEST_DIR)
     path = os.path.join(DEST_DIR, filename)
     with open(path, 'wb') as fp:
         fp.write(img)

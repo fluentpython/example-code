@@ -25,6 +25,8 @@ DEST_DIR = 'downloads/'  # <4>
 
 
 def save_flag(img, filename):  # <5>
+    if not os.path.exists(DEST_DIR):
+        os.makedirs(DEST_DIR)
     path = os.path.join(DEST_DIR, filename)
     with open(path, 'wb') as fp:
         fp.write(img)
