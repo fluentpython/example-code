@@ -11,13 +11,11 @@ sleep(0.2) dt=0.201s
 
 # BEGIN CLOCKDECO_PARAM
 import time
-import functools
 
 DEFAULT_FMT = '[{elapsed:0.8f}s] {name}({args}) -> {result}'
 
 def clock(fmt=DEFAULT_FMT):  # <1>
     def decorate(func):      # <2>
-        @functools.wraps(func)
         def clocked(*_args): # <3>
             t0 = time.time()
             _result = func(*_args)  # <4>
@@ -37,7 +35,6 @@ if __name__ == '__main__':
         time.sleep(seconds)
 
     for i in range(3):
-        print(snooze.__name__)
         snooze(.123)
 
 # END CLOCKDECO_PARAM
