@@ -7,7 +7,7 @@ from aiohttp import web
 from charfinder import UnicodeNameIndex
 
 TEMPLATE_NAME = 'http_charfinder.html'
-CONTENT_TYPE = 'text/html; charset=UTF-8'
+CONTENT_TYPE = 'text/html'
 SAMPLE_WORDS = ('bismillah chess cat circled Malayalam digit'
                 ' Roman face Ethiopic black mark symbol dot'
                 ' operator Braille hexagram').split()
