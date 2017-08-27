@@ -1,15 +1,18 @@
+import os
 import shelve
+
 import pytest
 
 import schedule2 as schedule
 
 
-@pytest.yield_fixture
+@pytest.fixture(scope='module')
 def db():
-    with shelve.open(schedule.DB_NAME) as the_db:
+    with shelve.open(DB_NAME) as the_db:
         if schedule.CONFERENCE not in the_db:
             schedule.load_db(the_db)
         yield the_db
+        os.remove(DB_NAME)
 
 
 def test_record_attr_access():
