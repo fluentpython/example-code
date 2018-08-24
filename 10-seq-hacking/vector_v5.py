@@ -284,5 +284,7 @@ class Vector:
     def frombytes(cls, octets):
         typecode = chr(octets[0])
         memv = memoryview(octets[1:]).cast(typecode)
-        return cls(memv)
+        vec = cls(memv)
+        vec.typecode = typecode
+        return vec
 # END VECTOR_V5
