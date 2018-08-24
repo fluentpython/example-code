@@ -201,7 +201,9 @@ import itertools  # <1>
 class Vector:
     typecode = 'd'
 
-    def __init__(self, components):
+    def __init__(self, components, typecode=None):
+        if typecode:
+            self.typecode = typecode
         self._components = array(self.typecode, components)
 
     def __iter__(self):
@@ -284,5 +286,5 @@ class Vector:
     def frombytes(cls, octets):
         typecode = chr(octets[0])
         memv = memoryview(octets[1:]).cast(typecode)
-        return cls(memv)
+        return cls(memv, typecode)
 # END VECTOR_V5
