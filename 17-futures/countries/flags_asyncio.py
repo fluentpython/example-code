@@ -17,17 +17,16 @@ import aiohttp  # <1>
 from flags import BASE_URL, save_flag, show, main  # <2>
 
 
-@asyncio.coroutine  # <3>
-def get_flag(cc):
+async def get_flag(session, cc):
     url = '{}/{cc}/{cc}.gif'.format(BASE_URL, cc=cc.lower())
-    resp = yield from aiohttp.request('GET', url)  # <4>
-    image = yield from resp.read()  # <5>
+    async with session.get(url) as resp:
+        image = await resp.read()  # <5>
     return image
 
 
-@asyncio.coroutine
-def download_one(cc):  # <6>
-    image = yield from get_flag(cc)  # <7>
+async def download_one(cc):  # <6>
+    async with aiohttp.ClientSession() as session:
+        image = await get_flag(session, cc)  # <7>
     show(cc)
     save_flag(image, cc.lower() + '.gif')
     return cc
