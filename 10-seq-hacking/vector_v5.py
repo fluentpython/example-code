@@ -259,7 +259,7 @@ class Vector:
 
     def angle(self, n):  # <2>
         r = math.sqrt(sum(x * x for x in self[n:]))
-        a = math.atan2(r, self[n - 1])
+        a = math.atan2(r, self[n-1])
         if (n == len(self) - 1) and (self[-1] < 0):
             return math.pi * 2 - a
         else:
