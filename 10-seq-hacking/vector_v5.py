@@ -259,7 +259,7 @@ class Vector:
 
     def angle(self, n):  # <2>
         r = math.sqrt(sum(x * x for x in self[n:]))
-        a = math.atan2(r, self[n-1])
+        a = math.atan2(r, self[n - 1])
         if (n == len(self) - 1) and (self[-1] < 0):
             return math.pi * 2 - a
         else:
@@ -269,15 +269,24 @@ class Vector:
         return (self.angle(n) for n in range(1, len(self)))
 
     def __format__(self, fmt_spec=''):
+        ellipsis = ''
+        limit_num = len(self)
+        if fmt_spec.endswith('*'):
+            fmt_spec = fmt_spec[:-1]
+        elif len(self) > 30:
+            limit_num = 30
+            ellipsis = ', ...'
+
         if fmt_spec.endswith('h'):  # hyperspherical coordinates
             fmt_spec = fmt_spec[:-1]
             coords = itertools.chain([abs(self)],
                                      self.angles())  # <4>
-            outer_fmt = '<{}>'  # <5>
+            outer_fmt = '<{{}}{}>'.format(ellipsis)  # <5>
         else:
             coords = self
-            outer_fmt = '({})'  # <6>
-        components = (format(c, fmt_spec) for c in coords)  # <7>
+            outer_fmt = '({{}}{})'.format(ellipsis)  # <6>
+        components = (format(c, fmt_spec)
+                      for c in itertools.islice(coords, limit_num))  # <7>
         return outer_fmt.format(', '.join(components))  # <8>
 
     @classmethod
