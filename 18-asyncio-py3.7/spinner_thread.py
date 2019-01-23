@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # spinner_thread.py
 
 # credits: Adapted from Michele Simionato's
