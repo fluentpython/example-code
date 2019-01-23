@@ -1,3 +1,5 @@
+.vscode/
+.venv3?/
 *.sublime-project
 *.sublime-workspace
 .env*
