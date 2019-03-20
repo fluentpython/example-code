@@ -6,9 +6,9 @@ import re
 import reprlib
 
 
-RE_TOKEN = re.compile('\w+|\s+|[^\w\s]+')
+RE_TOKEN = re.compile(r'\w+|\s+|[^\w\s]+')
 RE_WORD = re.compile('\w+')
-RE_PUNCTUATION = re.compile('[^\w\s]+')
+RE_PUNCTUATION = re.compile(r'[^\w\s]+')
 
 
 class SentenceSlice:

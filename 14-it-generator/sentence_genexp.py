@@ -6,7 +6,7 @@ Sentence: iterate over words using a generator expression
 import re
 import reprlib
 
-RE_WORD = re.compile('\w+')
+RE_WORD = re.compile(r'\w+')
 
 
 class Sentence:
