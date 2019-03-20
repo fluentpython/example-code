@@ -64,9 +64,9 @@ import itertools
 import functools
 from collections import namedtuple
 
-RE_WORD = re.compile('\w+')
+RE_WORD = re.compile(r'\w+')
 RE_UNICODE_NAME = re.compile('^[A-Z0-9 -]+$')
-RE_CODEPOINT = re.compile('U\+([0-9A-F]{4,6})')
+RE_CODEPOINT = re.compile(r'U\+([0-9A-F]{4,6})')
 
 INDEX_NAME = 'charfinder_index.pickle'
 MINIMUM_SAVE_LEN = 10000

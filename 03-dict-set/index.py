@@ -8,7 +8,7 @@
 import sys
 import re
 
-WORD_RE = re.compile('\w+')
+WORD_RE = re.compile(r'\w+')
 
 index = {}
 with open(sys.argv[1], encoding='utf-8') as fp:

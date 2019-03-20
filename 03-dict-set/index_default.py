@@ -9,7 +9,7 @@ import sys
 import re
 import collections
 
-WORD_RE = re.compile('\w+')
+WORD_RE = re.compile(r'\w+')
 
 index = collections.defaultdict(list)     # <1>
 with open(sys.argv[1], encoding='utf-8') as fp:

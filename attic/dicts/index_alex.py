@@ -8,7 +8,7 @@
 import sys
 import re
 
-NONWORD_RE = re.compile('\W+')
+NONWORD_RE = re.compile(r'\W+')
 
 idx = {}
 with open(sys.argv[1], encoding='utf-8') as fp:
