@@ -9,21 +9,17 @@
 # BEGIN SPINNER_ASYNCIO
 import asyncio
 import itertools
-import sys
 
 
 async def spin(msg):  # <1>
-    write, flush = sys.stdout.write, sys.stdout.flush
     for char in itertools.cycle('|/-\\'):
         status = char + ' ' + msg
-        write(status)
-        flush()
-        write('\x08' * len(status))
+        print(status, flush=True, end='\r')
         try:
             await asyncio.sleep(.1)  # <2>
         except asyncio.CancelledError:  # <3>
             break
-    write(' ' * len(status) + '\x08' * len(status))
+    print(' ' * len(status), end='\r')
 
 
 async def slow_function():  # <4>
