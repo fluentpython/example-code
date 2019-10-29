@@ -160,6 +160,7 @@ class Vector:
 
     def __init__(self, components):
         self._components = array(self.typecode, components)
+        self._hash = None
 
     def __iter__(self):
         return iter(self._components)
@@ -177,12 +178,17 @@ class Vector:
                 bytes(self._components))
 
     def __eq__(self, other):
-        return (len(self) == len(other) and
+        return (hash(self) == hash(other) and len(self) == len(other) and
                 all(a == b for a, b in zip(self, other)))
 
     def __hash__(self):
+        if self._hash:
+            return self._hash
+
         hashes = (hash(x) for x in self)
-        return functools.reduce(operator.xor, hashes, 0)
+        self._hash = functools.reduce(operator.xor, hashes, 0)
+        
+        return self._hash
 
     def __abs__(self):
         return math.sqrt(sum(x * x for x in self))
