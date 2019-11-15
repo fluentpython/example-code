@@ -17,7 +17,7 @@ class Sentence:
     def __getitem__(self, index):
         return self.words[index]  # <2>
 
-    def __len__(self, index):  # <3>
+    def __len__(self):  # <3>
         return len(self.words)
 
     def __repr__(self):
