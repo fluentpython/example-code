@@ -38,26 +38,17 @@ async def handle_queries(reader, writer):  # <3>
 # END TCP_CHARFINDER_TOP
 
 # BEGIN TCP_CHARFINDER_MAIN
-def main(address='127.0.0.1', port=2323):  # <1>
+async def main(address='127.0.0.1', port=2323):  # <1>
     port = int(port)
-    loop = asyncio.get_event_loop()
-    server_coro = asyncio.start_server(handle_queries, address, port,
-                                loop=loop) # <2>
-    server = loop.run_until_complete(server_coro) # <3>
+    server = await asyncio.start_server(handle_queries, address, port) # <2>
 
-    host = server.sockets[0].getsockname()  # <4>
-    print('Serving on {}. Hit CTRL-C to stop.'.format(host))  # <5>
-    try:
-        loop.run_forever()  # <6>
-    except KeyboardInterrupt:  # CTRL+C pressed
-        pass
+    host = server.sockets[0].getsockname()  # <3>
+    print('Serving on {}. Hit CTRL-C to stop.'.format(host))  # <4>
 
-    print('Server shutting down.')
-    server.close()  # <7>
-    loop.run_until_complete(server.wait_closed())  # <8>
-    loop.close()  # <9>
+    async with server:
+        await server.serve_forever()
 
 
 if __name__ == '__main__':
-    main(*sys.argv[1:])  # <10>
+    asyncio.run(main(*sys.argv[1:]))  # <5>
 # END TCP_CHARFINDER_MAIN
