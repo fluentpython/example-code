@@ -8,7 +8,7 @@ if len(sys.argv) == 2:
     module_name = sys.argv[1].replace('.py', '')
     module = importlib.import_module(module_name)
 else:
-    print('Usage: {} <vector-module-to-test>'.format())
+    print('Usage: {} <vector-module-to-test>'.format(sys.argv[0]))
     sys.exit(1)
 
 fmt = 'Selected Vector2d type: {.__name__}.{.__name__}'
