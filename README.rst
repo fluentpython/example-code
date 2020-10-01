@@ -13,4 +13,6 @@ Example code for the book `Fluent Python`_ by Luciano Ramalho (O'Reilly, 2014).
 
 * No promises. No guarantees. Use at own risk.
 
+*responsible for own safety Swim at your own risk.
+
 .. _Fluent Python: http://shop.oreilly.com/product/0636920032519.do 
