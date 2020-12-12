@@ -14,7 +14,8 @@ import itertools
 async def spin(msg):  # <1>
     for char in itertools.cycle('|/-\\'):
         status = char + ' ' + msg
-        print(status, flush=True, end='\r')
+        print(end='\r')
+        print(status, flush=True, end='')
         try:
             await asyncio.sleep(.1)  # <2>
         except asyncio.CancelledError:  # <3>
