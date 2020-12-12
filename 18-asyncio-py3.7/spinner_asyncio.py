@@ -36,11 +36,11 @@ async def supervisor():  # <6>
     return result
 
 
-def main():
-    result = asyncio.run(supervisor())  # <11>
+async def main():
+    result = await supervisor()  # <11>
     print('Answer:', result)
 
 
 if __name__ == '__main__':
-    main()
+    await main()
 # END SPINNER_ASYNCIO
