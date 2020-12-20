@@ -1,5 +1,5 @@
-Fluent Python: example code
-===========================
+Fluent Python, First Edition: example code
+==========================================
 
 Example code for the book `Fluent Python, First Edition` by Luciano Ramalho (O'Reilly, 2015).
 
