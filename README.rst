@@ -1,9 +1,7 @@
 Fluent Python: example code
 ===========================
 
-Example code for the book `Fluent Python`_ by Luciano Ramalho (O'Reilly, 2014).
-
-   **BEWARE**: This is a work in progress, like the book itself.
+Example code for the book `Fluent Python, First Edition` by Luciano Ramalho (O'Reilly, 2015).
 
 * Code here may change and disappear without warning. 
 
