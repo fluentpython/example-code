@@ -163,7 +163,7 @@ class UnicodeNameIndex:
         result_sets = []
         for word in tokenize(query):
             chars = self.index.get(word)
-            if chars is None:  # shorcut: no such word
+            if chars is None:  # shortcut: no such word
                 result_sets = []
                 break
             result_sets.append(chars)

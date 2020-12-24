@@ -165,7 +165,7 @@ class UnicodeNameIndex:
         for word in tokenize(query):
             if word in self.index:
                 result_sets.append(self.index[word])
-            else:  # shorcut: no such word
+            else:  # shortcut: no such word
                 result_sets = []
                 break
         if result_sets:
