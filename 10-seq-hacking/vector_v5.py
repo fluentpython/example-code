@@ -187,6 +187,65 @@ Tests of ``format()`` with spherical coordinates in 2D, 3D and 4D::
     '<4.000e+00, 1.047e+00, 9.553e-01, 7.854e-01>'
     >>> format(Vector([0, 1, 0, 0]), '0.5fh')
     '<1.00000, 1.57080, 0.00000, 0.00000>'
+
+Tests of new ``format()`` with length limit::
+
+    >>> v5 = Vector(range(5))
+    >>> v100 = Vector(range(100))
+    >>> format(v5)
+    '(0.0, 1.0, 2.0, 3.0, 4.0)'
+    >>> format(v5, 'h')  # doctest:+ELLIPSIS
+    '<5.477..., 1.5707..., 1.387..., 1.190..., 0.927...>'
+    >>> format(v5, '0.3fh')
+    '<5.477, 1.571, 1.387, 1.190, 0.927>'
+    >>> format(v5, '*')
+    '(0.0, 1.0, 2.0, 3.0, 4.0)'
+    >>> format(v5, '.3f*')
+    '(0.000, 1.000, 2.000, 3.000, 4.000)'
+    >>> format(v5, '.3fh*')
+    '<5.477, 1.571, 1.387, 1.190, 0.927>'
+
+    >>> v30 = Vector(range(30))
+    >>> format(v30)  # doctest:+ELLIPSIS
+    '(0.0, 1.0, ..., 29.0)'
+    >>> format(v30, 'h')  # doctest:+ELLIPSIS
+    '<92.493..., 1.570..., ..., 0.802...>'
+    >>> format(v30, '0.3fh')  # doctest:+ELLIPSIS
+    '<92.493, 1.571, ..., 0.803>'
+    >>> format(v30, '*')  # doctest:+ELLIPSIS
+    '(0.0, 1.0, ..., 29.0)'
+    >>> format(v30, '.3f*')  # doctest:+ELLIPSIS
+    '(0.000, 1.000, ..., 29.000)'
+    >>> format(v30, '.3fh*')  # doctest:+ELLIPSIS
+    '<92.493, 1.571, ..., 0.803>'
+
+    >>> v100 = Vector(range(100))
+    >>> format(v100)  # doctest:+ELLIPSIS
+    '(0.0, 1.0, ..., 29.0, ...)'
+    >>> format(v100, 'h')  # doctest:+ELLIPSIS
+    '<573.018..., 1.570..., ..., 1.521..., ...>'
+    >>> format(v100, '0.3fh')  # doctest:+ELLIPSIS
+    '<573.018, 1.571, ..., 1.521, ...>'
+    >>> format(v100, '*')  # doctest:+ELLIPSIS
+    '(0.0, 1.0, ..., 99.0)'
+    >>> format(v100, '.3f*')  # doctest:+ELLIPSIS
+    '(0.000, 1.000, ..., 99.000)'
+    >>> format(v100, '.3fh*')  # doctest:+ELLIPSIS
+    '<573.018, 1.571, ..., 0.790>'
+
+    >>> v100.maxlen = 3
+    >>> format(v100)
+    '(0.0, 1.0, 2.0, ...)'
+    >>> format(v100, 'h')  # doctest:+ELLIPSIS
+    '<573.018..., 1.570..., 1.569..., ...>'
+    >>> format(v100, '0.3fh')
+    '<573.018, 1.571, 1.569, ...>'
+    >>> format(v100, '*')  # doctest:+ELLIPSIS
+    '(0.0, 1.0, ..., 99.0)'
+    >>> format(v100, '.3f*')  # doctest:+ELLIPSIS
+    '(0.000, 1.000, ..., 99.000)'
+    >>> format(v100, '.3fh*')  # doctest:+ELLIPSIS
+    '<573.018, 1.571, ..., 0.790>'
 """
 
 from array import array
@@ -228,10 +287,10 @@ class Vector:
         return functools.reduce(operator.xor, hashes, 0)
 
     def __abs__(self):
-        return math.sqrt(sum(x * x for x in self))
+        return math.hypot(*self)
 
     def __bool__(self):
-        return bool(abs(self))
+        return any(x != 0 for x in self)
 
     def __len__(self):
         return len(self._components)
@@ -268,16 +327,30 @@ class Vector:
     def angles(self):  # <3>
         return (self.angle(n) for n in range(1, len(self)))
 
+    maxlen = 30
     def __format__(self, fmt_spec=''):
+        print_all = len(self) <= self.maxlen  # whether print all numbers
+        if fmt_spec.endswith('*'):
+            fmt_spec = fmt_spec[:-1]
+            print_all = True
         if fmt_spec.endswith('h'):  # hyperspherical coordinates
             fmt_spec = fmt_spec[:-1]
-            coords = itertools.chain([abs(self)],
-                                     self.angles())  # <4>
+            if print_all:
+                coords = itertools.chain([abs(self)],
+                                        self.angles())  # <4>
+            else:
+                coords = itertools.chain([abs(self)],
+                                        itertools.islice(self.angles(), self.maxlen -1))
             outer_fmt = '<{}>'  # <5>
         else:
-            coords = self
+            if print_all:
+                coords = self
+            else:
+                coords = itertools.islice(self, self.maxlen)
             outer_fmt = '({})'  # <6>
         components = (format(c, fmt_spec) for c in coords)  # <7>
+        if not print_all:
+            components = itertools.chain(components, ['...'])
         return outer_fmt.format(', '.join(components))  # <8>
 
     @classmethod
