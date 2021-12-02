@@ -1,6 +1,8 @@
 Fluent Python, First Edition: example code
 ==========================================
 
+**This repository is archived and will not be updated. Please visit https://github.com/fluentpython/example-code-2e**
+
 Example code for the book `Fluent Python, First Edition` by Luciano Ramalho (O'Reilly, 2015).
 
 * Code here may change and disappear without warning. 
