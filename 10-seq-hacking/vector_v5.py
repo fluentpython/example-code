@@ -268,7 +268,13 @@ class Vector:
     def angles(self):  # <3>
         return (self.angle(n) for n in range(1, len(self)))
 
+    max_format_size = 30
     def __format__(self, fmt_spec=''):
+        showall = False
+        if fmt_spec.endswith('*'):
+            fmt_spec = fmt_spec[:-1]
+            showall = True
+
         if fmt_spec.endswith('h'):  # hyperspherical coordinates
             fmt_spec = fmt_spec[:-1]
             coords = itertools.chain([abs(self)],
@@ -277,7 +283,14 @@ class Vector:
         else:
             coords = self
             outer_fmt = '({})'  # <6>
-        components = (format(c, fmt_spec) for c in coords)  # <7>
+
+        # if truncate is needed
+        if (not showall) and len(self) > self.max_format_size:
+            components = itertools.chain((format(x, fmt_spec) for index, x in enumerate(coords)
+                                         if index < self.max_format_size), ['...'])
+        else:
+            components = (format(x, fmt_spec) for x in coords) # <7>
+
         return outer_fmt.format(', '.join(components))  # <8>
 
     @classmethod
