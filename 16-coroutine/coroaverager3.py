@@ -63,8 +63,11 @@ def averager():  # <1>
 
 # the delegating generator
 def grouper(results, key):  # <5>
-    while True:  # <6>
-        results[key] = yield from averager()  # <7>
+    # while True:       # <6>
+    results[key] = yield from averager()  # <7>
+    # When group.send(None) is called, group runs to the yield statement below 
+    # without raising StopIteration and creating a useless new instance of averager  
+    yield
 
 
 # the client code, a.k.a. the caller
